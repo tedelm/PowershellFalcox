@@ -1,3 +1,4 @@
+git pull
 git add --all
 git commit -m "New Stuff"
 git push -u origin master
