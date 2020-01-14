@@ -12,6 +12,6 @@ Offline configuration editor for powershell
 GetFalcoX -InputFile "< path to your falcoX backup file >.txt" -ViewThis pid,filter,rates,tpa</br>
 
 
-# Checklist
+# To Do list...
 * Create SetFalcoX functionality
 * Create Serial interface (Possible?)
