@@ -10,3 +10,8 @@ Offline configuration editor for powershell
 3. In Powershell:</br>
 . .\FalcoXLovesPowershell.ps1</br>
 GetFalcoX -InputFile "< path to your falcoX backup file >.txt" -ViewThis pid,filter,rates,tpa</br>
+
+
+# Checklist
+* Create SetFalcoX functionality
+* Create Serial interface (Possible?)
