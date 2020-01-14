@@ -57,12 +57,13 @@ Function GetFalcoX($InputFile,$ViewThis){
         Write-host "Yaw: $($($PIDS[6] -split "=")[1]), $($($PIDS[7] -split "=")[1]), $($($PIDS[8] -split "=")[1]) -- D-term: $YawDtermPercent%"
         Write-Host " " 
         Write-Host "-- Misc ---"
-        $PIDS_misc = $content_clean | select-string -pattern "use_simmode=","sim_boost=","use_whisper="
+        $PIDS_misc = $content_clean | select-string -pattern "use_simmode=","sim_boost=","use_whisper=","cg_comp="
             If($($($PIDS_misc[0] -split "=")[1]) -match "1"){$SIMmodeEnabled = "True"}else{$SIMmodeEnabled = "False"}
             If($($($PIDS_misc[1] -split "=")[1]) -match "1"){$WhisperEnabled = "True"}else{$WhisperEnabled = "False"}
         Write-host "SIM Mode Enabled: $SIMmodeEnabled"
-        Write-host "SIM Boost: $($($PIDS_misc[2] -split "=")[1])"
+        Write-host "SIM Boost: $($($PIDS_misc[3] -split "=")[1])"
         Write-host "Whisper Enabled: $WhisperEnabled"
+        Write-host "CG: $($($PIDS_misc[2] -split "=")[1])"
         
         Write-Host " "
 
@@ -80,6 +81,12 @@ Function GetFalcoX($InputFile,$ViewThis){
             Write-Host "----- D-Term -----"
             Write-Host "Filter1: $(FilterNumb -Filterint $(($filters[2]) -split '=','')[1]), @ $($($filters[6] -split "=")[1]) Hz"
             Write-Host "Filter2: $(FilterNumb -Filterint $(($filters[3]) -split '=','')[1]), @ $($($filters[7] -split "=")[1]) Hz"  
+
+            Write-Host "-- Dynamic AA ---"
+            $filters_aa = $content_clean | select-string -pattern "use_dyn_aa=","aa_strength="
+                If($($($filters_aa[0] -split "=")[1]) -match "1"){$DynamicAAEnabled = "True"}else{$DynamicAAEnabled = "False"}
+            Write-Host "Dynamic AA Enabled: $DynamicAAEnabled"
+            Write-Host "Dynamic AA Strength: $($($filters_aa[1] -split "=")[1])"
             Write-Host " "
     }
 
@@ -89,7 +96,12 @@ Function GetFalcoX($InputFile,$ViewThis){
         Write-host "----- RATE, ACRO, EXPO -----"
         Write-host "Roll: $($($Rates[0] -split "=")[1]), $($($Rates[3] -split "=")[1]), $($($Rates[6] -split "=")[1])"
         Write-host "Pitch: $($($Rates[1] -split "=")[1]), $($($Rates[4] -split "=")[1]), $($($Rates[7] -split "=")[1])"
-        Write-host "Yaw: $($($Rates[2] -split "=")[1]), $($($Rates[5] -split "=")[1]), $($($Rates[8] -split "=")[1])"        
+        Write-host "Yaw: $($($Rates[2] -split "=")[1]), $($($Rates[5] -split "=")[1]), $($($Rates[8] -split "=")[1])"    
+        Write-host "----- RC Smooth -----"
+        $Rates_Smooth = $content_clean | select-string -pattern "rc_smoothing_type=","rc_smoothing_value="
+        Write-host "RC Smooth type: $($($Rates_Smooth[0] -split "=")[1])"
+        Write-host "RC Smooth: $($($Rates_Smooth[1] -split "=")[1])"
+
         Write-Host " "
     }
 
@@ -116,11 +128,9 @@ Function GetFalcoX($InputFile,$ViewThis){
 
 
 
-#use_dyn_aa=0","
-#aa_strength=0","
 
-#cg_comp=0.949","
 
-#rc_smoothing_type=0","
-#rc_smoothing_value=0.000","
+
+
+
 
