@@ -26,6 +26,7 @@ https://github.com/tedelm/PowershellFalcox
 #Import Modules
 Import-Module '.\comPort.psm1' #Module to read/write to comport
 
+#Main function for GET
 Function GetFalcoX($InputFile,$ViewThis){
 
     #Get filter names
