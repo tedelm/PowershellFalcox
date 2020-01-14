@@ -12,7 +12,7 @@ Created: 2020-01-10
 Edited: 
 2020-01-12: Added function variables
 2020-01-13: Added D-term percentage
-2020-01-14: Added ComPort module for read/write to comport
+2020-01-14: Added ComPort module for read/write to comport. Added support for simmode and whisper
 
 .EXAMPLE
 . .\FalcoXLovesPowershell.ps1
@@ -47,7 +47,6 @@ Function GetFalcoX($InputFile,$ViewThis){
 
     If($ViewThis -match "pid"){
         Write-Host "-- PIDs ---"
-        Write-Host " "
         $PIDS = $content_clean | select-string -pattern "roll_([\w])=","pitch_([\w])=","yaw_([\w])="
         $RollDtermPercent = [int]$($(100/$($($PIDS[0] -split "=")[1])) * $(($PIDS[2] -split "=")[1]))
         $PitchDtermPercent = [int]$($(100/$($($PIDS[3] -split "=")[1])) * $(($PIDS[5] -split "=")[1]))
@@ -56,7 +55,17 @@ Function GetFalcoX($InputFile,$ViewThis){
         Write-host "Roll: $($($PIDS[0] -split "=")[1]), $($($PIDS[1] -split "=")[1]), $($($PIDS[2] -split "=")[1]) -- D-term: $RollDtermPercent%"
         Write-host "Pitch: $($($PIDS[3] -split "=")[1]), $($($PIDS[4] -split "=")[1]), $($($PIDS[5] -split "=")[1]) -- D-term: $PitchDtermPercent%"
         Write-host "Yaw: $($($PIDS[6] -split "=")[1]), $($($PIDS[7] -split "=")[1]), $($($PIDS[8] -split "=")[1]) -- D-term: $YawDtermPercent%"
+        Write-Host " " 
+        Write-Host "-- Misc ---"
+        $PIDS_misc = $content_clean | select-string -pattern "use_simmode=","sim_boost=","use_whisper="
+            If($($($PIDS_misc[0] -split "=")[1]) -match "1"){$SIMmodeEnabled = "True"}else{$SIMmodeEnabled = "False"}
+            If($($($PIDS_misc[1] -split "=")[1]) -match "1"){$WhisperEnabled = "True"}else{$WhisperEnabled = "False"}
+        Write-host "SIM Mode Enabled: $SIMmodeEnabled"
+        Write-host "SIM Boost: $($($PIDS_misc[2] -split "=")[1])"
+        Write-host "Whisper Enabled: $WhisperEnabled"
+        
         Write-Host " "
+
     }
 
     If($ViewThis -match "filter"){
@@ -105,4 +114,13 @@ Function GetFalcoX($InputFile,$ViewThis){
 
 }
 
+
+
+#use_dyn_aa=0","
+#aa_strength=0","
+
+#cg_comp=0.949","
+
+#rc_smoothing_type=0","
+#rc_smoothing_value=0.000","
 
