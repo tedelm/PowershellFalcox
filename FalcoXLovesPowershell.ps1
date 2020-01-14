@@ -1,3 +1,26 @@
+<#
+.SYNOPSIS
+Use powershell to configure FL1 FalcoX
+
+.DESCRIPTION
+Comming soon...
+
+.NOTES
+Author
+MRTEEL
+Created: 2020-01-10
+Edited: 
+2020-01-13: Added function variables
+2020-01-13: Added D-term percentage
+
+.EXAMPLE
+. .\FalcoXLovesPowershell.ps1
+GetFalcoX -InputFile "C:\Users\TEEL\Google Drive\Drone\MiniSquad\FalcoX Tunes\miniSquad_4inch_4s_falcoX_Alpha_v0.10.txt" -ViewThis pid,filter,rates,tpa
+
+.LINK
+https://github.com/tedelm/PowershellFalcox
+
+#>
 
 Function GetFalcoX($InputFile,$ViewThis){
 
