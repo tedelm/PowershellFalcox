@@ -10,7 +10,7 @@ function Get-ComPorts($viewThis){
     }
 }
 #Get-ComPorts
-Get-ComPorts -viewThis COM3
+#Get-ComPorts -viewThis COM3
 
 
 function Get-ComPortData($comPort,$ComSpeed,$comDataBits,$comStopBits){
@@ -26,8 +26,12 @@ function Set-ComPortData($comPort,$ComSpeed,$comDataBits,$comStopBits,$inputStri
     #$port= new-Object System.IO.Ports.SerialPort COM3,9600,None,8,one
     $port= new-Object System.IO.Ports.SerialPort $comPort,$ComSpeed,None,$comDataBits,$comStopBits
     $port.open()
-    $port.WriteLine(“$($inputString)”)
+    $port.WriteLine("$($inputString)")
     $port.Close()
     
 }
 #Set-ComPortData -comPort COM3 -ComSpeed 9600 -comDataBits 8 -comStopBits one -inputString "Hello World"
+
+Export-ModuleMember -Function Get-ComPorts
+Export-ModuleMember -Function Get-ComPortData
+Export-ModuleMember -Function Set-ComPortData

@@ -10,8 +10,9 @@ Author
 MRTEEL
 Created: 2020-01-10
 Edited: 
-2020-01-13: Added function variables
+2020-01-12: Added function variables
 2020-01-13: Added D-term percentage
+2020-01-14: Added ComPort module for read/write to comport
 
 .EXAMPLE
 . .\FalcoXLovesPowershell.ps1
@@ -21,6 +22,9 @@ GetFalcoX -InputFile "C:\Users\TEEL\Google Drive\Drone\MiniSquad\FalcoX Tunes\mi
 https://github.com/tedelm/PowershellFalcox
 
 #>
+
+#Import Modules
+Import-Module '.\comPort.psm1' #Module to read/write to comport
 
 Function GetFalcoX($InputFile,$ViewThis){
 
