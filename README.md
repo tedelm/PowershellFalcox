@@ -9,4 +9,4 @@ Offline configuration editor for powershell
 2. Open Powershell and navigate to your "FalcoXLovesPowershell" folder
 3. In Powershell:</br>
 . .\FalcoXLovesPowershell.ps1</br>
-GetFalcoX -InputFile "<path to your falcoX backup file>.txt" -ViewThis pid,filter,rates,tpa</br>
+GetFalcoX -InputFile "< path to your falcoX backup file >.txt" -ViewThis pid,filter,rates,tpa</br>
