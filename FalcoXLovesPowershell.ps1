@@ -16,7 +16,7 @@ Edited:
 
 .EXAMPLE
 . .\FalcoXLovesPowershell.ps1
-GetFalcoX -InputFile "C:\Users\TEEL\Google Drive\Drone\MiniSquad\FalcoX Tunes\miniSquad_4inch_4s_falcoX_Alpha_v0.10.txt" -ViewThis pid,filter,rates,tpa
+GetFalcoX -InputFile ".\miniSquad_4inch_4s_falcoX_Alpha_v0.10.txt" -ViewThis pid,filter,rates,tpa
 
 .LINK
 https://github.com/tedelm/PowershellFalcox
@@ -106,4 +106,3 @@ Function GetFalcoX($InputFile,$ViewThis){
 }
 
 
-GetFalcoX -InputFile "C:\Users\TEEL\Google Drive\Drone\MiniSquad\FalcoX Tunes\miniSquad_4inch_4s_falcoX_Alpha_v0.10.txt" -ViewThis pid,filter,rates,tpa
