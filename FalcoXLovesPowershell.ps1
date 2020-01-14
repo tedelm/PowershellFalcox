@@ -21,9 +21,13 @@ Function GetFalcoX($InputFile,$ViewThis){
         Write-Host "-- PIDs ---"
         Write-Host " "
         $PIDS = $content_clean | select-string -pattern "roll_([\w])=","pitch_([\w])=","yaw_([\w])="
-        Write-host "Roll: $($($PIDS[0] -split "=")[1]), $($($PIDS[1] -split "=")[1]), $($($PIDS[2] -split "=")[1]) -- " $($(100/$($($PIDS[0] -split "=")[1])) * $(($PIDS[2] -split "=")[1]))
-        Write-host "Pitch: $($($PIDS[3] -split "=")[1]), $($($PIDS[4] -split "=")[1]), $($($PIDS[5] -split "=")[1])"
-        Write-host "Yaw: $($($PIDS[6] -split "=")[1]), $($($PIDS[7] -split "=")[1]), $($($PIDS[8] -split "=")[1])"
+        $RollDtermPercent = [int]$($(100/$($($PIDS[0] -split "=")[1])) * $(($PIDS[2] -split "=")[1]))
+        $PitchDtermPercent = [int]$($(100/$($($PIDS[3] -split "=")[1])) * $(($PIDS[5] -split "=")[1]))
+        $YawDtermPercent = [int]$($(100/$($($PIDS[6] -split "=")[1])) * $(($PIDS[8] -split "=")[1]))
+
+        Write-host "Roll: $($($PIDS[0] -split "=")[1]), $($($PIDS[1] -split "=")[1]), $($($PIDS[2] -split "=")[1]) -- D-term: $RollDtermPercent%"
+        Write-host "Pitch: $($($PIDS[3] -split "=")[1]), $($($PIDS[4] -split "=")[1]), $($($PIDS[5] -split "=")[1]) -- D-term: $PitchDtermPercent%"
+        Write-host "Yaw: $($($PIDS[6] -split "=")[1]), $($($PIDS[7] -split "=")[1]), $($($PIDS[8] -split "=")[1]) -- D-term: $YawDtermPercent%"
         Write-Host " "
     }
 
