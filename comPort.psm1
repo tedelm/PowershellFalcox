@@ -1,4 +1,6 @@
-
+#https://docs.microsoft.com/en-us/windows-hardware/drivers/usbcon/developing-windows-applications-that-communicate-with-a-usb-device
+#https://docs.microsoft.com/en-us/windows-hardware/drivers/usbcon/using-winusb-api-to-communicate-with-a-usb-device
+#Get-PnpDevice -FriendlyName "STMicroelectronics 3-Axis Digital Accelerometer" | fl
 
 function Get-ComPorts($viewThis){
     $script:comPort = [System.IO.Ports.SerialPort]::getportnames()
@@ -35,3 +37,10 @@ function Set-ComPortData($comPort,$ComSpeed,$comDataBits,$comStopBits,$inputStri
 Export-ModuleMember -Function Get-ComPorts
 Export-ModuleMember -Function Get-ComPortData
 Export-ModuleMember -Function Set-ComPortData
+
+
+$port= new-Object System.IO.Ports.SerialPort "COM1",9600,None,8,one
+$port.Open()
+$port.ReadLine()
+$port.Close()
+}
