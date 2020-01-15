@@ -13,6 +13,7 @@ Edited:
 2020-01-12: Added function variables
 2020-01-13: Added D-term percentage
 2020-01-14: Added ComPort module for read/write to comport. Added support for simmode and whisper
+2020-01-15: Added support for COM-port communication
 
 .EXAMPLE
 . .\FalcoXLovesPowershell.ps1
@@ -24,7 +25,7 @@ https://github.com/tedelm/PowershellFalcox
 #>
 
 #Import Modules
-#Import-Module '.\comPort.psm1' #Module to read/write to comport
+Import-Module '.\comPort.psm1' #Module to read/write to comport
 
 #Main function for GET
 Function Get-FalcoXConfig($InputFile,$ViewThis){
