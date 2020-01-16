@@ -32,7 +32,27 @@ function Get-FalcoXCOMPortDump($comPort, [int]$Waitms){
 }
 #Get-FalcoXCOMPortDump -comPort COM7 -Waitms 3000
 
-function Set-FalcoXCOMPortConfig($comPort,$ComSpeed,$comDataBits,$comStopBits,$inputString) {
+#Use this function to fetch settings
+function Get-FalcoXCOMPortReadLine($comPort, [int]$Waitms, $InputString){
+
+    If(!$Waitms){$Waitms = 3000}
+    #Only get command allowed
+    If($InputString -match "GET"){
+        $port = new-Object System.IO.Ports.SerialPort $comPort,9600,None,8,one
+        $port.Open()
+        start-sleep -Milliseconds 500
+        $port.WriteLine("$($InputString)")
+        start-sleep -Milliseconds $Waitms
+        $Script:FalcoXDump = $port.ReadExisting()
+        start-sleep -Milliseconds 250
+        $port.Close()
+        #Output one line
+        $FalcoXDump
+    }
+}
+#Get-FalcoXCOMPortReadLine -comPort COM7 -Waitms 3000
+
+function Set-FalcoXCOMPortWriteLine($comPort,$inputString) {
     
     $port= new-Object System.IO.Ports.SerialPort $comPort,9600,None,8,one
     $port.open()
@@ -70,8 +90,12 @@ function Set-FalcoXCOMPortConfig($comPort,$ComSpeed,$comDataBits,$comStopBits,$i
     $port.Close()
     
 }
-#Set-FalcoXCOMPortConfig -comPort COM7 -inputString "SET led_red=115","SET led_green=255","SET led_blue=245"
+#Set-FalcoXCOMPortWriteLine -comPort COM7 -inputString "SET led_red=115","SET led_green=255","SET led_blue=245"
 
 Export-ModuleMember -Function Get-FalcoXCOMPort
 Export-ModuleMember -Function Get-FalcoXCOMPortDump
-Export-ModuleMember -Function Set-FalcoXCOMPortConfig
+Export-ModuleMember -Function Get-FalcoXCOMPortReadLine
+Export-ModuleMember -Function Set-FalcoXCOMPortWriteLine
+
+
+

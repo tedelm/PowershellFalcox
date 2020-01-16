@@ -39,11 +39,16 @@ Function Get-FalcoXConfig {
     param (
         [parameter(Mandatory=$true)][string]$comPort,
         [int]$Waitms,
-        [switch]$VtxChannel
-        #[switch]$PilotName
-        #[switch]$LedColor
+        [switch]$VtxChannel,
+        [switch]$PilotName,
+        [switch]$Filters
     )
 
+    If($PilotName){
+        $PilotName_ = Get-FalcoXCOMPortReadLine -comPort $comPort -InputString "GET name_pilot"
+        Write-Host "PilotName:" $([string]$PilotName_ -split '=')[1]
+
+    }
     If($VtxChannel){
         Write-Host "VTX Settings:"
         $VtxChannelRaw = Get-FalcoXCOMPortReadLine -comPort $comPort -InputString "GET vtx_channel"
@@ -53,6 +58,7 @@ Function Get-FalcoXConfig {
         "$($VTXSettings[0]) - $($VTXSettings[1])" | Out-Host
 
     }
+
     
 }
 ####
