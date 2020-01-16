@@ -26,6 +26,7 @@ https://github.com/tedelm/PowershellFalcox
 
 #Import Modules
 Import-Module '.\comPort.psm1' #Module to read/write to comport
+Import-Module '.\vtxchannelmap.psm1' #Module for vtx channel mapping, Smart Audio/IRC Tramp
 
 #Main function for GET
 Function Get-FalcoXConfig($InputFile,$ViewThis){
