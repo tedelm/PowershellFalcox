@@ -1,5 +1,5 @@
 # PowershellLovesFalcox
-Offline configuration editor for powershell
+Configuration editor for powershell
 
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/GetOnline.PNG'>
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/GetLocal.PNG'>
