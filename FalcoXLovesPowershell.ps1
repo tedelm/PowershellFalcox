@@ -13,6 +13,8 @@ Edited:
 2020-01-12: Added function variables
 2020-01-13: Added D-term percentage
 2020-01-14: Added ComPort module for read/write to comport. Added support for simmode and whisper
+2020-01-15: Added support for COM-port communication
+2020-01-16: Added vtx channel mapping
 
 .EXAMPLE
 . .\FalcoXLovesPowershell.ps1
@@ -25,112 +27,145 @@ https://github.com/tedelm/PowershellFalcox
 
 #Import Modules
 Import-Module '.\comPort.psm1' #Module to read/write to comport
+Import-Module '.\vtxchannelmap.psm1' #Module for vtx channel mapping, Smart Audio/IRC Tramp
 
-#Main function for GET
-Function GetFalcoX($InputFile,$ViewThis){
 
-    #Get filter names
-    Function FilterNumb($Filterint){
-        switch ($Filterint)
-        {
-            1 { $result = 'BiQuad' }
-            2 { $result = 'Frequency' }
-            3 { $result = 'Dynamic' }
-        }
+####
+####
+# Main function for getting config from FC
+####
+####
+Function Get-FalcoXConfig {
+    param (
+        [parameter(Mandatory=$true)][string]$comPort,
+        [int]$Waitms,
+        [switch]$VtxChannel
+        #[switch]$PilotName
+        #[switch]$LedColor
+    )
+
+    If($VtxChannel){
+        Write-Host "VTX Settings:"
+        $VtxChannelRaw = Get-FalcoXCOMPortReadLine -comPort $comPort -InputString "GET vtx_channel"
+        $VtxChannelRaw = $VtxChannelRaw -split "="
+        $VtxChannelRaw = [int]$($VtxChannelRaw[1])
+        $VTXSettings = Get-VTXChannelMapping -SmartAudio $VtxChannelRaw
+        "$($VTXSettings[0]) - $($VTXSettings[1])" | Out-Host
+
+    }
     
-        $result
+}
+####
+####
+#Main function for Seting config directly to FC
+####
+####
+Function Set-FalcoXConfig {
+    param (
+        [switch]$VtxChannel,
+        [switch]$PilotName,
+        [switch]$LedColor
+    )
+
+    If($VtxChannel){
+        Write-Host "Setting vtx"
     }
+}
+
+####
+####
+# Main function for local .txt config file
+####
+####
+Function Get-FalcoXConfigLocal {
+    param (
+        [String]$InputFile,
+        [switch]$RawConfig,
+        [switch]$VtxChannel,
+        [switch]$PIDs,
+        [switch]$Filters,
+        [switch]$Pilotname,
+        [switch]$Rates,
+        [switch]$TPA
+    )
+
+    $InputFile
+    $InputFile_clean = (Get-Content $InputFile) -split "," -replace "SET ","" -replace '"','' -replace "\[" -replace "\]"
     
-    #clear
-    $content = Get-Content $InputFile
-    $content_clean = $content -split "," -replace "SET ","" -replace '"',''
+    #Output raw config to screen
+    If($RawConfig){$InputFile_clean}
 
-    If($ViewThis -match "pid"){
-        Write-Host "-- PIDs ---"
-        $PIDS = $content_clean | select-string -pattern "roll_([\w])=","pitch_([\w])=","yaw_([\w])="
-        $RollDtermPercent = [int]$($(100/$($($PIDS[0] -split "=")[1])) * $(($PIDS[2] -split "=")[1]))
-        $PitchDtermPercent = [int]$($(100/$($($PIDS[3] -split "=")[1])) * $(($PIDS[5] -split "=")[1]))
-        $YawDtermPercent = [int]$($(100/$($($PIDS[6] -split "=")[1])) * $(($PIDS[8] -split "=")[1]))
+    #Parse file
+    $FalcoXTable = New-Object PSObject
+    Foreach($contentLine in $InputFile_clean){$FalcoXTable | Add-Member NoteProperty -Name "$($($contentLine -split '=')[0])" -Value "$($($contentLine -split '=')[1])" -ErrorAction silentlycontinue}
 
-        Write-host "Roll: $($($PIDS[0] -split "=")[1]), $($($PIDS[1] -split "=")[1]), $($($PIDS[2] -split "=")[1]) -- D-term: $RollDtermPercent%"
-        Write-host "Pitch: $($($PIDS[3] -split "=")[1]), $($($PIDS[4] -split "=")[1]), $($($PIDS[5] -split "=")[1]) -- D-term: $PitchDtermPercent%"
-        Write-host "Yaw: $($($PIDS[6] -split "=")[1]), $($($PIDS[7] -split "=")[1]), $($($PIDS[8] -split "=")[1]) -- D-term: $YawDtermPercent%"
-        Write-Host " " 
-        Write-Host "-- Misc ---"
-        $PIDS_misc = $content_clean | select-string -pattern "use_simmode=","sim_boost=","use_whisper=","cg_comp="
-            If($($($PIDS_misc[0] -split "=")[1]) -match "1"){$SIMmodeEnabled = "True"}else{$SIMmodeEnabled = "False"}
-            If($($($PIDS_misc[1] -split "=")[1]) -match "1"){$WhisperEnabled = "True"}else{$WhisperEnabled = "False"}
-        Write-host "SIM Mode Enabled: $SIMmodeEnabled"
-        Write-host "SIM Boost: $($($PIDS_misc[3] -split "=")[1])"
-        Write-host "Whisper Enabled: $WhisperEnabled"
-        Write-host "CG: $($($PIDS_misc[2] -split "=")[1])"
-        
-        Write-Host " "
-
+    #Output PIDs
+    If($PIDs){
+        $PIDs_tbl = $FalcoXTable | select "roll_p","roll_i","roll_d","pitch_p","pitch_i","pitch_d","yaw_p","yaw_i","yaw_d"
+        Write-host "       P     I     D "
+        Write-host "Roll:  $($PIDs_tbl.roll_p),  $($PIDs_tbl.roll_i),  $($PIDs_tbl.roll_d)"
+        Write-host "Pitch: $($PIDs_tbl.pitch_p),  $($PIDs_tbl.pitch_i),  $($PIDs_tbl.pitch_d)"
+        Write-host "Yaw:   $($PIDs_tbl.yaw_p),  $($PIDs_tbl.yaw_i),  $($PIDs_tbl.yaw_d)"
     }
-
-    If($ViewThis -match "filter"){
-        Write-Host "-- Filters ---"
-        $filters = $content_clean | select-string -pattern "filt([\d])","dynLpfScale="
+    #Output Filters
+    If($Filters){
+        $Filters_tbl = $FalcoXTable | select "filt1_type","filt1_freq","filt2_type","filt2_freq","dfilt1_type","dfilt1_freq","dfilt2_freq","dynLpfScale","use_dyn_aa","aa_strength"
         
-            Write-Host "----- Gyro -----"
-            Write-Host "Filter1: $(FilterNumb -Filterint $(($filters[0]) -split '=','')[1]), @ $($($filters[4] -split "=")[1]) Hz"
-            Write-Host "Filter2: $(FilterNumb -Filterint $(($filters[1]) -split '=','')[1]), @ $($($filters[5] -split "=")[1]) Hz"
-            Write-Host "Dynamic filter Strenght: $($($filters[8] -split '=')[1])"
+        Write-Host "----- Gyro -----"
+        Write-Host "Filter1: $(FilterNumb -Filterint $($Filters_tbl.filt1_type)) @ $($Filters_tbl.filt1_freq) Hz"
+        Write-Host "Filter2: $(FilterNumb -Filterint $($Filters_tbl.filt2_type)) @ $($Filters_tbl.filt2_freq) Hz"
+        Write-Host "Dynamic filter Strenght: $($Filters_tbl.dynLpfScale)"
 
-            Write-Host "----- D-Term -----"
-            Write-Host "Filter1: $(FilterNumb -Filterint $(($filters[2]) -split '=','')[1]), @ $($($filters[6] -split "=")[1]) Hz"
-            Write-Host "Filter2: $(FilterNumb -Filterint $(($filters[3]) -split '=','')[1]), @ $($($filters[7] -split "=")[1]) Hz"  
+        Write-Host "----- D-Term -----"
+        Write-Host "Filter1: $(FilterNumb -Filterint $($Filters_tbl.dfilt1_type)) @ $($Filters_tbl.dfilt1_freq) Hz"
+        Write-Host "Filter1: $(FilterNumb -Filterint $($Filters_tbl.dfilt2_type)) @ $($Filters_tbl.dfilt2_freq) Hz"
 
-            Write-Host "-- Dynamic AA ---"
-            $filters_aa = $content_clean | select-string -pattern "use_dyn_aa=","aa_strength="
-                If($($($filters_aa[0] -split "=")[1]) -match "1"){$DynamicAAEnabled = "True"}else{$DynamicAAEnabled = "False"}
-            Write-Host "Dynamic AA Enabled: $DynamicAAEnabled"
-            Write-Host "Dynamic AA Strength: $($($filters_aa[1] -split "=")[1])"
-            Write-Host " "
+        Write-Host "-- Dynamic AA ---"
+        If($($Filters_tbl.use_dyn_aa) -match "1"){$DynamicAAEnabled = "True"}else{$DynamicAAEnabled = "False"}
+        Write-Host "Dynamic AA Enabled: $DynamicAAEnabled"
+        Write-Host "Dynamic AA Strength: $($Filters_tbl.aa_strength)"
     }
+    #Output Pilotname
+    If($Pilotname){$Pilotname_tbl = $FalcoXTable | select "name_pilot"; $($Pilotname_tbl.name_pilot)}
 
-    If($ViewThis -match "rates"){
+    #Output Rates
+    If($Rates){
+        $Rates_tbl = $FalcoXTable | select "pitch_rate1","roll_rate1","yaw_rate1","pitch_acrop1","roll_acrop1","yaw_acrop1","pitch_expo1","roll_expo1","yaw_expo1","rc_smoothing_type","rc_smoothing_value"
         Write-Host "-- Rates ---"
-        $Rates = $content_clean | select-string -pattern "roll_rate([\d])=","pitch_rate([\d])=","yaw_rate([\d])=","roll_acrop([\d])=","pitch_acrop([\d])=","yaw_acrop([\d])=","roll_expo([\d])=","pitch_expo([\d])=","yaw_expo([\d])=","rate_"
         Write-host "----- RATE, ACRO, EXPO -----"
-        Write-host "Roll: $($($Rates[0] -split "=")[1]), $($($Rates[3] -split "=")[1]), $($($Rates[6] -split "=")[1])"
-        Write-host "Pitch: $($($Rates[1] -split "=")[1]), $($($Rates[4] -split "=")[1]), $($($Rates[7] -split "=")[1])"
-        Write-host "Yaw: $($($Rates[2] -split "=")[1]), $($($Rates[5] -split "=")[1]), $($($Rates[8] -split "=")[1])"    
+        Write-host "Roll: $($Rates_tbl.roll_rate1), $($Rates_tbl.roll_acrop1), $($Rates_tbl.roll_expo1)"
+        Write-host "Pitch: $($Rates_tbl.pitch_rate1), $($Rates_tbl.pitch_acrop1), $($Rates_tbl.pitch_expo1)"
+        Write-host "Yaw: $($Rates_tbl.yaw_rate1), $($Rates_tbl.yaw_acrop1), $($Rates_tbl.yaw_expo1)"    
         Write-host "----- RC Smooth -----"
-        $Rates_Smooth = $content_clean | select-string -pattern "rc_smoothing_type=","rc_smoothing_value="
-        Write-host "RC Smooth type: $($($Rates_Smooth[0] -split "=")[1])"
-        Write-host "RC Smooth: $($($Rates_Smooth[1] -split "=")[1])"
+        Write-host "RC Smooth type: $($Rates_tbl.rc_smoothing_type)"
+        Write-host "RC Smooth: $($Rates_tbl.rc_smoothing_value)"        
 
-        Write-Host " "
     }
-
-    If($ViewThis -match "tpa"){
+    #Output TPA
+    IF($TPA){
+        $TPA_tbl = $FalcoXTable | select "*_curve*"
         Write-Host "-- TPA ---"
-        $TPA = $content_clean | select-string -pattern "([\w])_curve([\d])="
+        "Throttle: 0-100%"
+        "P: $($TPA_tbl.p_curve0),$($TPA_tbl.p_curve1),$($TPA_tbl.p_curve2),$($TPA_tbl.p_curve3),$($TPA_tbl.p_curve4),$($TPA_tbl.p_curve5),$($TPA_tbl.p_curve6),$($TPA_tbl.p_curve7),$($TPA_tbl.p_curve8),$($TPA_tbl.p_curve9),$($TPA_tbl.p_curve10)"
+        "I: $($TPA_tbl.i_curve0),$($TPA_tbl.i_curve1),$($TPA_tbl.i_curve2),$($TPA_tbl.i_curve3),$($TPA_tbl.i_curve4),$($TPA_tbl.i_curve5),$($TPA_tbl.i_curve6),$($TPA_tbl.i_curve7),$($TPA_tbl.i_curve8),$($TPA_tbl.i_curve9),$($TPA_tbl.i_curve10)"
+        "D: $($TPA_tbl.d_curve0),$($TPA_tbl.d_curve1),$($TPA_tbl.d_curve2),$($TPA_tbl.d_curve3),$($TPA_tbl.d_curve4),$($TPA_tbl.d_curve5),$($TPA_tbl.d_curve6),$($TPA_tbl.d_curve7),$($TPA_tbl.d_curve8),$($TPA_tbl.d_curve9),$($TPA_tbl.d_curve10)"
 
-        $TPA_P = $($TPA[0..9]) -replace "([\w])_curve([\d])=",""
-        $TPA_I = $($TPA[10..19]) -replace "([\w])_curve([\d])=",""
-        $TPA_D = $($TPA[20..29]) -replace "([\w])_curve([\d])=",""
-
-        Write-host "Throttle: 0-100%"
-        Write-host "P: $TPA_P"
-        Write-host "I: $TPA_I"
-        Write-host "D: $TPA_D"
     }
-
-     If($ViewThis -match "all"){
-        $content_clean
-    }   
-    
 
 }
 
+####
+####
+# Secondary function for getting filter names
+####
+####
+Function FilterNumb($Filterint){
+    switch ($Filterint)
+    {
+        1 { $result = 'BiQuad' }
+        2 { $result = 'Frequency' }
+        3 { $result = 'Dynamic' }
+    }
 
-
-
-
-
-
-
-
+    $result
+}
