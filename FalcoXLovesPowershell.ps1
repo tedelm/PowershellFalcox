@@ -41,7 +41,9 @@ Function Get-FalcoXConfig {
         [int]$Waitms,
         [switch]$VtxChannel,
         [switch]$PilotName,
-        [switch]$Filters
+        [switch]$Filters,
+        [switch]$Dump,
+        [string]$Outputfile
     )
 
     If($PilotName){
@@ -58,6 +60,11 @@ Function Get-FalcoXConfig {
         "$($VTXSettings[0]) - $($VTXSettings[1])" | Out-Host
 
     }
+    If($Dump){
+        Get-FalcoXCOMPortDump -comPort $comPort | Out-File -FilePath "$($Outputfile)"
+
+    }
+    
 
     
 }

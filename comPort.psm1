@@ -16,7 +16,6 @@ function Get-FalcoXCOMPort($viewThis){
 function Get-FalcoXCOMPortDump($comPort, [int]$Waitms){
 
     If(!$Waitms){$Waitms = 3000}
-    
     $port = new-Object System.IO.Ports.SerialPort $comPort,9600,None,8,one
     $port.Open()
     start-sleep -Milliseconds 500
@@ -29,6 +28,8 @@ function Get-FalcoXCOMPortDump($comPort, [int]$Waitms){
     If(!$(($FalcoXDump -split "#")[1]) -match "OK"){
         Write-Host -ForegroundColor red "! Dump not complete, increase '-Waitms' !"
     }
+    
+    $FalcoXDump
 }
 #Get-FalcoXCOMPortDump -comPort COM7 -Waitms 3000
 

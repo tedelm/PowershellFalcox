@@ -1,8 +1,9 @@
 # PowershellLovesFalcox
-Offline configuration editor for powershell
+Configuration editor for powershell
 
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/GetOnline.PNG'>
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/GetLocal.PNG'>
+<img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/GetBackup.PNG'>
 
 # Usage
 1. Save/Backup Config from FalcoX Companion to same folder as "FalcoXLovesPowerShell.ps1"
@@ -13,6 +14,8 @@ Get-FalcoXConfigLocal -InputFile "< path to your falcoX backup file >.txt"  -PID
 
 # Online Usage (USB)
 Get-FalcoXConfig -comPort COMx -Pilotname -VtxChannel
+Get-FalcoXConfig -comPort COMx -Dump -Outputfile .\MyFalcoXBackup.txt
+
 
 # To Do list...
 * Create Set-FalcoX functionality - Working on it!
