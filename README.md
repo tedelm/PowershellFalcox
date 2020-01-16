@@ -17,6 +17,8 @@ Get-FalcoXConfigLocal -InputFile "< path to your falcoX backup file >.txt"  -PID
 2. In Powershell:</br>
 . .\FalcoXLovesPowershell.ps1</br>
 Get-FalcoXConfig -comPort COMx -Pilotname -VtxChannel
+
+- Backup:
 Get-FalcoXConfig -comPort COMx -Dump -Outputfile .\MyFalcoXBackup.txt
 
 
