@@ -6,7 +6,13 @@
 2. In Powershell:</br>
 ```Powershell
 Import-Module .\FalcoXLovesPowershell.ps1
-Get-FalcoXConfig -comPort COM7 -Pilotname -VtxChannel
+Get-FalcoXConfig -comPort COM7 `
+ -VtxChannel `
+ -PilotName `
+ -Filters `
+ -PIDs `
+ -TPA `
+ -Rates
 ```
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/GetOnline.PNG'>
 
@@ -37,13 +43,6 @@ Set-FalcoXConfig -comPort com7 `
 Import-Module .\FalcoXLovesPowershell.ps1
 Get-FalcoXConfig -comPort COM7 -Dump -Outputfile .\MyFalcoXBackup.txt
 
-Get-FalcoXConfig -comPort COM7 `
- -VtxChannel `
- -PilotName `
- -Filters `
- -PIDs `
- -TPA `
- -Rates
 ```
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/GetBackup.PNG'>
 
