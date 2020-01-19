@@ -32,3 +32,8 @@ Get-FalcoXConfigLocal -InputFile "< path to your falcoX backup file >.txt"  -PID
 - [x]  Create "Get-FalcoXConfigLocal" functionality - Working on it!
 - [ ]  Create "Set-FalcoXConfigLocal" functionality - Working on it!
 - [ ]  Create Set-FalcoX functionality - Working on it!
+
+
+## Support
+* This is a third-party tool, use at own risk!
+* The PowerShell module is only compatible with FalcoX
