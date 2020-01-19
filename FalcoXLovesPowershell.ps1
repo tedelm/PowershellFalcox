@@ -19,7 +19,7 @@ Edited:
 .EXAMPLE
 Import-Module .\FalcoXLovesPowershell.ps1
 Get-FalcoXConfigLocal -InputFile ".\miniSquad_4inch_4s_falcoX_Alpha_v0.10.txt" -pids -filters -rates -tpa -VtxChannel
-Get-FalcoXConfig -comPort COM7 -VtxChannel -PilotName -Filters
+Get-FalcoXConfig -comPort COM7 -VtxChannel -PilotName -Filters -PIDs -TPA -Rates
 Get-FalcoXConfig -comPort COM7 -Dump -Outputfile "Mybackup.txt"
 Set-FalcoXConfig -comPort com7 -PilotName "DolphinFeeder2000" -VtxChannel R7 -LedColor 255,0,0 -PIDroll 65,45,175 -PIDpitch 64,45,175 -PIDyaw 58,45,0 -Filter1Freq 240 -Filter2Freq 105 -DFilter1Freq 200 -DFilter2Freq 200 -Filter1 Frequency -Filter2 Dynamic -DFilter1 BiQuad -DFilter2 BiQuad
 
@@ -48,14 +48,25 @@ Function Get-FalcoXConfig {
         [switch]$PilotName,
         [switch]$Filters,
         [switch]$Dump,
+        [switch]$PIDs,
+        [switch]$Rates,
+        [switch]$TPA,
         [string]$Outputfile
     )
 
+    #Always dump config
+    $FalcoXOnlineDump = Get-FalcoXCOMPortDump -comPort $comPort
+    $FalcoXOnlineDump = $FalcoXOnlineDump -split "," -replace "SET ","" -replace '"','' -replace "\[" -replace "\]"
+    #Parse file
+    $FalcoXTable = New-Object PSObject
+
+    #Get pilotname
     If($PilotName){
         $PilotName_ = Get-FalcoXCOMPortReadLine -comPort $comPort -InputString "GET name_pilot"
         Write-Host "PilotName:" $([string]$PilotName_ -split '=')[1]
 
     }
+    #Get vtx channel
     If($VtxChannel){
         Write-Host "VTX Settings:"
         $VtxChannelRaw = Get-FalcoXCOMPortReadLine -comPort $comPort -InputString "GET vtx_channel"
@@ -65,11 +76,78 @@ Function Get-FalcoXConfig {
         "$($VTXSettings[0]) - $($VTXSettings[1])" | Out-Host
 
     }
+    #Get all settings - raw dump
     If($Dump){
         Get-FalcoXCOMPortDump -comPort $comPort | Out-File -FilePath "$($Outputfile)"
 
     }
+    #Get filters
+    If($Filters){
+        $GetFilters = $FalcoXOnlineDump
     
+        #Parse file
+        Foreach($contentLine in $GetFilters){$FalcoXTable | Add-Member NoteProperty -Name "$($($contentLine -split '=')[0])" -Value "$($($contentLine -split '=')[1])" -ErrorAction silentlycontinue}
+        $Filters_tbl = $FalcoXTable | select "filt1_type","filt1_freq","filt2_type","filt2_freq","dfilt1_type","dfilt1_freq","dfilt2_freq","dynLpfScale","use_dyn_aa","aa_strength"
+        
+        Write-Host "----- Gyro -----"
+        Write-Host "Filter1: $(FilterNumb -Filterint $($Filters_tbl.filt1_type)) @ $($Filters_tbl.filt1_freq) Hz"
+        Write-Host "Filter2: $(FilterNumb -Filterint $($Filters_tbl.filt2_type)) @ $($Filters_tbl.filt2_freq) Hz"
+        Write-Host "Dynamic filter Strenght: $($Filters_tbl.dynLpfScale)"
+
+        Write-Host "----- D-Term -----"
+        Write-Host "Filter1: $(FilterNumb -Filterint $($Filters_tbl.dfilt1_type)) @ $($Filters_tbl.dfilt1_freq) Hz"
+        Write-Host "Filter1: $(FilterNumb -Filterint $($Filters_tbl.dfilt2_type)) @ $($Filters_tbl.dfilt2_freq) Hz"
+
+        Write-Host "-- Dynamic AA ---"
+        If($($Filters_tbl.use_dyn_aa) -match "1"){$DynamicAAEnabled = "True"}else{$DynamicAAEnabled = "False"}
+        Write-Host "Dynamic AA Enabled: $DynamicAAEnabled"
+        Write-Host "Dynamic AA Strength: $($Filters_tbl.aa_strength)"
+    }
+    #Output PIDs
+    If($PIDs){
+        $GetPIDs = $FalcoXOnlineDump
+
+        Foreach($contentLine in $GetPIDs){$FalcoXTable | Add-Member NoteProperty -Name "$($($contentLine -split '=')[0])" -Value "$($($contentLine -split '=')[1])" -ErrorAction silentlycontinue}
+        
+        $PIDs_tbl = $FalcoXTable | select "roll_p","roll_i","roll_d","pitch_p","pitch_i","pitch_d","yaw_p","yaw_i","yaw_d"
+        Write-host "       P     I     D "
+        Write-host "Roll:  $($PIDs_tbl.roll_p),  $($PIDs_tbl.roll_i),  $($PIDs_tbl.roll_d)"
+        Write-host "Pitch: $($PIDs_tbl.pitch_p),  $($PIDs_tbl.pitch_i),  $($PIDs_tbl.pitch_d)"
+        Write-host "Yaw:   $($PIDs_tbl.yaw_p),  $($PIDs_tbl.yaw_i),  $($PIDs_tbl.yaw_d)"
+    }
+
+    #Output Rates
+    If($Rates){
+        $GetRates = $FalcoXOnlineDump
+    
+        Foreach($contentLine in $GetRates){$FalcoXTable | Add-Member NoteProperty -Name "$($($contentLine -split '=')[0])" -Value "$($($contentLine -split '=')[1])" -ErrorAction silentlycontinue}
+        
+        $Rates_tbl = $FalcoXTable | select "pitch_rate1","roll_rate1","yaw_rate1","pitch_acrop1","roll_acrop1","yaw_acrop1","pitch_expo1","roll_expo1","yaw_expo1","rc_smoothing_type","rc_smoothing_value"
+        Write-Host "-- Rates ---"
+        Write-host "----- RATE, ACRO, EXPO -----"
+        Write-host "Roll: $($Rates_tbl.roll_rate1), $($Rates_tbl.roll_acrop1), $($Rates_tbl.roll_expo1)"
+        Write-host "Pitch: $($Rates_tbl.pitch_rate1), $($Rates_tbl.pitch_acrop1), $($Rates_tbl.pitch_expo1)"
+        Write-host "Yaw: $($Rates_tbl.yaw_rate1), $($Rates_tbl.yaw_acrop1), $($Rates_tbl.yaw_expo1)"    
+        Write-host "----- RC Smooth -----"
+        Write-host "RC Smooth type: $($Rates_tbl.rc_smoothing_type)"
+        Write-host "RC Smooth: $($Rates_tbl.rc_smoothing_value)"        
+
+    }
+    #Output TPA
+    IF($TPA){
+        $GetTPA = $FalcoXOnlineDump
+
+        #Parse file
+        Foreach($contentLine in $GetTPA){$FalcoXTable | Add-Member NoteProperty -Name "$($($contentLine -split '=')[0])" -Value "$($($contentLine -split '=')[1])" -ErrorAction silentlycontinue}
+        
+        $TPA_tbl = $FalcoXTable | select "*_curve*"
+        Write-Host "-- TPA ---"
+        "Throttle: 0-100%"
+        "P: $($TPA_tbl.p_curve0),$($TPA_tbl.p_curve1),$($TPA_tbl.p_curve2),$($TPA_tbl.p_curve3),$($TPA_tbl.p_curve4),$($TPA_tbl.p_curve5),$($TPA_tbl.p_curve6),$($TPA_tbl.p_curve7),$($TPA_tbl.p_curve8),$($TPA_tbl.p_curve9),$($TPA_tbl.p_curve10)"
+        "I: $($TPA_tbl.i_curve0),$($TPA_tbl.i_curve1),$($TPA_tbl.i_curve2),$($TPA_tbl.i_curve3),$($TPA_tbl.i_curve4),$($TPA_tbl.i_curve5),$($TPA_tbl.i_curve6),$($TPA_tbl.i_curve7),$($TPA_tbl.i_curve8),$($TPA_tbl.i_curve9),$($TPA_tbl.i_curve10)"
+        "D: $($TPA_tbl.d_curve0),$($TPA_tbl.d_curve1),$($TPA_tbl.d_curve2),$($TPA_tbl.d_curve3),$($TPA_tbl.d_curve4),$($TPA_tbl.d_curve5),$($TPA_tbl.d_curve6),$($TPA_tbl.d_curve7),$($TPA_tbl.d_curve8),$($TPA_tbl.d_curve9),$($TPA_tbl.d_curve10)"
+
+    }
 
     
 }
@@ -152,7 +230,7 @@ Function Set-FalcoXConfig {
         Write-Host "Setting Gyro Filter 1"  
         $Filter1_int = Get-FilterNameTable -FilterName $Filter1
         If($Filter1_int){
-            Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET dfilt1_type=$($Filter1_int)"
+            Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET filt1_type=$($Filter1_int)"
         }
     }
     #Set gyro filter 2 freq
@@ -166,7 +244,7 @@ Function Set-FalcoXConfig {
         Write-Host "Setting Gyro Filter 2"  
         $Filter2_int = Get-FilterNameTable -FilterName $Filter2
         If($Filter2_int){
-            Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET dfilt1_type=$($Filter2_int)"
+            Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET filt2_type=$($Filter2_int)"
         }
     }
     #Set D-term filter 1 freq

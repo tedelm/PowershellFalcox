@@ -33,7 +33,7 @@ function Get-FalcoXCOMPortDump($comPort, [int]$Waitms){
 }
 #Get-FalcoXCOMPortDump -comPort COM7 -Waitms 3000
 
-#Use this function to fetch settings
+#Use this function to fetch all settings
 function Get-FalcoXCOMPortReadLine($comPort, [int]$Waitms, $InputString){
 
     If(!$Waitms){$Waitms = 3000}
@@ -42,16 +42,26 @@ function Get-FalcoXCOMPortReadLine($comPort, [int]$Waitms, $InputString){
         $port = new-Object System.IO.Ports.SerialPort $comPort,9600,None,8,one
         $port.Open()
         start-sleep -Milliseconds 500
-        $port.WriteLine("$($InputString)")
-        start-sleep -Milliseconds $Waitms
+
+        foreach($InputStringCommand in $inputString){
+        
+            $port.WriteLine("$($InputStringCommand)")
+            start-sleep -Milliseconds 500
+            $Script:readline = $port.ReadLine()
+            start-sleep -Milliseconds 250
+            #output one line
+            $readline
+        }
+
+        #Save all lines to variable
         $Script:FalcoXDump = $port.ReadExisting()
         start-sleep -Milliseconds 250
         $port.Close()
-        #Output one line
-        $FalcoXDump
+
     }
 }
 #Get-FalcoXCOMPortReadLine -comPort COM7 -Waitms 3000
+
 
 function Set-FalcoXCOMPortWriteLine($comPort,$inputString) {
     
