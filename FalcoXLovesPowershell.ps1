@@ -17,8 +17,12 @@ Edited:
 2020-01-16: Added vtx channel mapping
 
 .EXAMPLE
-. .\FalcoXLovesPowershell.ps1
-GetFalcoX -InputFile ".\miniSquad_4inch_4s_falcoX_Alpha_v0.10.txt" -ViewThis pid,filter,rates,tpa
+Import-Module .\FalcoXLovesPowershell.ps1
+Get-FalcoXConfigLocal -InputFile ".\miniSquad_4inch_4s_falcoX_Alpha_v0.10.txt" -pids -filters -rates -tpa -VtxChannel
+Get-FalcoXConfig -comPort COM7 -VtxChannel -PilotName -Filters
+Get-FalcoXConfig -comPort COM7 -Dump -Outputfile "Mybackup.txt"
+Set-FalcoXConfig -comPort com7 -PilotName "DolphinFeeder2000" -VtxChannel R7 -LedColor 255,0,0 -PIDroll 65,45,175 -PIDpitch 64,45,175 -PIDyaw 58,45,0 -Filter1Freq 240 -Filter2Freq 105 -DFilter1Freq 200 -DFilter2Freq 200 -Filter1 Frequency -Filter2 Dynamic -DFilter1 BiQuad -DFilter2 BiQuad
+
 
 .LINK
 https://github.com/tedelm/PowershellFalcox
@@ -35,6 +39,7 @@ Import-Module '.\vtxchannelmap.psm1' #Module for vtx channel mapping, Smart Audi
 # Main function for getting config from FC
 ####
 ####
+
 Function Get-FalcoXConfig {
     param (
         [parameter(Mandatory=$true)][string]$comPort,
@@ -73,16 +78,126 @@ Function Get-FalcoXConfig {
 #Main function for Seting config directly to FC
 ####
 ####
+
 Function Set-FalcoXConfig {
     param (
-        [switch]$VtxChannel,
-        [switch]$PilotName,
-        [switch]$LedColor
+        [parameter(Mandatory=$true)][string]$comPort,
+        [parameter(Mandatory=$false)][string]$VtxChannel,
+        [parameter(Mandatory=$false)][string]$PilotName,
+        [parameter(Mandatory=$false)][array]$LedColor,
+        [parameter(Mandatory=$false)][array]$PIDroll,
+        [parameter(Mandatory=$false)][array]$PIDpitch,
+        [parameter(Mandatory=$false)][array]$PIDyaw,
+        [parameter(Mandatory=$false)][int]$Filter1Freq,
+        [parameter(Mandatory=$false)][string]$Filter1,
+        [parameter(Mandatory=$false)][int]$Filter2Freq,
+        [parameter(Mandatory=$false)][string]$Filter2,
+        [parameter(Mandatory=$false)][int]$DFilter1Freq,
+        [parameter(Mandatory=$false)][string]$DFilter1,
+        [parameter(Mandatory=$false)][int]$DFilter2Freq,
+        [parameter(Mandatory=$false)][string]$DFilter2
     )
-
+    #Set "VTX Channel"
     If($VtxChannel){
         Write-Host "Setting vtx"
+        $SetVtxChannelLookup = (Get-VTXChannelMapping -SmartAudio $VtxChannel)[0]
+        Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET vtx_channel=$($SetVtxChannelLookup)"
     }
+    #Set pilotname
+    If($PilotName){
+        Write-Host "Setting Pilot name"
+        Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET name_pilot=$($PilotName)"
+
+    }
+    #Set Led color
+    If($LedColor){
+        Write-Host "Setting LED Color"
+        Write-Host "led_red=$($LedColor[0])","led_green=$($LedColor[1])","led_blue=$($LedColor[2])"
+        Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET led_red=$($LedColor[0])","SET led_green=$($LedColor[1])","SET led_blue=$($LedColor[2])"
+    }
+    #Set pids Roll
+    If($PIDroll){
+        Write-Host "Setting PIDs Roll"
+        Write-Host "P: $($PIDroll[0]), I: $($PIDroll[1]), D: $($PIDroll[2])"
+        If($(($PIDpitch).count) -eq 3){
+            Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET roll_p=$($PIDroll[0])","SET roll_i=$($PIDroll[1])","SET roll_d=$($PIDroll[2])"
+        }Else{Write-Host "Please enter all P-I-D for Roll"}
+    }
+    #Set pids Pitch
+    If($PIDpitch){
+        Write-Host "Setting PIDs Pitch"
+        Write-Host "P: $($PIDpitch[0]), I: $($PIDpitch[1]), D: $($PIDpitch[2])"
+        If($(($PIDpitch).count) -eq 3){
+            Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET pitch_p=$($PIDpitch[0])","SET pitch_i=$($PIDpitch[1])","SET pitch_d=$($PIDpitch[2])"
+        }Else{Write-Host "Please enter all P-I-D for Pitch"}
+    }
+    #Set pids Yaw
+    If($PIDyaw){
+        Write-Host "Setting PIDs Yaw"
+        Write-Host "P: $($PIDyaw[0]), I: $($PIDyaw[1]), D: $($PIDyaw[2])"
+        If($(($PIDyaw).count) -eq 3){
+            Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET yaw_p=$($PIDyaw[0])","SET yaw_i=$($PIDyaw[1])","SET yaw_d=$($PIDyaw[2])"
+        }Else{Write-Host "Please enter all P-I-D for Yaw"}
+        
+
+    }
+    #Set gyro filter 1 freq
+    If($Filter1Freq){
+        Write-Host "Setting Gyro Filter Freq"  
+        Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET filt1_freq=$($Filter1Freq)"
+
+    }
+    #Set gyro filter 1 name
+    If($Filter1){
+        Write-Host "Setting Gyro Filter 1"  
+        $Filter1_int = Get-FilterNameTable -FilterName $Filter1
+        If($Filter1_int){
+            Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET dfilt1_type=$($Filter1_int)"
+        }
+    }
+    #Set gyro filter 2 freq
+    If($Filter2Freq){
+        Write-Host "Setting Gyro Filter Freq"  
+        Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET filt2_freq=$($Filter2Freq)"
+
+    }
+    #Set gyro filter 2 name
+    If($Filter2){
+        Write-Host "Setting Gyro Filter 2"  
+        $Filter2_int = Get-FilterNameTable -FilterName $Filter2
+        If($Filter2_int){
+            Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET dfilt1_type=$($Filter2_int)"
+        }
+    }
+    #Set D-term filter 1 freq
+    If($DFilter1Freq){
+        Write-Host "Setting D-term Filter Freq"  
+        Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET dfilt1_freq=$($DFilter1Freq)"
+
+    }
+    #Set D-term filter 1
+    If($DFilter1){
+        Write-Host "Setting D-term Filter"  
+        $DFilter1_int = Get-FilterNameTable -FilterName $DFilter1
+        If($DFilter1_int){
+            Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET dfilt1_type=$($DFilter1_int)"
+        }
+    }
+    #Set D-term filter 2 freq
+    If($DFilter2Freq){
+        Write-Host "Setting D-term Filter Freq"  
+        Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET dfilt2_freq=$($DFilter2Freq)"
+
+    }
+    #Set D-term filter 2
+    If($DFilter2){
+        Write-Host "Setting D-term Filter"  
+        $DFilter2_int = Get-FilterNameTable -FilterName $DFilter2
+        If($DFilter2_int){
+            Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET dfilt2_type=$($DFilter2_int)"
+        }
+    }
+
 }
 
 ####
@@ -111,6 +226,12 @@ Function Get-FalcoXConfigLocal {
     #Parse file
     $FalcoXTable = New-Object PSObject
     Foreach($contentLine in $InputFile_clean){$FalcoXTable | Add-Member NoteProperty -Name "$($($contentLine -split '=')[0])" -Value "$($($contentLine -split '=')[1])" -ErrorAction silentlycontinue}
+
+    #Output VTX channel and freq
+    If($VtxChannel){
+        $VtxChannel_tbl = $FalcoXTable | select "vtx_protocol","vtx_model","enable_vtx_channel","enable_vtx_value","vtx_channel","vtx_power","vtx_pit","vtx_kill_ch"
+        Get-VTXChannelMapping -SmartAudio $VtxChannel
+    }
 
     #Output PIDs
     If($PIDs){
@@ -178,7 +299,22 @@ Function FilterNumb($Filterint){
         1 { $result = 'BiQuad' }
         2 { $result = 'Frequency' }
         3 { $result = 'Dynamic' }
+
     }
 
     $result
 }
+Function Get-FilterNameTable($FilterName){
+    switch ($FilterName)
+    {
+        BiQuad { $result = 1 }
+        Freq { $result = 2 }
+        Dyn { $result = 3 }
+        Frequency { $result = 2 }
+        Dynamic { $result = 3 }
+
+    }
+
+    $result
+}
+

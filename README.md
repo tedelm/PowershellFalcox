@@ -11,7 +11,26 @@ Get-FalcoXConfig -comPort COM7 -Pilotname -VtxChannel
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/GetOnline.PNG'>
 
 ## Online Usage (USB): "Set" commands</br>
+Available commands/switches (use one or more):
 ```Powershell
+Import-Module .\FalcoXLovesPowershell.ps1
+
+Set-FalcoXConfig -comPort com7 `
+-PilotName "DolphinFeeder2000" `
+-VtxChannel R7 `
+-LedColor 255,0,0 `
+-PIDroll 65,45,175 `
+-PIDpitch 64,45,175 `
+-PIDyaw 58,45,0 `
+-Filter1 "Frequency" `
+-Filter2 "Dynamic" `
+-Filter1Freq 240 `
+-Filter2Freq 105 `
+-DFilter1 "BiQuad" `
+-DFilter2 "BiQuad" `
+-DFilter1Freq 200 `
+-DFilter2Freq 200
+
 ```
 ## Online Usage (USB): "Backup" commands</br>
 ```Powershell
