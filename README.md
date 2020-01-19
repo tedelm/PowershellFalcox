@@ -32,6 +32,7 @@ Get-FalcoXConfigLocal -InputFile "< path to your falcoX backup file >.txt"  -PID
 - [x]  Create "Get-FalcoXConfigLocal" functionality - Working on it!
 - [ ]  Create "Set-FalcoXConfigLocal" functionality - Working on it!
 - [ ]  Create Set-FalcoX functionality - Working on it!
+- [ ]  VTX channel mapping, not verified - Working on it!
 
 
 ## Support
