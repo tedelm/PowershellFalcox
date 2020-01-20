@@ -22,7 +22,7 @@ Get-FalcoXConfigLocal -InputFile ".\miniSquad_4inch_4s_falcoX_Alpha_v0.10.txt" -
 Get-FalcoXConfig -comPort COM7 -VtxChannel -PilotName -Filters -PIDs -TPA -Rates
 Get-FalcoXConfig -comPort COM7 -Dump -Outputfile "Mybackup.txt"
 Set-FalcoXConfig -comPort com7 -PilotName "DolphinFeeder2000" -VtxChannel R7 -LedColor 255,0,0 -PIDroll 65,45,175 -PIDpitch 64,45,175 -PIDyaw 58,45,0 -Filter1Freq 240 -Filter2Freq 105 -DFilter1Freq 200 -DFilter2Freq 200 -Filter1 Frequency -Filter2 Dynamic -DFilter1 BiQuad -DFilter2 BiQuad
-
+Set-FalcoXConfig -comPort COM7 -Restore -RestoreFilePath .\MyFalcoXBackup.txt
 
 .LINK
 https://github.com/tedelm/PowershellFalcox
@@ -173,7 +173,9 @@ Function Set-FalcoXConfig {
         [parameter(Mandatory=$false)][int]$DFilter1Freq,
         [parameter(Mandatory=$false)][string]$DFilter1,
         [parameter(Mandatory=$false)][int]$DFilter2Freq,
-        [parameter(Mandatory=$false)][string]$DFilter2
+        [parameter(Mandatory=$false)][string]$DFilter2,
+        [parameter(Mandatory=$false)][switch]$Restore,
+        [parameter(Mandatory=$false)][String]$RestoreFilePath
     )
     #Set "VTX Channel"
     If($VtxChannel){
@@ -275,6 +277,17 @@ Function Set-FalcoXConfig {
             Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET dfilt2_type=$($DFilter2_int)"
         }
     }
+    #Restore from backup
+    If($Restore){
+        Write-Host "Restoring from backup"  
+        
+        If(Test-Path "$($RestoreFilePath)"){
+            $RestoreFileContent = (Get-Content "$($RestoreFilePath)") -split "," -replace '"','' -replace "\[" -replace "\]"
+            Foreach($RestoreFileContentRow in $RestoreFileContent){
+                Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "$($RestoreFileContentRow)"
+            }
+        }
+    }    
 
 }
 

@@ -46,6 +46,14 @@ Get-FalcoXConfig -comPort COM7 -Dump -Outputfile .\MyFalcoXBackup.txt
 ```
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/GetBackup.PNG'>
 
+## Online Usage (USB): "Restore" commands</br>
+```Powershell
+Import-Module .\FalcoXLovesPowershell.ps1
+Set-FalcoXConfig -comPort COM7 -Restore -RestoreFilePath .\MyFalcoXBackup.txt
+
+
+```
+
 ## Offline Usage: 
 1. Save a backup of config by using "Get-FalcoXConfig -comPort COMx -Dump -Outputfile .\MyFalcoXBackup.txt" to same folder as "FalcoXLovesPowerShell.ps1"
 2. Open Powershell and navigate to your "FalcoXLovesPowershell" folder </br> e.g (without quotes) "cd C:\Users\\$env:username\Downloads\"
