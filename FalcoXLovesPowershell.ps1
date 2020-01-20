@@ -34,6 +34,11 @@ Set-FalcoXConfig -comPort com7 -PilotName "DolphinFeeder2000" -VtxChannel R7 -Le
 #### Restore configuration flightcontroller
 Set-FalcoXConfig -comPort COM7 -Restore -RestoreFilePath .\MyFalcoXBackup.txt
 
+.EXAMPLE
+#### Restore configuration flightcontroller
+Set-FalcoXConfig -comPort COM7 -RestoreDump -RestoreFilePath .\MyFalcoXBackup.txt
+
+
 .LINK
 https://github.com/tedelm/PowershellFalcox
 
@@ -185,6 +190,7 @@ Function Set-FalcoXConfig {
         [parameter(Mandatory=$false)][int]$DFilter2Freq,
         [parameter(Mandatory=$false)][string]$DFilter2,
         [parameter(Mandatory=$false)][switch]$Restore,
+        [parameter(Mandatory=$false)][switch]$RestoreDump,
         [parameter(Mandatory=$false)][String]$RestoreFilePath
     )
     #Set "VTX Channel"
@@ -297,7 +303,34 @@ Function Set-FalcoXConfig {
                 Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "$($RestoreFileContentRow)"
             }
         }
-    }    
+    }
+    #Restore from backup
+    If($RestoreDump){
+        Write-Host "Restoring from backup"  
+        
+        If(Test-Path "$($RestoreFilePath)"){
+
+            $RestoreDumpArray = @()
+            #If dump is taken useing this script - ok! - looking for #OK
+            If( ((Get-content "$($RestoreFilePath)") | ?{$_ -match "#OK"}) ){
+                (Get-content "$($RestoreFilePath)") | ?{$_ -notmatch "#OK"} |foreach{
+                    if($_){
+                        #Add quotes and comma eg. "SET p_pitch=65,"
+                        $RestoreDumpArray += "`"$($_)`","
+                    }   
+                }
+                #Clean array first row
+                $RestoreDumpArray[0] = "[$($RestoreDumpArray[0])"
+                #Clean array last row
+                $RestoreDumpArraylastRow = $(($RestoreDumpArray).count) - 1
+                $RestoreDumpArray[$RestoreDumpArraylastRow] = $($RestoreDumpArray[$RestoreDumpArraylastRow]) -replace ",",""
+                $RestoreDumpArray[$RestoreDumpArraylastRow] = "$($RestoreDumpArray[$RestoreDumpArraylastRow])]"
+                $RestoreFileRestored = [string]$RestoreDumpArray -replace ", ",","
+
+                Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "$($RestoreFileRestored)"
+            }
+        }
+    }       
 
 }
 
