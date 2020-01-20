@@ -66,11 +66,13 @@ Get-FalcoXConfigLocal -InputFile "< path to your falcoX backup file >.txt"  -PID
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/GetLocal.PNG'>
 
 ## To Do list...
-- [x]  Create Serial interface (Possible?) - YES! Working on it!
+- [x]  Create Serial interface (Possible?) - YES! Working!
 - [x]  Create "Get-FalcoXConfigLocal" functionality - Working on it!
 - [ ]  Create "Set-FalcoXConfigLocal" functionality - Working on it!
-- [ ]  Create Set-FalcoX functionality - Working on it!
+- [ ]  Create Set-FalcoXConfig functionality - Working on it!
+- [ ]  Create Get-FalcoXConfig functionality - Working on it!
 - [ ]  VTX channel mapping, not verified - Working on it!
+- [ ]  Cli: Version, Status, Tasks - Working on it!
 
 
 ## Support
