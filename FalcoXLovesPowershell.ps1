@@ -17,11 +17,21 @@ Edited:
 2020-01-16: Added vtx channel mapping
 
 .EXAMPLE
+#### Read backup file
 Import-Module .\FalcoXLovesPowershell.ps1
 Get-FalcoXConfigLocal -InputFile ".\miniSquad_4inch_4s_falcoX_Alpha_v0.10.txt" -pids -filters -rates -tpa -VtxChannel
+
+.EXAMPLE
+#### Read configuration from flightcontroller
 Get-FalcoXConfig -comPort COM7 -VtxChannel -PilotName -Filters -PIDs -TPA -Rates
 Get-FalcoXConfig -comPort COM7 -Dump -Outputfile "Mybackup.txt"
+
+.EXAMPLE
+#### Set configuration flightcontroller
 Set-FalcoXConfig -comPort com7 -PilotName "DolphinFeeder2000" -VtxChannel R7 -LedColor 255,0,0 -PIDroll 65,45,175 -PIDpitch 64,45,175 -PIDyaw 58,45,0 -Filter1Freq 240 -Filter2Freq 105 -DFilter1Freq 200 -DFilter2Freq 200 -Filter1 Frequency -Filter2 Dynamic -DFilter1 BiQuad -DFilter2 BiQuad
+
+.EXAMPLE
+#### Restore configuration flightcontroller
 Set-FalcoXConfig -comPort COM7 -Restore -RestoreFilePath .\MyFalcoXBackup.txt
 
 .LINK
