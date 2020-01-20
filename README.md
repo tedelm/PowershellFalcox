@@ -38,6 +38,9 @@ Set-FalcoXConfig -comPort com7 `
 -DFilter2Freq 200
 
 ```
+<img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/SetOnlinePilotname.PNG'>
+
+
 ## Online Usage (USB): "Backup" commands</br>
 ```Powershell
 Import-Module .\FalcoXLovesPowershell.ps1
@@ -67,12 +70,13 @@ Get-FalcoXConfigLocal -InputFile "< path to your falcoX backup file >.txt"  -PID
 
 ## To Do list...
 - [x]  Create Serial interface (Possible?) - YES! Working!
-- [x]  Create "Get-FalcoXConfigLocal" functionality - Working on it!
+- [x]  Create "Get-FalcoXConfigLocal" functionality - Done!
 - [ ]  Create "Set-FalcoXConfigLocal" functionality - Working on it!
 - [ ]  Create Set-FalcoXConfig functionality - Working on it!
-- [ ]  Create Get-FalcoXConfig functionality - Working on it!
+- [x]  Create Get-FalcoXConfig functionality - Working on it!
 - [ ]  VTX channel mapping, not verified - Working on it!
-- [ ]  Cli: Version, Status, Tasks - Working on it!
+- [x]  Cli: Version - Done!
+- [ ]  Speed up restore cmdlet - Working on it!
 
 
 ## Support

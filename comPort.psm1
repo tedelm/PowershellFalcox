@@ -18,7 +18,7 @@ function Get-FalcoXCOMPortDump($comPort, [int]$Waitms){
     If(!$Waitms){$Waitms = 3000}
     $port = new-Object System.IO.Ports.SerialPort $comPort,9600,None,8,one
     $port.Open()
-    start-sleep -Milliseconds 500
+    start-sleep -Milliseconds 10
     $port.WriteLine("dump")
     start-sleep -Milliseconds $Waitms
     $Script:FalcoXDump = $port.ReadExisting()
@@ -38,24 +38,24 @@ function Get-FalcoXCOMPortReadLine($comPort, [int]$Waitms, $InputString){
 
     If(!$Waitms){$Waitms = 3000}
     #Only get command allowed
-    If($InputString -match "GET"){
+    If(($InputString -match "GET") -or ($InputString -match "version")){
         $port = new-Object System.IO.Ports.SerialPort $comPort,9600,None,8,one
         $port.Open()
-        start-sleep -Milliseconds 500
+        start-sleep -Milliseconds 10
 
         foreach($InputStringCommand in $inputString){
         
             $port.WriteLine("$($InputStringCommand)")
-            start-sleep -Milliseconds 500
+            start-sleep -Milliseconds 50
             $Script:readline = $port.ReadLine()
-            start-sleep -Milliseconds 250
+            start-sleep -Milliseconds 50
             #output one line
             $readline
         }
 
         #Save all lines to variable
         $Script:FalcoXDump = $port.ReadExisting()
-        start-sleep -Milliseconds 250
+        start-sleep -Milliseconds 50
         $port.Close()
 
     }

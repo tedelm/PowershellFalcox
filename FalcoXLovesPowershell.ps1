@@ -66,14 +66,25 @@ Function Get-FalcoXConfig {
         [switch]$PIDs,
         [switch]$Rates,
         [switch]$TPA,
+        [switch]$FWVersion,
         [string]$Outputfile
     )
 
     #Always dump config
     $FalcoXOnlineDump = Get-FalcoXCOMPortDump -comPort $comPort
-    $FalcoXOnlineDump = $FalcoXOnlineDump -split "," -replace "SET ","" -replace '"','' -replace "\[" -replace "\]"
+    $FalcoXOnlineDump = ($FalcoXOnlineDump) -split "SET ","" -replace '"','' -replace "\[" -replace "\]"
+    $FalcoXOnlineDump = $FalcoXOnlineDump.trim()
+    $FalcoXOnlineDump = $FalcoXOnlineDump | ?{$_ -notmatch "#OK"} | select -Skip 1
+
     #Parse file
     $FalcoXTable = New-Object PSObject
+
+    #Get version
+    If($FWVersion){
+        $VersionOutput = Get-FalcoXCOMPortReadLine -comPort $comPort -InputString "version"
+        Write-Host "Version:" $VersionOutput
+
+    }
 
     #Get pilotname
     If($PilotName){
@@ -83,12 +94,11 @@ Function Get-FalcoXConfig {
     }
     #Get vtx channel
     If($VtxChannel){
-        Write-Host "VTX Settings:"
         $VtxChannelRaw = Get-FalcoXCOMPortReadLine -comPort $comPort -InputString "GET vtx_channel"
         $VtxChannelRaw = $VtxChannelRaw -split "="
         $VtxChannelRaw = [int]$($VtxChannelRaw[1])
         $VTXSettings = Get-VTXChannelMapping -SmartAudio $VtxChannelRaw
-        "$($VTXSettings[0]) - $($VTXSettings[1])" | Out-Host
+        Write-Host "VTX Settings: $($VTXSettings[0]) - $($VTXSettings[1])"
 
     }
     #Get all settings - raw dump
@@ -111,7 +121,7 @@ Function Get-FalcoXConfig {
 
         Write-Host "----- D-Term -----"
         Write-Host "Filter1: $(FilterNumb -Filterint $($Filters_tbl.dfilt1_type)) @ $($Filters_tbl.dfilt1_freq) Hz"
-        Write-Host "Filter1: $(FilterNumb -Filterint $($Filters_tbl.dfilt2_type)) @ $($Filters_tbl.dfilt2_freq) Hz"
+        Write-Host "Filter2: $(FilterNumb -Filterint $($Filters_tbl.dfilt2_type)) @ $($Filters_tbl.dfilt2_freq) Hz"
 
         Write-Host "-- Dynamic AA ---"
         If($($Filters_tbl.use_dyn_aa) -match "1"){$DynamicAAEnabled = "True"}else{$DynamicAAEnabled = "False"}
@@ -124,11 +134,19 @@ Function Get-FalcoXConfig {
 
         Foreach($contentLine in $GetPIDs){$FalcoXTable | Add-Member NoteProperty -Name "$($($contentLine -split '=')[0])" -Value "$($($contentLine -split '=')[1])" -ErrorAction silentlycontinue}
         
-        $PIDs_tbl = $FalcoXTable | select "roll_p","roll_i","roll_d","pitch_p","pitch_i","pitch_d","yaw_p","yaw_i","yaw_d"
+        $PIDs_tbl = $FalcoXTable | select "roll_p","roll_i","roll_d","pitch_p","pitch_i","pitch_d","yaw_p","yaw_i","yaw_d","use_simmode","use_whisper","sim_boost"
         Write-host "       P     I     D "
         Write-host "Roll:  $($PIDs_tbl.roll_p),  $($PIDs_tbl.roll_i),  $($PIDs_tbl.roll_d)"
         Write-host "Pitch: $($PIDs_tbl.pitch_p),  $($PIDs_tbl.pitch_i),  $($PIDs_tbl.pitch_d)"
         Write-host "Yaw:   $($PIDs_tbl.yaw_p),  $($PIDs_tbl.yaw_i),  $($PIDs_tbl.yaw_d)"
+        
+        Write-host "-- PID Controller --"
+        If($($PIDs_tbl.use_simmode) -match "1"){$SimmodeEnabled = "True"}else{$SimmodeEnabled = "False"}
+        If($($PIDs_tbl.use_whisper) -match "1"){$WhisperEnabled = "True"}else{$WhisperEnabled = "False"}
+        Write-host "Sim mode:   $($SimmodeEnabled)"
+        Write-host "Sim Boost:   $($PIDs_tbl.sim_boost)"
+        Write-host "Whisper: $($WhisperEnabled)"
+
     }
 
     #Output Rates
