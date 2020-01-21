@@ -16,7 +16,7 @@ function Get-FalcoXCOMPort($viewThis){
 function Get-FalcoXCOMPortDump($comPort, [int]$Waitms){
 
     If(!$Waitms){$Waitms = 3000}
-    $port = new-Object System.IO.Ports.SerialPort $comPort,9600,None,8,one
+    $port = new-Object System.IO.Ports.SerialPort $comPort,115200,None,8,one
     $port.Open()
     start-sleep -Milliseconds 10
     $port.WriteLine("dump")
@@ -39,7 +39,7 @@ function Get-FalcoXCOMPortReadLine($comPort, [int]$Waitms, $InputString){
     If(!$Waitms){$Waitms = 3000}
     #Only get command allowed
     If(($InputString -match "GET") -or ($InputString -match "version")){
-        $port = new-Object System.IO.Ports.SerialPort $comPort,9600,None,8,one
+        $port = new-Object System.IO.Ports.SerialPort $comPort,115200,None,8,one
         $port.Open()
         start-sleep -Milliseconds 10
 
@@ -65,7 +65,7 @@ function Get-FalcoXCOMPortReadLine($comPort, [int]$Waitms, $InputString){
 
 function Set-FalcoXCOMPortWriteLine($comPort,$inputString) {
     
-    $port= new-Object System.IO.Ports.SerialPort $comPort,9600,None,8,one
+    $port= new-Object System.IO.Ports.SerialPort $comPort,115200,None,8,one
     $port.open()
     start-sleep -Milliseconds 500
 
