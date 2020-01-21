@@ -1,6 +1,4 @@
 
-
-
     Function Get-VTXChannelMapping($SmartAudio){
         switch ($SmartAudio)
         {
