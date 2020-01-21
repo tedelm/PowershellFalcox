@@ -13,6 +13,17 @@ Get-FalcoXConfig -comPort COM7 `
  -PIDs `
  -TPA `
  -Rates
+
+ #Or
+
+ Get-FalcoXConfig -comPort COM7 `
+ -All
+
+ #Or using a powershell table
+ Get-FalcoXConfig -comPort COM7 -AllTable | format-list
+ Get-FalcoXConfig -comPort COM7 -AllTable | format-table
+ Get-FalcoXConfig -comPort COM7 -AllTable | Select "roll_*","pitch_*","yaw_*"
+
 ```
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/GetOnline.PNG'>
 
@@ -56,6 +67,7 @@ Set-FalcoXConfig -comPort COM7 -Restore -RestoreFilePath .\MyFalcoXBackup.txt
 
 
 ```
+<img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/SetRestore.PNG'>
 
 ## Offline Usage: 
 1. Save a backup of config by using "Get-FalcoXConfig -comPort COMx -Dump -Outputfile .\MyFalcoXBackup.txt" to same folder as "FalcoXLovesPowerShell.ps1"

@@ -59,6 +59,7 @@ Function Get-FalcoXConfig {
     param (
         [parameter(Mandatory=$true)][string]$comPort,
         [int]$Waitms,
+        [switch]$All,
         [switch]$VtxChannel,
         [switch]$PilotName,
         [switch]$Filters,
@@ -67,6 +68,7 @@ Function Get-FalcoXConfig {
         [switch]$Rates,
         [switch]$TPA,
         [switch]$FWVersion,
+        [switch]$AllTable,
         [string]$Outputfile
     )
 
@@ -78,28 +80,48 @@ Function Get-FalcoXConfig {
 
     #Parse file
     $FalcoXTable = New-Object PSObject
+    Foreach($contentLine in $FalcoXOnlineDump){$FalcoXTable | Add-Member NoteProperty -Name "$($($contentLine -split '=')[0])" -Value "$($($contentLine -split '=')[1])" -ErrorAction silentlycontinue}
+
+    #Show All
+    If($All){
+        $All = $true
+        $VtxChannel = $true
+        $PilotName = $true
+        $Filters = $true
+        $PIDs = $true
+        $Rates = $true
+        $TPA = $true
+        $FWVersion = $true
+    }
+
+    #Show All table Formated
+    If($AllTable){
+        $FalcoXTable
+    }
 
     #Get version
     If($FWVersion){
         $VersionOutput = Get-FalcoXCOMPortReadLine -comPort $comPort -InputString "version"
-        Write-Host "Version:" $VersionOutput
-
+        Write-Host "----- Version -----"
+        Write-Host $VersionOutput
+        Write-Host "-----------------"
     }
 
     #Get pilotname
     If($PilotName){
-        $PilotName_ = Get-FalcoXCOMPortReadLine -comPort $comPort -InputString "GET name_pilot"
-        Write-Host "PilotName:" $([string]$PilotName_ -split '=')[1]
 
+        $PilotName_tbl = $FalcoXTable | select "name_pilot"
+        Write-Host "----- PilotName -----"
+        Write-Host $($PilotName_tbl.name_pilot)
+        Write-Host "-----------------"
     }
     #Get vtx channel
     If($VtxChannel){
-        $VtxChannelRaw = Get-FalcoXCOMPortReadLine -comPort $comPort -InputString "GET vtx_channel"
-        $VtxChannelRaw = $VtxChannelRaw -split "="
-        $VtxChannelRaw = [int]$($VtxChannelRaw[1])
-        $VTXSettings = Get-VTXChannelMapping -SmartAudio $VtxChannelRaw
-        Write-Host "VTX Settings: $($VTXSettings[0]) - $($VTXSettings[1])"
-
+        $VtxChannel_tbl = $FalcoXTable | select "vtx_channel"
+        
+        Write-Host "----- VTX Settings -----"
+        Write-Host "VTX Channel: $(Get-VTXChannelMapping -SmartAudio $($VtxChannel_tbl.vtx_channel))"
+        Write-Host "-----------------"
     }
     #Get all settings - raw dump
     If($Dump){
@@ -108,12 +130,8 @@ Function Get-FalcoXConfig {
     }
     #Get filters
     If($Filters){
-        $GetFilters = $FalcoXOnlineDump
-    
-        #Parse file
-        Foreach($contentLine in $GetFilters){$FalcoXTable | Add-Member NoteProperty -Name "$($($contentLine -split '=')[0])" -Value "$($($contentLine -split '=')[1])" -ErrorAction silentlycontinue}
+
         $Filters_tbl = $FalcoXTable | select "filt1_type","filt1_freq","filt2_type","filt2_freq","dfilt1_type","dfilt1_freq","dfilt2_freq","dynLpfScale","use_dyn_aa","aa_strength"
-        
         Write-Host "----- Gyro -----"
         Write-Host "Filter1: $(FilterNumb -Filterint $($Filters_tbl.filt1_type)) @ $($Filters_tbl.filt1_freq) Hz"
         Write-Host "Filter2: $(FilterNumb -Filterint $($Filters_tbl.filt2_type)) @ $($Filters_tbl.filt2_freq) Hz"
@@ -127,14 +145,13 @@ Function Get-FalcoXConfig {
         If($($Filters_tbl.use_dyn_aa) -match "1"){$DynamicAAEnabled = "True"}else{$DynamicAAEnabled = "False"}
         Write-Host "Dynamic AA Enabled: $DynamicAAEnabled"
         Write-Host "Dynamic AA Strength: $($Filters_tbl.aa_strength)"
+        Write-Host "-----------------"
     }
     #Output PIDs
     If($PIDs){
-        $GetPIDs = $FalcoXOnlineDump
 
-        Foreach($contentLine in $GetPIDs){$FalcoXTable | Add-Member NoteProperty -Name "$($($contentLine -split '=')[0])" -Value "$($($contentLine -split '=')[1])" -ErrorAction silentlycontinue}
-        
         $PIDs_tbl = $FalcoXTable | select "roll_p","roll_i","roll_d","pitch_p","pitch_i","pitch_d","yaw_p","yaw_i","yaw_d","use_simmode","use_whisper","sim_boost"
+        Write-Host "-- PIDs ---"
         Write-host "       P     I     D "
         Write-host "Roll:  $($PIDs_tbl.roll_p),  $($PIDs_tbl.roll_i),  $($PIDs_tbl.roll_d)"
         Write-host "Pitch: $($PIDs_tbl.pitch_p),  $($PIDs_tbl.pitch_i),  $($PIDs_tbl.pitch_d)"
@@ -146,15 +163,12 @@ Function Get-FalcoXConfig {
         Write-host "Sim mode:   $($SimmodeEnabled)"
         Write-host "Sim Boost:   $($PIDs_tbl.sim_boost)"
         Write-host "Whisper: $($WhisperEnabled)"
-
+        Write-Host "-----------------"
     }
 
     #Output Rates
     If($Rates){
-        $GetRates = $FalcoXOnlineDump
-    
-        Foreach($contentLine in $GetRates){$FalcoXTable | Add-Member NoteProperty -Name "$($($contentLine -split '=')[0])" -Value "$($($contentLine -split '=')[1])" -ErrorAction silentlycontinue}
-        
+
         $Rates_tbl = $FalcoXTable | select "pitch_rate1","roll_rate1","yaw_rate1","pitch_acrop1","roll_acrop1","yaw_acrop1","pitch_expo1","roll_expo1","yaw_expo1","rc_smoothing_type","rc_smoothing_value"
         Write-Host "-- Rates ---"
         Write-host "----- RATE, ACRO, EXPO -----"
@@ -164,14 +178,10 @@ Function Get-FalcoXConfig {
         Write-host "----- RC Smooth -----"
         Write-host "RC Smooth type: $($Rates_tbl.rc_smoothing_type)"
         Write-host "RC Smooth: $($Rates_tbl.rc_smoothing_value)"        
-
+        Write-Host "-----------------"
     }
     #Output TPA
     IF($TPA){
-        $GetTPA = $FalcoXOnlineDump
-
-        #Parse file
-        Foreach($contentLine in $GetTPA){$FalcoXTable | Add-Member NoteProperty -Name "$($($contentLine -split '=')[0])" -Value "$($($contentLine -split '=')[1])" -ErrorAction silentlycontinue}
         
         $TPA_tbl = $FalcoXTable | select "*_curve*"
         Write-Host "-- TPA ---"
@@ -179,7 +189,7 @@ Function Get-FalcoXConfig {
         "P: $($TPA_tbl.p_curve0),$($TPA_tbl.p_curve1),$($TPA_tbl.p_curve2),$($TPA_tbl.p_curve3),$($TPA_tbl.p_curve4),$($TPA_tbl.p_curve5),$($TPA_tbl.p_curve6),$($TPA_tbl.p_curve7),$($TPA_tbl.p_curve8),$($TPA_tbl.p_curve9),$($TPA_tbl.p_curve10)"
         "I: $($TPA_tbl.i_curve0),$($TPA_tbl.i_curve1),$($TPA_tbl.i_curve2),$($TPA_tbl.i_curve3),$($TPA_tbl.i_curve4),$($TPA_tbl.i_curve5),$($TPA_tbl.i_curve6),$($TPA_tbl.i_curve7),$($TPA_tbl.i_curve8),$($TPA_tbl.i_curve9),$($TPA_tbl.i_curve10)"
         "D: $($TPA_tbl.d_curve0),$($TPA_tbl.d_curve1),$($TPA_tbl.d_curve2),$($TPA_tbl.d_curve3),$($TPA_tbl.d_curve4),$($TPA_tbl.d_curve5),$($TPA_tbl.d_curve6),$($TPA_tbl.d_curve7),$($TPA_tbl.d_curve8),$($TPA_tbl.d_curve9),$($TPA_tbl.d_curve10)"
-
+        Write-Host "-----------------"
     }
 
     
@@ -208,9 +218,9 @@ Function Set-FalcoXConfig {
         [parameter(Mandatory=$false)][int]$DFilter2Freq,
         [parameter(Mandatory=$false)][string]$DFilter2,
         [parameter(Mandatory=$false)][switch]$Restore,
-        [parameter(Mandatory=$false)][switch]$RestoreDump,
         [parameter(Mandatory=$false)][String]$RestoreFilePath
     )
+
     #Set "VTX Channel"
     If($VtxChannel){
         Write-Host "Setting vtx"
@@ -316,39 +326,11 @@ Function Set-FalcoXConfig {
         Write-Host "Restoring from backup"  
         
         If(Test-Path "$($RestoreFilePath)"){
-            $RestoreFileContent = (Get-Content "$($RestoreFilePath)") -split "," -replace '"','' -replace "\[" -replace "\]"
-            Foreach($RestoreFileContentRow in $RestoreFileContent){
-                Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "$($RestoreFileContentRow)"
-            }
-        }
-    }
-    #Restore from backup
-    If($RestoreDump){
-        Write-Host "Restoring from backup"  
-        
-        If(Test-Path "$($RestoreFilePath)"){
 
-            $RestoreDumpArray = @()
-            #If dump is taken useing this script - ok! - looking for #OK
-            If( ((Get-content "$($RestoreFilePath)") | ?{$_ -match "#OK"}) ){
-                (Get-content "$($RestoreFilePath)") | ?{$_ -notmatch "#OK"} |foreach{
-                    if($_){
-                        #Add quotes and comma eg. "SET p_pitch=65,"
-                        $RestoreDumpArray += "`"$($_)`","
-                    }   
-                }
-                #Clean array first row
-                $RestoreDumpArray[0] = "[$($RestoreDumpArray[0])"
-                #Clean array last row
-                $RestoreDumpArraylastRow = $(($RestoreDumpArray).count) - 1
-                $RestoreDumpArray[$RestoreDumpArraylastRow] = $($RestoreDumpArray[$RestoreDumpArraylastRow]) -replace ",",""
-                $RestoreDumpArray[$RestoreDumpArraylastRow] = "$($RestoreDumpArray[$RestoreDumpArraylastRow])]"
-                $RestoreFileRestored = [string]$RestoreDumpArray -replace ", ",","
-
-                Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "$($RestoreFileRestored)"
-            }
+            Set-FalcoXCOMPortWriteDump -comPort $comPort -inputString $(Get-Content $RestoreFilePath)
+                
         }
-    }       
+    }     
 
 }
 
@@ -469,4 +451,5 @@ Function Get-FilterNameTable($FilterName){
 
     $result
 }
+
 

@@ -2,7 +2,11 @@
 #https://docs.microsoft.com/en-us/windows-hardware/drivers/usbcon/using-winusb-api-to-communicate-with-a-usb-device
 #Get-PnpDevice -FriendlyName "STMicroelectronics 3-Axis Digital Accelerometer" | fl
 
-function Get-FalcoXCOMPort($viewThis){
+function Get-FalcoXCOMPort(){
+    param (
+        [parameter(Mandatory=$false)][string]$viewThis
+    )
+
     $script:comPort = [System.IO.Ports.SerialPort]::getportnames()
 
     if($viewThis){
@@ -13,7 +17,11 @@ function Get-FalcoXCOMPort($viewThis){
 }
 #Get-FalcoXCOMPort -viewThis COM7
 
-function Get-FalcoXCOMPortDump($comPort, [int]$Waitms){
+function Get-FalcoXCOMPortDump(){
+    param (
+        [parameter(Mandatory=$true)][string]$comPort,
+        [int]$Waitms
+    )
 
     If(!$Waitms){$Waitms = 3000}
     $port = new-Object System.IO.Ports.SerialPort $comPort,9600,None,8,one
@@ -34,7 +42,12 @@ function Get-FalcoXCOMPortDump($comPort, [int]$Waitms){
 #Get-FalcoXCOMPortDump -comPort COM7 -Waitms 3000
 
 #Use this function to fetch all settings
-function Get-FalcoXCOMPortReadLine($comPort, [int]$Waitms, $InputString){
+function Get-FalcoXCOMPortReadLine(){
+    param (
+        [parameter(Mandatory=$true)][string]$comPort,
+        [array]$inputString,
+        [int]$Waitms
+    )
 
     If(!$Waitms){$Waitms = 3000}
     #Only get command allowed
@@ -63,8 +76,12 @@ function Get-FalcoXCOMPortReadLine($comPort, [int]$Waitms, $InputString){
 #Get-FalcoXCOMPortReadLine -comPort COM7 -Waitms 3000
 
 
-function Set-FalcoXCOMPortWriteLine($comPort,$inputString) {
-    
+function Set-FalcoXCOMPortWriteLine() {
+    param (
+        [parameter(Mandatory=$true)][string]$comPort,
+        [array]$inputString
+    )
+
     $port= new-Object System.IO.Ports.SerialPort $comPort,9600,None,8,one
     $port.open()
     start-sleep -Milliseconds 500
@@ -103,10 +120,51 @@ function Set-FalcoXCOMPortWriteLine($comPort,$inputString) {
 }
 #Set-FalcoXCOMPortWriteLine -comPort COM7 -inputString "SET led_red=115","SET led_green=255","SET led_blue=245"
 
+
+function Set-FalcoXCOMPortWriteDump() {
+    param (
+        [parameter(Mandatory=$true)][string]$comPort,
+        [array]$inputString
+    )
+
+    $Percent = 100/$(($inputString).count)
+
+    $port= new-Object System.IO.Ports.SerialPort $comPort,115200,None,8,one
+    $port.open()
+    start-sleep -Milliseconds 10
+
+    foreach($inputString_ in $inputString){
+        $Percent_ = $Percent_ + $Percent
+        $Percent_Round = [math]::Round($Percent_,2) 
+        Write-Progress -Activity "Restoring..." -Status "$Percent_Round% Complete:" -PercentComplete $Percent_Round;
+
+        $port.WriteLine("$($inputString_)")
+        start-sleep -Milliseconds 100
+    }    
+
+    #Save config
+    $port.WriteLine("save")
+        start-sleep -Milliseconds 300
+        $readline = $port.ReadLine()
+        start-sleep -Milliseconds 10
+        #Check if input ok
+        if(!($readline -match "#Ok")){
+            $readline
+            Write-Host "Could not save... :("
+        }else{
+            $readline
+        }  
+    start-sleep -Milliseconds 250
+    $port.Close()
+    
+}
+
+
 Export-ModuleMember -Function Get-FalcoXCOMPort
 Export-ModuleMember -Function Get-FalcoXCOMPortDump
 Export-ModuleMember -Function Get-FalcoXCOMPortReadLine
 Export-ModuleMember -Function Set-FalcoXCOMPortWriteLine
+Export-ModuleMember -Function Set-FalcoXCOMPortWriteDump
 
 
 
