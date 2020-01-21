@@ -96,6 +96,9 @@ Function Get-FalcoXConfig {
 
     #Show All table Formated
     If($AllTable){
+        $VersionOutput = Get-FalcoXCOMPortReadLine -comPort $comPort -InputString "version"
+        $VersionOutput = [string]$VersionOutput -split ":" -replace " ","_"
+        $FalcoXTable | Add-Member NoteProperty -Name "$($VersionOutput[0])" -Value "$($VersionOutput[1])" -ErrorAction silentlycontinue
         $FalcoXTable
     }
 

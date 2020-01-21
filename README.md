@@ -9,6 +9,7 @@ Import-Module .\FalcoXLovesPowershell.ps1
 Get-FalcoXConfig -comPort COM7 `
  -VtxChannel `
  -PilotName `
+ -FWVersion `
  -Filters `
  -PIDs `
  -TPA `
