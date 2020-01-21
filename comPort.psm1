@@ -144,7 +144,7 @@ function Set-FalcoXCOMPortWriteDump() {
 
     #Save config
     $port.WriteLine("save")
-        start-sleep -Milliseconds 300
+        start-sleep -Milliseconds 1000
         $readline = $port.ReadLine()
         start-sleep -Milliseconds 10
         #Check if input ok

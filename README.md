@@ -1,5 +1,5 @@
 # PowershellLovesFalcox
-#FalcoX Configurator PowerShell Module
+FalcoX Configurator PowerShell Module
 
 ## Online Usage (USB): "Get" commands
 1. Open Powershell and navigate to your "FalcoXLovesPowershell" folder </br> e.g (without quotes) "cd C:\Users\\$env:username\Downloads\"
@@ -14,10 +14,8 @@ Get-FalcoXConfig -comPort COM7 `
  -TPA `
  -Rates
 
- #Or
-
- Get-FalcoXConfig -comPort COM7 `
- -All
+ #Or displaying all
+ Get-FalcoXConfig -comPort COM7 -All
 
  #Or using a powershell table
  Get-FalcoXConfig -comPort COM7 -AllTable | format-list
