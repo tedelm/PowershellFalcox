@@ -197,7 +197,6 @@ Function Set-FalcoXConfig {
         [parameter(Mandatory=$false)][int]$DFilter2Freq,
         [parameter(Mandatory=$false)][string]$DFilter2,
         [parameter(Mandatory=$false)][switch]$Restore,
-        [parameter(Mandatory=$false)][switch]$RestoreDump,
         [parameter(Mandatory=$false)][String]$RestoreFilePath
     )
     #Set "VTX Channel"
@@ -305,18 +304,7 @@ Function Set-FalcoXConfig {
         Write-Host "Restoring from backup"  
         
         If(Test-Path "$($RestoreFilePath)"){
-            $RestoreFileContent = (Get-Content "$($RestoreFilePath)") -split "," -replace '"','' -replace "\[" -replace "\]"
-            Foreach($RestoreFileContentRow in $RestoreFileContent){
-                Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "$($RestoreFileContentRow)"
-            }
-        }
-    }
-    #Restore from backup
-    If($RestoreDump){
-        Write-Host "Restoring from backup"  
-        
-        If(Test-Path "$($RestoreFilePath)"){
-            
+
             Set-FalcoXCOMPortWriteDump -comPort $comPort -inputString $(Get-Content $RestoreFilePath)
                 
         }
