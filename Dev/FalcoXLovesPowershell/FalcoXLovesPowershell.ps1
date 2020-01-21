@@ -316,28 +316,12 @@ Function Set-FalcoXConfig {
         Write-Host "Restoring from backup"  
         
         If(Test-Path "$($RestoreFilePath)"){
-
-            $RestoreDumpArray = @()
-            #If dump is taken useing this script - ok! - looking for #OK
-            If( ((Get-content "$($RestoreFilePath)") | ?{$_ -match "#OK"}) ){
-                (Get-content "$($RestoreFilePath)") | ?{$_ -notmatch "#OK"} |foreach{
-                    if($_){
-                        #Add quotes and comma eg. "SET p_pitch=65,"
-                        $RestoreDumpArray += "`"$($_)`","
-                    }   
-                }
-                #Clean array first row
-                $RestoreDumpArray[0] = "[$($RestoreDumpArray[0])"
-                #Clean array last row
-                $RestoreDumpArraylastRow = $(($RestoreDumpArray).count) - 1
-                $RestoreDumpArray[$RestoreDumpArraylastRow] = $($RestoreDumpArray[$RestoreDumpArraylastRow]) -replace ",",""
-                $RestoreDumpArray[$RestoreDumpArraylastRow] = "$($RestoreDumpArray[$RestoreDumpArraylastRow])]"
-                $RestoreFileRestored = [string]$RestoreDumpArray -replace ", ",","
-
-                Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "$($RestoreFileRestored)"
-            }
+            
+            Set-FalcoXCOMPortWriteDump -comPort $comPort -inputString $(Get-Content $RestoreFilePath)
+                
         }
-    }       
+    }
+           
 
 }
 

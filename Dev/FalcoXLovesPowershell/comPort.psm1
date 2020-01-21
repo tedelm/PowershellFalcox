@@ -103,10 +103,44 @@ function Set-FalcoXCOMPortWriteLine($comPort,$inputString) {
 }
 #Set-FalcoXCOMPortWriteLine -comPort COM7 -inputString "SET led_red=115","SET led_green=255","SET led_blue=245"
 
+function Set-FalcoXCOMPortWriteDump() {
+    param (
+        [parameter(Mandatory=$true)][string]$comPort,
+        [array]$inputString
+    )
+
+    $port= new-Object System.IO.Ports.SerialPort $comPort,115200,None,8,one
+    $port.open()
+    start-sleep -Milliseconds 10
+
+    foreach($inputString_ in $inputString){
+        $port.WriteLine("$($inputString_)")
+        start-sleep -Milliseconds 100
+    }    
+
+    #Save config
+    $port.WriteLine("save")
+        start-sleep -Milliseconds 250
+        $readline = $port.ReadLine()
+        start-sleep -Milliseconds 250
+        #Check if input ok
+        if(!($readline -match "#Ok")){
+            $readline
+            Write-Host "Could not save... :("
+        }else{
+            $readline
+        }  
+    start-sleep -Milliseconds 250
+    $port.Close()
+    
+}
+
+
 Export-ModuleMember -Function Get-FalcoXCOMPort
 Export-ModuleMember -Function Get-FalcoXCOMPortDump
 Export-ModuleMember -Function Get-FalcoXCOMPortReadLine
 Export-ModuleMember -Function Set-FalcoXCOMPortWriteLine
+Export-ModuleMember -Function Set-FalcoXCOMPortWriteDump
 
 
 
