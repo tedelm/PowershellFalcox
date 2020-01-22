@@ -1,6 +1,13 @@
 # PowershellLovesFalcox
 FalcoX Configurator PowerShell Module
 
+## PowerShellLovesFalcoX for n00bs
+Download FalcoXLovesPowerShell_for_n00bs.zip and extract the files</br>
+Connect your FlightController</br>
+Double click on "Start FalcoXLovesPowerShell.cmd"</br>
+<img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/n00bs001.PNG'></br>
+</br>
+
 ## Online Usage (USB): "Get" commands
 1. Open Powershell and navigate to your "FalcoXLovesPowershell" folder </br> e.g (without quotes) "cd C:\Users\\$env:username\Downloads\"
 2. In Powershell:</br>
@@ -104,16 +111,16 @@ Set-executionpolicy remotesigned
 ```
 
 ## Install Powershell
-Powershell is installed by default on any later version of Windows
+Powershell is installed by default on any later version of Windows</br>
 
-Install steps on MAC
+Install steps on MAC</br>
 ```Powershell
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 brew cask install powershell
 
 ```
-Install steps for Linux
+Install steps for Linux</br>
 https://www.rootusers.com/how-to-install-powershell-on-linux/
 
 

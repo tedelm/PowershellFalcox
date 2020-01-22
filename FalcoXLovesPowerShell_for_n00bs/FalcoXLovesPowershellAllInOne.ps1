@@ -49,7 +49,7 @@ https://github.com/tedelm/PowershellFalcox
 # Main function for getting config from FC
 ####
 ####
-
+clear
 Function GuidedMenu(){
 
     Write-Host " * Welcome to FalcoXLovesPowerShell * "
