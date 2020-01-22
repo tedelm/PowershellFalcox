@@ -50,6 +50,61 @@ https://github.com/tedelm/PowershellFalcox
 ####
 ####
 
+Function GuidedMenu(){
+
+    Write-Host " * Welcome to FalcoXLovesPowerShell * "
+    Write-Host " "
+    Write-Host " [1] - Create backup"
+    Write-Host " [2] - Restore from backup"
+    Write-Host " [3] - View current config"
+    Write-Host " [4] - Show connected COM-ports"
+    Write-Host " "
+
+    $GuidedMenuAnwser = read-host "Pick a number [1-4]"
+
+
+    If($GuidedMenuAnwser -eq 1){
+        $GuidedMenuAnwser1_1 = read-host "Select COM-port e.g. 'COM7'"
+        $GuidedMenuAnwser1_2 = read-host "Backup filename e.g. 'myFalcoXbackup.txt'"
+        $GuidedMenuAnwser1_2 
+
+        Get-FalcoXConfig -comPort "$($GuidedMenuAnwser1_1)" -Dump -Outputfile "$($GuidedMenuAnwser1_2)"
+        Write-Host "Backup command executed"
+        $GuidedPressEnter = read-host "Press [Enter] to continue"
+        clear  
+        GuidedMenu         
+    }
+    If($GuidedMenuAnwser -eq 2){
+        $GuidedMenuAnwser2_1 = read-host "Select COM-port e.g. 'COM7'"
+        $GuidedMenuAnwser2_2 = read-host "Restore filename e.g. 'myFalcoXbackup.txt'"
+
+        Set-FalcoXConfig -comPort "$($GuidedMenuAnwser2_1)" -Restore -RestoreFilePath "$($GuidedMenuAnwser2_2)"
+        Write-Host "Restore command executed"
+        $GuidedPressEnter = read-host "Press [Enter] to continue"
+        clear 
+        GuidedMenu          
+    }
+    If($GuidedMenuAnwser -eq 3){
+        $GuidedMenuAnwser3_1 = read-host "Select COM-port e.g. 'COM7'"
+
+        Get-FalcoXConfig -comPort "$($GuidedMenuAnwser3_1)" -All
+        $GuidedPressEnter = read-host "Press [Enter] to continue"
+        clear 
+        GuidedMenu       
+    }
+    If($GuidedMenuAnwser -eq 4){
+        Get-FalcoXCOMPort
+        $GuidedPressEnter = read-host "Press [Enter] to continue"
+        clear
+        GuidedMenu
+    }
+
+    
+}
+
+
+
+
 Function Get-FalcoXConfig {
     param (
         [parameter(Mandatory=$true)][string]$comPort,
@@ -734,3 +789,4 @@ Function Get-VTXChannelMapping($SmartAudio){
 }
 
 #####################################
+GuidedMenu

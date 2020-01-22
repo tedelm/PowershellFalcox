@@ -1,0 +1,1 @@
+Powershell.exe -executionpolicy bypass -file .\FalcoXLovesPowershellAllInOne.ps1
