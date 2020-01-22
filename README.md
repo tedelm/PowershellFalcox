@@ -90,7 +90,7 @@ Get-FalcoXConfigLocal -InputFile "< path to your falcoX backup file >.txt"  -PID
 - [ ]  Speed up restore cmdlet - Working on it!
 
 ## Problems that may occur
-* insufficient rights
+* Insufficient rights/Problem loading module/script
 ```Powershell
 Import-Module : File <\FalcoXLovesPowershell.ps1> cannot use running scripts is disabled on this system.
 ```
