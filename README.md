@@ -89,6 +89,19 @@ Get-FalcoXConfigLocal -InputFile "< path to your falcoX backup file >.txt"  -PID
 - [x]  Cli: Version - Done!
 - [ ]  Speed up restore cmdlet - Working on it!
 
+## Problems that may occur
+* insufficient rights
+```Powershell
+Import-Module : File <\FalcoXLovesPowershell.ps1> cannot use running scripts is disabled on this system.
+```
+To solve this, open powershell.exe as Administrator and run
+```Powershell
+Set-executionpolicy unrestricted
+```
+To revert settings again use:
+```Powershell
+Set-executionpolicy remotesigned
+```
 
 ## Support
 * This is a third-party tool, use at own risk!
