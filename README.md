@@ -103,6 +103,20 @@ To revert settings again use:
 Set-executionpolicy remotesigned
 ```
 
+## Install Powershell
+Powershell is installed by default on any later version of Windows
+
+Install steps on MAC
+```Powershell
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+brew cask install powershell
+
+```
+Install steps for Linux
+https://www.rootusers.com/how-to-install-powershell-on-linux/
+
+
 ## Support
 * This is a third-party tool, use at own risk!
 * The PowerShell module is only compatible with FalcoX
