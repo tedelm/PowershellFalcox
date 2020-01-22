@@ -174,13 +174,21 @@ Function Get-FalcoXConfig {
 
         $Rates_tbl = $FalcoXTable | select "pitch_rate1","roll_rate1","yaw_rate1","pitch_acrop1","roll_acrop1","yaw_acrop1","pitch_expo1","roll_expo1","yaw_expo1","rc_smoothing_type","rc_smoothing_value"
         Write-Host "-- Rates ---"
-        Write-host "----- RATE, ACRO, EXPO -----"
-        Write-host "Roll: $($Rates_tbl.roll_rate1), $($Rates_tbl.roll_acrop1), $($Rates_tbl.roll_expo1)"
-        Write-host "Pitch: $($Rates_tbl.pitch_rate1), $($Rates_tbl.pitch_acrop1), $($Rates_tbl.pitch_expo1)"
-        Write-host "Yaw: $($Rates_tbl.yaw_rate1), $($Rates_tbl.yaw_acrop1), $($Rates_tbl.yaw_expo1)"    
+        Write-host "----- RATE, EXPO, ACRO -----"
+        Write-host "Roll: $($Rates_tbl.roll_rate1), $($Rates_tbl.roll_expo1), $($Rates_tbl.roll_acrop1)"
+        Write-host "Pitch: $($Rates_tbl.pitch_rate1), $($Rates_tbl.pitch_expo1), $($Rates_tbl.pitch_acrop1)"
+        Write-host "Yaw: $($Rates_tbl.yaw_rate1), $($Rates_tbl.yaw_expo1),$($Rates_tbl.yaw_acrop1)"
+
+        $CalcRollRate = [int]($Rates_tbl.roll_rate1) + ([int]($Rates_tbl.roll_rate1) * [decimal]($Rates_tbl.roll_expo1))
+        $CalcPitchRate = [int]($Rates_tbl.pitch_rate1) + ([int]$($Rates_tbl.pitch_rate1) * [decimal]($Rates_tbl.roll_expo1))
+        $CalcYawRate = [int]($Rates_tbl.yaw_rate1) + ([int]$($Rates_tbl.yaw_rate1) * [decimal]($Rates_tbl.roll_expo1))            
+        Write-host "Roll deg/sec: $CalcRollRate"
+        Write-host "Pitch deg/sec: $CalcPitchRate"
+        Write-host "Yaw deg/sec: $CalcYawRate"              
         Write-host "----- RC Smooth -----"
         Write-host "RC Smooth type: $($Rates_tbl.rc_smoothing_type)"
-        Write-host "RC Smooth: $($Rates_tbl.rc_smoothing_value)"        
+        Write-host "RC Smooth: $($Rates_tbl.rc_smoothing_value)"   
+  
         Write-Host "-----------------"
     }
     #Output TPA
