@@ -3,8 +3,8 @@ FalcoX Configurator PowerShell Module
 
 ## Installation/Download
 
-Open PowerShell.exe (start->run->"powershell.exe"-><enter>)</br>
-Paste the commands below into Powershell</br>
+Open PowerShell.exe (start->run->type "powershell.exe"-> press "enter")</br>
+Paste the commands below into Powershell and press "enter"</br>
 You should now have two zip-files on your Desktop that you need to extract "FalcoXLovesPowershell.zip" and "FalcoXLovesPowerShell_for_n00bs"</br>
 
 ```Powershell
