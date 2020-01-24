@@ -1,6 +1,15 @@
 # PowershellLovesFalcox
 FalcoX Configurator PowerShell Module
 
+## Installation/Download
+
+Open PowerShell.exe (start->run->"powershell.exe"-><enter>)
+```Powershell
+iwr -Uri https://github.com/tedelm/PowershellFalcox/blob/master/FalcoXLovesPowerShell_for_n00bs/FalcoXLovesPowershell_for_n00bs.zip?raw=true -OutFile C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowershell.zip
+iwr -Uri https://github.com/tedelm/PowershellFalcox/blob/master/FalcoXLovesPowershell.zip?raw=true -OutFile C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowershell.zip
+```
+
+
 ## PowerShellLovesFalcoX for n00bs
 Download FalcoXLovesPowerShell_for_n00bs.zip and extract the files</br>
 Connect your FlightController</br>
