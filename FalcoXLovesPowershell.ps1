@@ -452,7 +452,7 @@ function Export-FalcoXReportHtml {
             <td class='td_headline'>AA STRENGTH</td><td>$($Filters_tbl.aa_strength)</td><td class='td_headline'>Idle %</td><td>$($Misc_tbl.idle_percent)</td><td></td><td></td><td>90%</td><td>$($TPA_tbl.p_curve9)</td><td>$($TPA_tbl.i_curve9)</td><td>$($TPA_tbl.d_curve9)</td>
         </tr>		
         <tr>
-            <td class='td_headline'>DYNAMIC FILT STRENGTH</td><td>$($Filters_tbl.dynLpfScale)</td><td class='td_headline'>ESC proto</td><td>$($Misc_tbl.esc_protocol)</td><td></td><td></td><td>100%</td><td>$($TPA_tbl.p_curve10)</td><td>$($TPA_tbl.i_curve10)</td><td>$($TPA_tbl.d_curve10)</td>
+            <td class='td_headline'>DYNAMIC FILT STRENGTH</td><td>$($Filters_tbl.dynLpfScale)</td><td class='td_headline'>ESC proto</td><td>$(Get-FalcoXEscProto -ProtocolInt $($Misc_tbl.esc_protocol))</td><td></td><td></td><td>100%</td><td>$($TPA_tbl.p_curve10)</td><td>$($TPA_tbl.i_curve10)</td><td>$($TPA_tbl.d_curve10)</td>
         </tr>       			
     </table>
 "
@@ -579,6 +579,19 @@ Function Get-FilterNameTable($FilterName){
         Frequency { $result = 2 }
         Dynamic { $result = 3 }
 
+    }
+
+    $result
+}
+
+#Esc proto
+Function Get-FalcoXEscProto($ProtocolInt){
+    switch ($ProtocolInt)
+    {
+        1 { $result = '1' }
+        2 { $result = '2' }
+        3 { $result = '3' }
+        4 { $result = '4' }        
     }
 
     $result
