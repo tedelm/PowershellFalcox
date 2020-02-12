@@ -345,6 +345,127 @@ Function Set-FalcoXConfig {
 
 }
 
+
+function Export-FalcoXReportHtml {
+    param (
+        [parameter(Mandatory=$true)][string]$comPort,
+        [string]$Outputfile = "C:\Users\$env:USERNAME\Desktop\FalcoXReport_$(Get-Date -format 'yyyyMMdd_HHmmss').html"
+    )
+
+    #Always dump config
+    $FalcoXOnlineDump = Get-FalcoXCOMPortDump -comPort $comPort
+    $FalcoXOnlineDump = ($FalcoXOnlineDump) -split "SET ","" -replace '"','' -replace "\[" -replace "\]"
+    $FalcoXOnlineDump = $FalcoXOnlineDump.trim()
+    $FalcoXOnlineDump = $FalcoXOnlineDump | ?{$_ -notmatch "#OK"} | select -Skip 1
+
+    #Parse file
+    $FalcoXTable = New-Object PSObject
+    Foreach($contentLine in $FalcoXOnlineDump){$FalcoXTable | Add-Member NoteProperty -Name "$($($contentLine -split '=')[0])" -Value "$($($contentLine -split '=')[1])" -ErrorAction silentlycontinue}
+
+    #Get falcox version
+    $VersionOutput = Get-FalcoXCOMPortReadLine -comPort $comPort -InputString "version"
+
+    Write-Host "Report exported to: $Outputfile"
+
+    $PIDs_tbl = $FalcoXTable | select "roll_p","roll_i","roll_d","pitch_p","pitch_i","pitch_d","yaw_p","yaw_i","yaw_d","use_simmode","use_whisper","sim_boost","cg_comp", "smooth_stop"
+    
+    #PID Controller
+    If($($PIDs_tbl.use_simmode) -match "1"){$SimmodeEnabled = "True"}else{$SimmodeEnabled = "False"}
+    If($($PIDs_tbl.use_whisper) -match "1"){$WhisperEnabled = "True"}else{$WhisperEnabled = "False"}
+    
+    #Pilot name
+    $Misc_tbl = $FalcoXTable | select "name_pilot", "idle_percent", "esc_protocol"
+    #$Misc_tbl.name_pilot
+    
+
+    #Filters
+    $Filters_tbl = $FalcoXTable | select "filt1_type","filt1_freq","filt2_type","filt2_freq","dfilt1_type","dfilt1_freq","dfilt2_freq","dynLpfScale","use_dyn_aa","aa_strength"
+    If($($Filters_tbl.use_dyn_aa) -match "1"){$DynamicAAEnabled = "True"}else{$DynamicAAEnabled = "False"}
+
+    $TPA_tbl = $FalcoXTable | select "*_curve*"
+
+    #Create HTML
+    $html = "
+    <html>
+    <head>
+    <title>$title</title>
+    <style>
+    table.default {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    border: 1px solid black;
+    }
+    th.th_headline {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    }
+    td.td_headline {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    }
+    td {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    border: 1px solid black;
+    }
+
+    </style>
+    </head>
+    <body>
+    $Body
+
+
+    <table class='Default'>
+        <tr>
+            <th>$VersionOutput</th><th></th><th></th><th>ROLL</th><th>PITCH</th><th>YAW</th><th>TPA</th><th>P</th><th>I</th><th>D</th>
+        </tr>      
+        <tr>
+            <td class='td_headline'>FILT1</td><td>$(FilterNumb -Filterint $($Filters_tbl.filt1_type))</td><td class='td_headline' align='center'>P</td><td>$($PIDs_tbl.roll_p)</td><td>$($PIDs_tbl.pitch_p)</td><td>$($PIDs_tbl.yaw_p)</td><td>0%</td><td>$($TPA_tbl.p_curve0)</td><td>$($TPA_tbl.i_curve0)</td><td>$($TPA_tbl.d_curve0)</td>
+        </tr>
+        <tr>
+            <td class='td_headline'>FILT2</td><td>$(FilterNumb -Filterint $($Filters_tbl.filt2_type))</td><td class='td_headline' align='center'>I</td><td>$($PIDs_tbl.roll_i)</td><td>$($PIDs_tbl.pitch_i)</td><td>$($PIDs_tbl.yaw_i)</td><td>10%</td><td>$($TPA_tbl.p_curve1)</td><td>$($TPA_tbl.i_curve1)</td><td>$($TPA_tbl.d_curve1)</td>
+        </tr>
+        <tr>
+            <td class='td_headline'>DFILT1</td><td>$(FilterNumb -Filterint $($Filters_tbl.dfilt1_type))</td><td class='td_headline' align='center'>D</td><td>$($PIDs_tbl.roll_d)</td><td>$($PIDs_tbl.pitch_d)</td><td>$($PIDs_tbl.yaw_d)</td><td>20%</td><td>$($TPA_tbl.p_curve2)</td><td>$($TPA_tbl.i_curve2)</td><td>$($TPA_tbl.d_curve2)</td>
+        </tr>
+        <tr>
+            <td class='td_headline'>DFILT2</td><td>$(FilterNumb -Filterint $($Filters_tbl.dfilt2_type))</td><td></td><td></td><td></td><td></td><td>30%</td><td>$($TPA_tbl.p_curve3)</td><td>$($TPA_tbl.i_curve3)</td><td>$($TPA_tbl.d_curve3)</td>
+        </tr>
+        <tr>
+            <td class='td_headline'>FILT1 (Hz)</td><td>$($Filters_tbl.filt1_freq)</td><td class='td_headline'>SIM</td><td>$SimmodeEnabled</td><td></td><td></td><td>40%</td><td>$($TPA_tbl.p_curve4)</td><td>$($TPA_tbl.i_curve4)</td><td>$($TPA_tbl.d_curve4)</td>
+        </tr>
+        <tr>
+            <td class='td_headline'>FILT2 (Hz)</td><td>$($Filters_tbl.filt2_freq)</td><td class='td_headline'>SIM BOOST</td><td>$($PIDs_tbl.sim_boost)</td><td></td><td></td><td>50%</td><td>$($TPA_tbl.p_curve5)</td><td>$($TPA_tbl.i_curve5)</td><td>$($TPA_tbl.d_curve5)</td>
+        </tr>
+        <tr>
+            <td class='td_headline'>DFILT1 (Hz)</td><td>$($Filters_tbl.dfilt1_freq)</td><td class='td_headline'>WHISPER</td><td>$WhisperEnabled</td><td></td><td></td><td>60%</td><td>$($TPA_tbl.p_curve6)</td><td>$($TPA_tbl.i_curve6)</td><td>$($TPA_tbl.d_curve6)</td>
+        </tr>
+        <tr>
+            <td class='td_headline'>DFILT2 (Hz)</td><td>$($Filters_tbl.dfilt2_freq)</td><td class='td_headline'>CG COMP</td><td>$($PIDs_tbl.cg_comp)</td><td></td><td></td><td>70%</td><td>$($TPA_tbl.p_curve7)</td><td>$($TPA_tbl.i_curve7)</td><td>$($TPA_tbl.d_curve7)</td>
+        </tr>
+        <tr>
+            <td class='td_headline'>DYNAMIC AA</td><td>$DynamicAAEnabled</td><td class='td_headline'>SMOOTH STOP</td><td>$($PIDs_tbl.smooth_stop)</td><td></td><td></td><td>80%</td><td>$($TPA_tbl.p_curve8)</td><td>$($TPA_tbl.i_curve8)</td><td>$($TPA_tbl.d_curve8)</td>
+        </tr>
+        <tr>
+            <td class='td_headline'>AA STRENGTH</td><td>$($Filters_tbl.aa_strength)</td><td class='td_headline'>Idle %</td><td>$($Misc_tbl.idle_percent)</td><td></td><td></td><td>90%</td><td>$($TPA_tbl.p_curve9)</td><td>$($TPA_tbl.i_curve9)</td><td>$($TPA_tbl.d_curve9)</td>
+        </tr>		
+        <tr>
+            <td class='td_headline'>DYNAMIC FILT STRENGTH</td><td>$($Filters_tbl.dynLpfScale)</td><td class='td_headline'>ESC proto</td><td>$($Misc_tbl.esc_protocol)</td><td></td><td></td><td>100%</td><td>$($TPA_tbl.p_curve10)</td><td>$($TPA_tbl.i_curve10)</td><td>$($TPA_tbl.d_curve10)</td>
+        </tr>       			
+    </table>
+"
+    
+    
+    $html | Out-File -FilePath $Outputfile -Encoding UTF8
+    start $Outputfile    
+
+    
+}
+
+
+
 ####
 ####
 # Main function for local .txt config file

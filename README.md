@@ -87,6 +87,17 @@ Set-FalcoXConfig -comPort COM7 -Restore -RestoreFilePath .\MyFalcoXBackup.txt
 ```
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/SetRestore.PNG'>
 
+## Online Usage (USB): "Restore" commands</br>
+```Powershell
+Import-Module .\FalcoXLovesPowershell.ps1
+Export-FalcoXReportHtml -comPort com7
+
+
+```
+<img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/ExportHTML.PNG'>
+<img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/exportHtml_2.PNG'>
+
+
 ## Offline Usage: 
 1. Save a backup of config by using "Get-FalcoXConfig -comPort COMx -Dump -Outputfile .\MyFalcoXBackup.txt" to same folder as "FalcoXLovesPowerShell.ps1"
 2. Open Powershell and navigate to your "FalcoXLovesPowershell" folder </br> e.g (without quotes) "cd C:\Users\\$env:username\Downloads\"
@@ -104,6 +115,7 @@ Get-FalcoXConfigLocal -InputFile "< path to your falcoX backup file >.txt"  -PID
 - [ ]  Create "Set-FalcoXConfigLocal" functionality - Working on it!
 - [ ]  Create Set-FalcoXConfig functionality - Working on it!
 - [x]  Create Get-FalcoXConfig functionality - Working on it!
+- [ ]  Add Esc protocoll lookup - Working on it!
 - [ ]  VTX channel mapping, not verified - Working on it!
 - [x]  Cli: Version - Done!
 - [ ]  Speed up restore cmdlet - Working on it!
