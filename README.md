@@ -88,6 +88,8 @@ Set-FalcoXConfig -comPort COM7 -Restore -RestoreFilePath .\MyFalcoXBackup.txt
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/SetRestore.PNG'>
 
 ## Online Usage (USB): "HTML export" commands</br>
+A shout out to @PaPaYoU for the original layout.
+
 ```Powershell
 Import-Module .\FalcoXLovesPowershell.ps1
 Export-FalcoXReportHtml -comPort com7
