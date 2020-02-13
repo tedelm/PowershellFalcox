@@ -349,7 +349,7 @@ Function Set-FalcoXConfig {
 function Export-FalcoXReportHtml {
     param (
         [parameter(Mandatory=$true)][string]$comPort,
-        [string]$Outputfile = "C:\Users\$env:USERNAME\Desktop\FalcoXReport_$(Get-Date -format 'yyyyMMdd_HHmmss').html"
+        [string]$Outputfile = "C:\Users\$env:USERNAME\FalcoXReport_$(Get-Date -format 'yyyyMMdd_HHmmss').html"
     )
 
     #Always dump config
