@@ -7,7 +7,9 @@ Install latest Beta Configurator:
 </br>
 https://flightone.com/download.php?version=beta
 </br>
-put FC in DFU Bootloader mode (AKA STM32 Bootloader, not "FlightOne Bootloader") by shorting Boot pins (use solder tinn)
+put FC in DFU Bootloader mode (STM32 Bootloader, not "FlightOne Bootloader") by shorting Boot pins (use solder tinn)
+</br>
+You can check under "Device Manager"->"View"->"Devices by container" which bootloader is being used.
 </br>
 flash Beta Firmware to FC and disconnect FC.
 </br>
