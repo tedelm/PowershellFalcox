@@ -1,6 +1,6 @@
 #Flashing firmware</br>
 </br>
-From 1.2.xx or older</br>
+From 1.2.xx (or older) to FalcoX</br>
 </br>
 </br>
 Install latest Beta Configurator:
