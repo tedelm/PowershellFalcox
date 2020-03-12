@@ -18,7 +18,8 @@ Download FalcoXLovesPowerShell_for_n00bs.zip and extract the files</br>
 Connect your FlightController</br>
 Double click on "Start FalcoXLovesPowerShell.cmd"</br>
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/n00bs001.PNG'></br>
-</br>
+<img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/exportHtml_2.PNG'>
+</br></br>
 
 ## Online Usage (USB): "Get" commands
 1. Open Powershell and navigate to your "FalcoXLovesPowershell" folder </br> e.g (without quotes) "cd C:\Users\\$env:username\Downloads\"
