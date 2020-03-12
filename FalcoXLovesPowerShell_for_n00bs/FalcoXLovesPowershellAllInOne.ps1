@@ -67,32 +67,57 @@ Function GuidedMenu(){
 
 
     If($GuidedMenuAnwser -eq 1){
-        $GuidedMenuAnwser1_1 = read-host "Select COM-port type e.g. 'COM7'"
+        $GuidedMenuAnwser1_1 = read-host "Select COM-port type e.g. 'COM7' or let me guess (default)"
         $GuidedMenuAnwser1_2 = read-host "Backup filename e.g. 'myFalcoXbackup.txt'"
         $GuidedMenuAnwser1_2 
 
-        Get-FalcoXConfig -comPort "$($GuidedMenuAnwser1_1)" -Dump -Outputfile "$($GuidedMenuAnwser1_2)"
+        if(!$GuidedMenuAnwser1_1){
+            $ComportToUse = $MostLikelyCOMport
+            Write-host "Im guessing your FC is on: $ComportToUse"
+        }else{
+            $ComportToUse = $GuidedMenuAnwser1_1
+        }
+        Write-host "Using $ComportToUse"
+
+
+        Get-FalcoXConfig -comPort "$($ComportToUse)" -Dump -Outputfile "$($GuidedMenuAnwser1_2)"
         Write-Host "Backup command executed"
         $GuidedPressEnter = read-host "Press [Enter] to continue"
         clear  
         GuidedMenu         
     }
     If($GuidedMenuAnwser -eq 2){
-        $GuidedMenuAnwser2_1 = read-host "Select COM-port type e.g. 'COM7'"
+        $GuidedMenuAnwser2_1 = read-host "Select COM-port type e.g. 'COM7' or let me guess (default)"
         $GuidedMenuAnwser2_2 = read-host "Restore filename e.g. 'myFalcoXbackup.txt'"
 
-        Set-FalcoXConfig -comPort "$($GuidedMenuAnwser2_1)" -Restore -RestoreFilePath "$($GuidedMenuAnwser2_2)"
+        if(!$GuidedMenuAnwser2_1){
+            $ComportToUse = $MostLikelyCOMport
+            Write-host "Im guessing your FC is on: $ComportToUse"
+        }else{
+            $ComportToUse = $GuidedMenuAnwser2_1
+        }
+        Write-host "Using $ComportToUse"
+
+
+        Set-FalcoXConfig -comPort "$($ComportToUse)" -Restore -RestoreFilePath "$($GuidedMenuAnwser2_2)"
         Write-Host "Restore command executed"
         $GuidedPressEnter = read-host "Press [Enter] to continue"
         clear 
         GuidedMenu          
     }
     If($GuidedMenuAnwser -eq 3){
-        $GuidedMenuAnwser3_1 = read-host "Select COM-port type e.g. 'COM7'"
+        $GuidedMenuAnwser3_1 = read-host "Select COM-port type e.g. 'COM7' or let me guess (default)"
+
+        if(!$GuidedMenuAnwser3_1){
+            $ComportToUse = $MostLikelyCOMport
+            Write-host "Im guessing your FC is on: $ComportToUse"
+        }else{
+            $ComportToUse = $GuidedMenuAnwser3_1
+        }
+        Write-host "Using $ComportToUse"
 
 
-
-        Get-FalcoXConfig -comPort "$($GuidedMenuAnwser3_1)" -All
+        Get-FalcoXConfig -comPort "$($ComportToUse)" -All
         $GuidedPressEnter = read-host "Press [Enter] to continue"
         clear 
         GuidedMenu       
