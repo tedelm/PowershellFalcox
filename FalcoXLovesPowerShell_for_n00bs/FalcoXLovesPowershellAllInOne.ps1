@@ -102,6 +102,7 @@ Function GuidedMenu(){
 
         if(!$GuidedMenuAnwser4){
             $ComportToUse = $MostLikelyCOMport
+            Write-host "Im guessing your FC is on: $ComportToUse"
         }else{
             $ComportToUse = $GuidedMenuAnwser4
         }
