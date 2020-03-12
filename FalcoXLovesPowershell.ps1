@@ -473,7 +473,12 @@ function Export-FalcoXReportHtml {
         </tr>    
         <tr>
             <td class='td_headline'>EXPO</td><td>$($Rate_tbl.pitch_expo1)</td><td>$($Rate_tbl.roll_expo1)</td><td>$($Rate_tbl.yaw_expo1)</td>
-        </tr>                                                                 	
+        </tr>
+        <tr>
+            <td class='td_headline'>DEG. SEC</td><td> $(Get-FalcoXRateCalc -Rate $($Rate_tbl.pitch_rate1) -Expo $($Rate_tbl.pitch_expo1) -Acro $($Rate_tbl.pitch_acrop1)) </td>
+                                                 <td> $(Get-FalcoXRateCalc -Rate $($Rate_tbl.roll_rate1) -Expo $($Rate_tbl.roll_expo1) -Acro $($Rate_tbl.roll_acrop1)) </td>
+                                                 <td> $(Get-FalcoXRateCalc -Rate $($Rate_tbl.yaw_rate1) -Expo $($Rate_tbl.yaw_expo1) -Acro $($Rate_tbl.yaw_acrop1)) </td>
+        </tr>        
     </table>    
 "
         
@@ -631,5 +636,12 @@ Function Get-FalcoXDfiltStrength($ProtocolInt){
     }
 
     $result
+}
+
+Function Get-FalcoXRateCalc($Rate,$Expo,$Acro){
+
+
+    $Result = [decimal]$Rate * [decimal]$Acro
+    [math]::Round($Result,2)
 }
 
