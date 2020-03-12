@@ -57,14 +57,17 @@ Function GuidedMenu(){
     Write-Host " [1] - Create backup"
     Write-Host " [2] - Restore from backup"
     Write-Host " [3] - View current config"
-    Write-Host " [4] - Show connected COM-ports"
+    Write-Host " [4] - Create HTML Report"    
+    Write-Host " [5] - Show connected COM-ports"
     Write-Host " "
 
-    $GuidedMenuAnwser = read-host "Pick a number [1-4]"
+    $GuidedMenuAnwser = read-host "Pick a number [1-5]"
+
+    $MostLikelyCOMport = Get-FalcoXCOMPort | select -Last 1
 
 
     If($GuidedMenuAnwser -eq 1){
-        $GuidedMenuAnwser1_1 = read-host "Select COM-port e.g. 'COM7'"
+        $GuidedMenuAnwser1_1 = read-host "Select COM-port type e.g. 'COM7'"
         $GuidedMenuAnwser1_2 = read-host "Backup filename e.g. 'myFalcoXbackup.txt'"
         $GuidedMenuAnwser1_2 
 
@@ -75,7 +78,7 @@ Function GuidedMenu(){
         GuidedMenu         
     }
     If($GuidedMenuAnwser -eq 2){
-        $GuidedMenuAnwser2_1 = read-host "Select COM-port e.g. 'COM7'"
+        $GuidedMenuAnwser2_1 = read-host "Select COM-port type e.g. 'COM7'"
         $GuidedMenuAnwser2_2 = read-host "Restore filename e.g. 'myFalcoXbackup.txt'"
 
         Set-FalcoXConfig -comPort "$($GuidedMenuAnwser2_1)" -Restore -RestoreFilePath "$($GuidedMenuAnwser2_2)"
@@ -85,7 +88,9 @@ Function GuidedMenu(){
         GuidedMenu          
     }
     If($GuidedMenuAnwser -eq 3){
-        $GuidedMenuAnwser3_1 = read-host "Select COM-port e.g. 'COM7'"
+        $GuidedMenuAnwser3_1 = read-host "Select COM-port type e.g. 'COM7'"
+
+
 
         Get-FalcoXConfig -comPort "$($GuidedMenuAnwser3_1)" -All
         $GuidedPressEnter = read-host "Press [Enter] to continue"
@@ -93,6 +98,21 @@ Function GuidedMenu(){
         GuidedMenu       
     }
     If($GuidedMenuAnwser -eq 4){
+        $GuidedMenuAnwser4 = read-host "Select COM-port type e.g. 'COM7' or let me guess (default)"
+
+        if(!$GuidedMenuAnwser4){
+            $ComportToUse = $MostLikelyCOMport
+        }else{
+            $ComportToUse = $GuidedMenuAnwser4
+        }
+        Write-host "Using $ComportToUse"
+
+        Export-FalcoXReportHtml -comPort "$($ComportToUse)"
+        $GuidedPressEnter = read-host "Press [Enter] to continue"
+        clear 
+        GuidedMenu       
+    }    
+    If($GuidedMenuAnwser -eq 5){
         Get-FalcoXCOMPort
         $GuidedPressEnter = read-host "Press [Enter] to continue"
         clear
@@ -103,7 +123,11 @@ Function GuidedMenu(){
 }
 
 
-
+####
+####
+# Main function for getting config from FC
+####
+####
 
 Function Get-FalcoXConfig {
     param (
@@ -184,11 +208,11 @@ Function Get-FalcoXConfig {
     #Get filters
     If($Filters){
 
-        $Filters_tbl = $FalcoXTable | select "filt1_type","filt1_freq","filt2_type","filt2_freq","dfilt1_type","dfilt1_freq","dfilt2_freq","dynLpfScale","use_dyn_aa","aa_strength"
+        $Filters_tbl = $FalcoXTable | select "filt1_type","filt1_freq","filt2_type","filt2_freq","dfilt1_type","dfilt1_freq","dfilt2_freq","dyn_lpf_scale","use_dyn_aa","aa_strength"
         Write-Host "----- Gyro -----"
         Write-Host "Filter1: $(FilterNumb -Filterint $($Filters_tbl.filt1_type)) @ $($Filters_tbl.filt1_freq) Hz"
         Write-Host "Filter2: $(FilterNumb -Filterint $($Filters_tbl.filt2_type)) @ $($Filters_tbl.filt2_freq) Hz"
-        Write-Host "Dynamic filter Strenght: $($Filters_tbl.dynLpfScale)"
+        Write-Host "Dynamic filter Strenght: $($Filters_tbl.dyn_lpf_scale)"
 
         Write-Host "----- D-Term -----"
         Write-Host "Filter1: $(FilterNumb -Filterint $($Filters_tbl.dfilt1_type)) @ $($Filters_tbl.dfilt1_freq) Hz"
@@ -224,13 +248,21 @@ Function Get-FalcoXConfig {
 
         $Rates_tbl = $FalcoXTable | select "pitch_rate1","roll_rate1","yaw_rate1","pitch_acrop1","roll_acrop1","yaw_acrop1","pitch_expo1","roll_expo1","yaw_expo1","rc_smoothing_type","rc_smoothing_value"
         Write-Host "-- Rates ---"
-        Write-host "----- RATE, ACRO, EXPO -----"
-        Write-host "Roll: $($Rates_tbl.roll_rate1), $($Rates_tbl.roll_acrop1), $($Rates_tbl.roll_expo1)"
-        Write-host "Pitch: $($Rates_tbl.pitch_rate1), $($Rates_tbl.pitch_acrop1), $($Rates_tbl.pitch_expo1)"
-        Write-host "Yaw: $($Rates_tbl.yaw_rate1), $($Rates_tbl.yaw_acrop1), $($Rates_tbl.yaw_expo1)"    
+        Write-host "----- RATE, EXPO, ACRO -----"
+        Write-host "Roll: $($Rates_tbl.roll_rate1), $($Rates_tbl.roll_expo1), $($Rates_tbl.roll_acrop1)"
+        Write-host "Pitch: $($Rates_tbl.pitch_rate1), $($Rates_tbl.pitch_expo1), $($Rates_tbl.pitch_acrop1)"
+        Write-host "Yaw: $($Rates_tbl.yaw_rate1), $($Rates_tbl.yaw_expo1),$($Rates_tbl.yaw_acrop1)"
+
+        $CalcRollRate = [int]($Rates_tbl.roll_rate1) + ([int]($Rates_tbl.roll_rate1) * [decimal]($Rates_tbl.roll_expo1))
+        $CalcPitchRate = [int]($Rates_tbl.pitch_rate1) + ([int]$($Rates_tbl.pitch_rate1) * [decimal]($Rates_tbl.roll_expo1))
+        $CalcYawRate = [int]($Rates_tbl.yaw_rate1) + ([int]$($Rates_tbl.yaw_rate1) * [decimal]($Rates_tbl.roll_expo1))            
+        Write-host "Roll deg/sec: $CalcRollRate"
+        Write-host "Pitch deg/sec: $CalcPitchRate"
+        Write-host "Yaw deg/sec: $CalcYawRate"              
         Write-host "----- RC Smooth -----"
         Write-host "RC Smooth type: $($Rates_tbl.rc_smoothing_type)"
-        Write-host "RC Smooth: $($Rates_tbl.rc_smoothing_value)"        
+        Write-host "RC Smooth: $($Rates_tbl.rc_smoothing_value)"   
+  
         Write-Host "-----------------"
     }
     #Output TPA
@@ -387,6 +419,151 @@ Function Set-FalcoXConfig {
 
 }
 
+
+function Export-FalcoXReportHtml {
+    param (
+        [parameter(Mandatory=$true)][string]$comPort,
+        [string]$Outputfile = "C:\Users\$env:USERNAME\FalcoXReport_$(Get-Date -format 'yyyyMMdd_HHmmss').html"
+    )
+
+    #Always dump config
+    $FalcoXOnlineDump = Get-FalcoXCOMPortDump -comPort $comPort
+    $FalcoXOnlineDump = ($FalcoXOnlineDump) -split "SET ","" -replace '"','' -replace "\[" -replace "\]"
+    $FalcoXOnlineDump = $FalcoXOnlineDump.trim()
+    $FalcoXOnlineDump = $FalcoXOnlineDump | ?{$_ -notmatch "#OK"} | select -Skip 1
+
+    #Parse file
+    $FalcoXTable = New-Object PSObject
+    Foreach($contentLine in $FalcoXOnlineDump){$FalcoXTable | Add-Member NoteProperty -Name "$($($contentLine -split '=')[0])" -Value "$($($contentLine -split '=')[1])" -ErrorAction silentlycontinue}
+
+    #Get falcox version
+    $VersionOutput = Get-FalcoXCOMPortReadLine -comPort $comPort -InputString "version"
+
+    Write-Host "Report exported to: $Outputfile"
+
+    $PIDs_tbl = $FalcoXTable | select "roll_p","roll_i","roll_d","pitch_p","pitch_i","pitch_d","yaw_p","yaw_i","yaw_d","use_simmode","use_whisper","sim_boost","cg_comp", "smooth_stop"
+    
+    #PID Controller
+    If($($PIDs_tbl.use_simmode) -match "1"){$SimmodeEnabled = "True"}else{$SimmodeEnabled = "False"}
+    If($($PIDs_tbl.use_whisper) -match "1"){$WhisperEnabled = "True"}else{$WhisperEnabled = "False"}
+    
+    #Pilot name
+    $Misc_tbl = $FalcoXTable | select "name_pilot", "idle_percent", "esc_protocol"
+    #$Misc_tbl.name_pilot
+    
+
+    #Filters
+    $Filters_tbl = $FalcoXTable | select "filt1_type","filt1_freq","filt2_type","filt2_freq","dfilt1_type","dfilt1_freq","dfilt2_freq","dyn_lpf_scale","use_dyn_aa","aa_strength","d_term_aa_strength"
+    If( $($Filters_tbl.use_dyn_aa) -match "1"){$DynamicAAEnabled = "True"}else{$DynamicAAEnabled = "False"}
+        
+
+    $TPA_tbl = $FalcoXTable | select "*_curve*"
+
+    $Rate_tbl = $FalcoXTable | select "*_rate*","*_acrop*","*_expo*"
+
+    #Create HTML
+    $html = "
+    <html>
+    <head>
+    <title>$title</title>
+    <style>
+    table.default {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    border: 1px solid black;
+    }
+    th.th_headline {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    }
+    td.td_headline {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    }
+    td {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    border: 1px solid black;
+    }
+
+    </style>
+    </head>
+    <body>
+    $Body
+
+
+    <table class='Default'>
+        <tr>
+            <th>$VersionOutput</th><th></th><th></th><th>ROLL</th><th>PITCH</th><th>YAW</th><th>TPA</th><th>P</th><th>I</th><th>D</th>
+        </tr>      
+        <tr>
+            <td class='td_headline'>FILT1</td><td>$(FilterNumb -Filterint $($Filters_tbl.filt1_type))</td><td class='td_headline' align='center'>P</td><td>$($PIDs_tbl.roll_p)</td><td>$($PIDs_tbl.pitch_p)</td><td>$($PIDs_tbl.yaw_p)</td><td>0%</td><td>$($TPA_tbl.p_curve0)</td><td>$($TPA_tbl.i_curve0)</td><td>$($TPA_tbl.d_curve0)</td>
+        </tr>
+        <tr>
+            <td class='td_headline'>FILT2</td><td>$(FilterNumb -Filterint $($Filters_tbl.filt2_type))</td><td class='td_headline' align='center'>I</td><td>$($PIDs_tbl.roll_i)</td><td>$($PIDs_tbl.pitch_i)</td><td>$($PIDs_tbl.yaw_i)</td><td>10%</td><td>$($TPA_tbl.p_curve1)</td><td>$($TPA_tbl.i_curve1)</td><td>$($TPA_tbl.d_curve1)</td>
+        </tr>
+        <tr>
+            <td class='td_headline'>DFILT1</td><td>$(FilterNumb -Filterint $($Filters_tbl.dfilt1_type))</td><td class='td_headline' align='center'>D</td><td>$($PIDs_tbl.roll_d)</td><td>$($PIDs_tbl.pitch_d)</td><td>$($PIDs_tbl.yaw_d)</td><td>20%</td><td>$($TPA_tbl.p_curve2)</td><td>$($TPA_tbl.i_curve2)</td><td>$($TPA_tbl.d_curve2)</td>
+        </tr>
+        <tr>
+            <td class='td_headline'>DFILT2</td><td>$(FilterNumb -Filterint $($Filters_tbl.dfilt2_type))</td><td></td><td></td><td></td><td></td><td>30%</td><td>$($TPA_tbl.p_curve3)</td><td>$($TPA_tbl.i_curve3)</td><td>$($TPA_tbl.d_curve3)</td>
+        </tr>
+        <tr>
+            <td class='td_headline'>FILT1 (Hz)</td><td>$($Filters_tbl.filt1_freq)</td><td class='td_headline'>SIM</td><td>$SimmodeEnabled</td><td></td><td></td><td>40%</td><td>$($TPA_tbl.p_curve4)</td><td>$($TPA_tbl.i_curve4)</td><td>$($TPA_tbl.d_curve4)</td>
+        </tr>
+        <tr>
+            <td class='td_headline'>FILT2 (Hz)</td><td>$($Filters_tbl.filt2_freq)</td><td class='td_headline'>SIM BOOST</td><td>$($PIDs_tbl.sim_boost)</td><td></td><td></td><td>50%</td><td>$($TPA_tbl.p_curve5)</td><td>$($TPA_tbl.i_curve5)</td><td>$($TPA_tbl.d_curve5)</td>
+        </tr>
+        <tr>
+            <td class='td_headline'>DFILT1 (Hz)</td><td>$($Filters_tbl.dfilt1_freq)</td><td class='td_headline'>WHISPER</td><td>$WhisperEnabled</td><td></td><td></td><td>60%</td><td>$($TPA_tbl.p_curve6)</td><td>$($TPA_tbl.i_curve6)</td><td>$($TPA_tbl.d_curve6)</td>
+        </tr>
+        <tr>
+            <td class='td_headline'>DFILT2 (Hz)</td><td>$($Filters_tbl.dfilt2_freq)</td><td class='td_headline'>CG COMP</td><td>$($PIDs_tbl.cg_comp)</td><td></td><td></td><td>70%</td><td>$($TPA_tbl.p_curve7)</td><td>$($TPA_tbl.i_curve7)</td><td>$($TPA_tbl.d_curve7)</td>
+        </tr>
+        <tr>
+            <td class='td_headline'>DYNAMIC AA</td><td>$DynamicAAEnabled</td><td class='td_headline'>SMOOTH STOP</td><td>$($PIDs_tbl.smooth_stop)</td><td></td><td></td><td>80%</td><td>$($TPA_tbl.p_curve8)</td><td>$($TPA_tbl.i_curve8)</td><td>$($TPA_tbl.d_curve8)</td>
+        </tr>
+        <tr>
+            <td class='td_headline'>AA STRENGTH</td><td>$($Filters_tbl.aa_strength)</td><td class='td_headline'>Idle %</td><td>$($Misc_tbl.idle_percent)</td><td></td><td></td><td>90%</td><td>$($TPA_tbl.p_curve9)</td><td>$($TPA_tbl.i_curve9)</td><td>$($TPA_tbl.d_curve9)</td>
+        </tr>		
+        <tr>
+            <td class='td_headline'>DYNAMIC FILT STRENGTH</td><td>$($Filters_tbl.dyn_lpf_scale)</td><td class='td_headline'>ESC proto</td><td>$(Get-FalcoXEscProto -ProtocolInt $($Misc_tbl.esc_protocol))</td><td></td><td></td><td>100%</td><td>$($TPA_tbl.p_curve10)</td><td>$($TPA_tbl.i_curve10)</td><td>$($TPA_tbl.d_curve10)</td>
+        </tr>
+        <tr>
+            <td class='td_headline'>DFILT AA STRENGTH</td><td>$(Get-FalcoXDfiltStrength -ProtocolInt $($Filters_tbl.d_term_aa_strength))</td><td class='td_headline'></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+        </tr>                                                             	
+    </table>
+    <table class='Default'>
+        <tr>
+            <td class='td_headline'></td><td class='td_headline'>PITCH</td><td class='td_headline'>ROLL</td><td class='td_headline'>YAW</td>
+        </tr>    
+        <tr>
+            <td class='td_headline'>RATE</td><td>$($Rate_tbl.pitch_rate1)</td><td>$($Rate_tbl.roll_rate1)</td><td>$($Rate_tbl.yaw_rate1)</td>
+        </tr>
+        <tr>
+            <td class='td_headline'>ACRO</td><td>$($Rate_tbl.pitch_acrop1)</td><td>$($Rate_tbl.roll_acrop1)</td><td>$($Rate_tbl.yaw_acrop1)</td>
+        </tr>    
+        <tr>
+            <td class='td_headline'>EXPO</td><td>$($Rate_tbl.pitch_expo1)</td><td>$($Rate_tbl.roll_expo1)</td><td>$($Rate_tbl.yaw_expo1)</td>
+        </tr>
+        <tr>
+            <td class='td_headline'>DEG. SEC</td><td> $(Get-FalcoXRateCalc -Rate $($Rate_tbl.pitch_rate1) -Expo $($Rate_tbl.pitch_expo1) -Acro $($Rate_tbl.pitch_acrop1)) </td>
+                                                 <td> $(Get-FalcoXRateCalc -Rate $($Rate_tbl.roll_rate1) -Expo $($Rate_tbl.roll_expo1) -Acro $($Rate_tbl.roll_acrop1)) </td>
+                                                 <td> $(Get-FalcoXRateCalc -Rate $($Rate_tbl.yaw_rate1) -Expo $($Rate_tbl.yaw_expo1) -Acro $($Rate_tbl.yaw_acrop1)) </td>
+        </tr>        
+    </table>    
+"
+        
+    $html | Out-File -FilePath $Outputfile -Encoding UTF8
+    start $Outputfile    
+
+    
+}
+
+
+
 ####
 ####
 # Main function for local .txt config file
@@ -430,12 +607,12 @@ Function Get-FalcoXConfigLocal {
     }
     #Output Filters
     If($Filters){
-        $Filters_tbl = $FalcoXTable | select "filt1_type","filt1_freq","filt2_type","filt2_freq","dfilt1_type","dfilt1_freq","dfilt2_freq","dynLpfScale","use_dyn_aa","aa_strength"
+        $Filters_tbl = $FalcoXTable | select "filt1_type","filt1_freq","filt2_type","filt2_freq","dfilt1_type","dfilt1_freq","dfilt2_freq","dyn_lpf_scale","use_dyn_aa","aa_strength"
         
         Write-Host "----- Gyro -----"
         Write-Host "Filter1: $(FilterNumb -Filterint $($Filters_tbl.filt1_type)) @ $($Filters_tbl.filt1_freq) Hz"
         Write-Host "Filter2: $(FilterNumb -Filterint $($Filters_tbl.filt2_type)) @ $($Filters_tbl.filt2_freq) Hz"
-        Write-Host "Dynamic filter Strenght: $($Filters_tbl.dynLpfScale)"
+        Write-Host "Dynamic filter Strenght: $($Filters_tbl.dyn_lpf_scale)"
 
         Write-Host "----- D-Term -----"
         Write-Host "Filter1: $(FilterNumb -Filterint $($Filters_tbl.dfilt1_type)) @ $($Filters_tbl.dfilt1_freq) Hz"
@@ -504,6 +681,44 @@ Function Get-FilterNameTable($FilterName){
 
     $result
 }
+
+#Esc proto
+Function Get-FalcoXEscProto($ProtocolInt){
+    switch ($ProtocolInt)
+    {
+        0 { $result = 'Multishot' }
+        1 { $result = 'DSHOT64' }
+        2 { $result = 'DSHOT32' }
+        3 { $result = 'DSHOT1200' }
+        4 { $result = 'DSHOT600' }
+        5 { $result = 'DSHOT300' }
+        6 { $result = 'Proshot32' }
+        7 { $result = 'Proshot16' }
+    }
+
+    $result
+}
+
+#DFilt strength
+Function Get-FalcoXDfiltStrength($ProtocolInt){
+    switch ($ProtocolInt)
+    {
+        0 { $result = 'Disabled' }
+        1 { $result = 'Low' }
+        2 { $result = 'Medium' }
+        3 { $result = 'High' }        
+    }
+
+    $result
+}
+
+Function Get-FalcoXRateCalc($Rate,$Expo,$Acro){
+
+
+    $Result = [decimal]$Rate * [decimal]$Acro
+    [math]::Round($Result,2)
+}
+
 
 ########################
 
