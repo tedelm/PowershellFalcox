@@ -624,7 +624,7 @@ Function Setup-FalcoX {
    
 }
 
-Setup-FalcoX -comPort com10 -SetUART 1 -SetUARTProtocol 2
+#Setup-FalcoX -comPort com10 -SetUART 1 -SetUARTProtocol 2
 
 ####
 ####
