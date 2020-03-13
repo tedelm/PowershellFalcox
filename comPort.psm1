@@ -24,7 +24,7 @@ function Get-FalcoXCOMPortDump(){
     )
 
     If(!$Waitms){$Waitms = 3000}
-    $port = new-Object System.IO.Ports.SerialPort $comPort,9600,None,8,one
+    $port = new-Object System.IO.Ports.SerialPort $comPort,115200,None,8,one
     $port.Open()
     start-sleep -Milliseconds 10
     $port.WriteLine("dump")
@@ -41,6 +41,32 @@ function Get-FalcoXCOMPortDump(){
 }
 #Get-FalcoXCOMPortDump -comPort COM7 -Waitms 3000
 
+function Set-FalcoXCOMPortFunctions(){
+    param (
+        [parameter(Mandatory=$true)][string]$comPort,
+        [string]$inputString,
+        [int]$Waitms
+    )
+
+    If(!$Waitms){$Waitms = 250}
+    $port = new-Object System.IO.Ports.SerialPort $comPort,115200,None,8,one
+    $port.Open()
+    start-sleep -Milliseconds 10
+    $port.WriteLine("$($inputString)")
+    start-sleep -Milliseconds $Waitms
+    #$Script:FalcoXDump = $port.ReadExisting()
+    start-sleep -Milliseconds 250
+    $port.Close()
+
+    #If(!$(($FalcoXDump -split "#")[1]) -match "OK"){
+    #    Write-Host -ForegroundColor red "! Error, try '-Waitms 3000' !"
+    #}
+    
+    #$FalcoXDump
+}
+#Get-FalcoXCOMPortFunctions -comPort COM7 -Waitms 3000 -inputString
+
+
 #Use this function to fetch all settings
 function Get-FalcoXCOMPortReadLine(){
     param (
@@ -52,7 +78,7 @@ function Get-FalcoXCOMPortReadLine(){
     If(!$Waitms){$Waitms = 3000}
     #Only get command allowed
     If(($InputString -match "GET") -or ($InputString -match "version")){
-        $port = new-Object System.IO.Ports.SerialPort $comPort,9600,None,8,one
+        $port = new-Object System.IO.Ports.SerialPort $comPort,115200,None,8,one
         $port.Open()
         start-sleep -Milliseconds 10
 
@@ -82,7 +108,7 @@ function Set-FalcoXCOMPortWriteLine() {
         [array]$inputString
     )
 
-    $port= new-Object System.IO.Ports.SerialPort $comPort,9600,None,8,one
+    $port= new-Object System.IO.Ports.SerialPort $comPort,115200,None,8,one
     $port.open()
     start-sleep -Milliseconds 500
 
@@ -165,6 +191,7 @@ Export-ModuleMember -Function Get-FalcoXCOMPortDump
 Export-ModuleMember -Function Get-FalcoXCOMPortReadLine
 Export-ModuleMember -Function Set-FalcoXCOMPortWriteLine
 Export-ModuleMember -Function Set-FalcoXCOMPortWriteDump
+Export-ModuleMember -Function Set-FalcoXCOMPortFunctions
 
 
 

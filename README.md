@@ -21,6 +21,24 @@ Double click on "Start FalcoXLovesPowerShell.cmd"</br>
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/exportHtml_2.PNG'>
 </br></br>
 
+## Online Usage (USB): "Setup" commands
+1. Open Powershell and navigate to your "FalcoXLovesPowershell" folder </br> e.g (without quotes) "cd C:\Users\\$env:username\Downloads\"
+2. In Powershell:</br>
+```Powershell
+Import-Module .\FalcoXLovesPowershell.ps1
+#Reset all config
+Setup-FalcoX -comPort com10 -ResetConfig
+#Reset Wizard
+Setup-FalcoX -comPort com10 -ResetWizard
+#Set Wizard complete
+Setup-FalcoX -comPort com10 -WizardCompleted
+#Enter DFU/STM32 Bootloader mode
+Setup-FalcoX -comPort com10 -EnterDFU
+
+```
+<img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/Setup-FalcoX_01.PNG'>
+
+
 ## Online Usage (USB): "Get" commands
 1. Open Powershell and navigate to your "FalcoXLovesPowershell" folder </br> e.g (without quotes) "cd C:\Users\\$env:username\Downloads\"
 2. In Powershell:</br>

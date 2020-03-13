@@ -582,24 +582,30 @@ Function Get-FalcoXConfigLocal {
 
 Function Setup-FalcoX {
     param (
+        [parameter(Mandatory=$true)][string]$comPort,
         [switch]$EnterDFU,
         [switch]$ResetConfig,
-        [switch]$ResetWizard
+        [switch]$ResetWizard,
+        [switch]$WizardCompleted
     )
 
     if($EnterDFU){
         Write-Host "Entering DFU mode"
-        Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "DFU"
+        Set-FalcoXCOMPortFunctions -comPort $comPort -inputString "DFU"
     }
     if($ResetConfig){
         Write-Host "Resetting Config"
-        Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "RESETCONFIG"
+        Set-FalcoXCOMPortFunctions -comPort $comPort -inputString "RESETCONFIG"
     }
     if($ResetWizard){
         Write-Host "Resetting Wizard"
-        Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "RESET_WIZARD"
+        Set-FalcoXCOMPortFunctions -comPort $comPort -inputString "RESET_WIZARD"
     }        
-    
+    if($WizardCompleted){
+        Write-Host "Setting Wizard Completed"
+        Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET wizard_flags=127"
+    }
+   
 }
 
 ####
