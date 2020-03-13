@@ -612,6 +612,7 @@ Function Setup-FalcoX {
 
         if($SetUART){
             Write-Host "Setting Radio Protocol $($SetUART)"
+            Write-Host "Only supported in 10.0.6.xxxx or later"
             Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET uart$($SetUART)_protocol=$($SetUARTProtocol)"
         }else{
             Write-Host "Please provide '-SetUART' as well"
