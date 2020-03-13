@@ -578,6 +578,30 @@ Function Get-FalcoXConfigLocal {
 
 }
 
+
+
+Function Setup-FalcoX {
+    param (
+        [switch]$EnterDFU,
+        [switch]$ResetConfig,
+        [switch]$ResetWizard
+    )
+
+    if($EnterDFU){
+        Write-Host "Entering DFU mode"
+        Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "DFU"
+    }
+    if($ResetConfig){
+        Write-Host "Resetting Config"
+        Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "RESETCONFIG"
+    }
+    if($ResetWizard){
+        Write-Host "Resetting Wizard"
+        Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "RESET_WIZARD"
+    }        
+    
+}
+
 ####
 ####
 # Secondary function for getting filter names
