@@ -587,7 +587,7 @@ Function Setup-FalcoX {
         [switch]$ResetConfig,
         [switch]$ResetWizard,
         [switch]$ResetRadio,
-        [string]$SetRadio,
+        [string]$SetUARTProtocol,
         [string]$SetUART,
         [switch]$WizardCompleted
     )
@@ -608,11 +608,11 @@ Function Setup-FalcoX {
         Write-Host "Setting Wizard Completed"
         Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET wizard_flags=127"
     }
-    if($SetRadio){
+    if($SetUARTProtocol){
 
         if($SetUART){
-            Write-Host "Setting Radio Protocol $($SetRadio)"
-            Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET uart$($SetUART)_protocol=$($SetRadio)"
+            Write-Host "Setting Radio Protocol $($SetUART)"
+            Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET uart$($SetUART)_protocol=$($SetUARTProtocol)"
         }else{
             Write-Host "Please provide '-SetUART' as well"
         }
@@ -622,6 +622,8 @@ Function Setup-FalcoX {
     
    
 }
+
+Setup-FalcoX -comPort com10 -SetUART 1 -SetUARTProtocol 2
 
 ####
 ####

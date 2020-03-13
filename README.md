@@ -34,7 +34,9 @@ Setup-FalcoX -comPort com10 -ResetWizard
 Setup-FalcoX -comPort com10 -WizardCompleted
 #Enter DFU/STM32 Bootloader mode
 Setup-FalcoX -comPort com10 -EnterDFU
-
+#Setting UARTS and Protocols 
+#Setting CRSF on UART1
+Setup-FalcoX -comPort com10 -SetUART 1 -SetUARTProtocol 2
 ```
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/Setup-FalcoX_01.PNG'>
 
