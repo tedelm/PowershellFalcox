@@ -638,10 +638,26 @@ Function Get-FalcoXDfiltStrength($ProtocolInt){
     $result
 }
 
-Function Get-FalcoXRateCalc($Rate,$Expo,$Acro){
 
+#Rates, deg/sec
+function Get-FalcoXRateCalc() {
+    param (
+        [decimal]$Rate,
+        [decimal]$Expo,
+        [decimal]$Acro,
+        [decimal]$rccmd
 
-    $Result = [decimal]$Rate * [decimal]$Acro
-    [math]::Round($Result,2)
+    )
+    if(!$rccmd){
+        #If empty, set to full deflection
+        #throttle is from 0 to 1, RcCmd is from -1 to 1
+        $rccmd = 1
+    }
+    
+
+    $curvedRcCommand = ((1.0 + $expo * ($rccmd * $rccmd - 1.0)) * $rccmd)
+    $returnRateInDeg = ($curvedRcCommand * ($rate + ($curvedRcCommand * $rate * $acro)))
+
+    [math]::Round($returnRateInDeg,0)
+
 }
-
