@@ -603,6 +603,7 @@ Function Setup-FalcoX {
     if($ResetWizard){
         Write-Host "Resetting Wizard"
         Set-FalcoXCOMPortFunctions -comPort $comPort -inputString "RESET_WIZARD"
+        Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET wizard_flags=0"
     }        
     if($WizardCompleted){
         Write-Host "Setting Wizard Completed"
