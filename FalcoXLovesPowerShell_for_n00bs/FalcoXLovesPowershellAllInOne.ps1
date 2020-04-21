@@ -150,7 +150,8 @@ Function GuidedMenu(){
             $ComportToUse = $GuidedMenuAnwser4
         }
         Write-host "Using $ComportToUse"
-
+        
+        #Get-UARTMapping -protocol crsf
         Setup-FalcoX -comPort $ComportToUse -SetUART 1 -SetUARTProtocol 2
         $GuidedPressEnter = read-host "Press [Enter] to continue"
         clear 
@@ -1131,6 +1132,53 @@ Function Get-VTXChannelMapping($SmartAudio){
     $VtxChannelMapping
     $VtxFreq
 }
+
+
+Function Get-UARTMapping($protocol){
+    switch ($protocol)
+    {
+       0 {$UARTMapping = "None"}
+       1 {$UARTMapping = "SERIAL_TAG_SPEK2048"}
+       2 {$UARTMapping = "SERIAL_TAG_CRSF"}
+       3 {$UARTMapping = "SERIAL_TAG_SBUS"}
+       4 {$UARTMapping = "SERIAL_TAG_FPORT"}
+       5 {$UARTMapping = "SERIAL_TAG_INV_SBUS"}
+       6 {$UARTMapping = "SERIAL_TAG_INV_FPORT"}
+       7 {$UARTMapping = "SERIAL_TAG_SUMD"}
+       8 {$UARTMapping = "SERIAL_TAG_IBUS"}
+       9 {$UARTMapping = "SERIAL_TAG_SMART_AUDIO"}
+       10 {$UARTMapping = "SERIAL_TAG_TRAMP_TELEM"}
+       11 {$UARTMapping = "SERIAL_TAG_BLHELI_TELEM"}
+       12 {$UARTMapping = "SERIAL_TAG_SRXL2"}
+       13 {$UARTMapping = "SERIAL_TAG_DJI_SBUS"}
+       14 {$UARTMapping = "SERIAL_TAG_MSP"}
+       15 {$UARTMapping = "SERIAL_TAG_GPS"}
+       16 {$UARTMapping = "SERIAL_TAG_FLX_LED"}
+       None {$UARTMapping = 0}
+       SPEK2048 {$UARTMapping = 1}
+       CRSF {$UARTMapping = 2}
+       SBUS {$UARTMapping = 3}
+       FPORT {$UARTMapping = 4}
+       INV_SBUS {$UARTMapping = 5}
+       INV_FPORT {$UARTMapping = 6}
+       SUMD {$UARTMapping = 7}
+       IBUS {$UARTMapping = 8}
+       SMART_AUDIO {$UARTMapping = 9}
+       TRAMP_TELEM {$UARTMapping = 10}
+       BLHELI_TELEM {$UARTMapping = 11}
+       SRXL2 {$UARTMapping = 12}
+       DJI_SBUS {$UARTMapping = 13}
+       MSP {$UARTMapping = 14}
+       GPS {$UARTMapping = 15}
+       FLX_LED {$UARTMapping = 16}       
+    }
+     
+    $UARTMapping
+}
+#Get-UARTMapping -protocol crsf
+
+
+
 
 #####################################
 GuidedMenu
