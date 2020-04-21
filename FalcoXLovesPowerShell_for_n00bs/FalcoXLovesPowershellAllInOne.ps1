@@ -57,13 +57,15 @@ Function GuidedMenu(){
     Write-Host " [1] - Create backup"
     Write-Host " [2] - Restore from backup"
     Write-Host " [3] - View current config"
-    Write-Host " [4] - Create HTML Report"    
-    Write-Host " [5] - Show connected COM-ports"
+    Write-Host " [4] - Create HTML Report" 
+    Write-Host " [5] - Set CRSF on TX1 (10.0.6.xxxx or later)"
+    Write-Host " [6] - Set MRTEEL PIDs and Filters"
+    Write-Host " [7] - Show connected COM-ports"
     Write-Host " "
 
-    $GuidedMenuAnwser = read-host "Pick a number [1-5]"
+    $GuidedMenuAnwser = read-host "Pick a number [1-7]"
 
-    $MostLikelyCOMport = Get-FalcoXCOMPort | select -Last 1
+    $MostLikelyCOMport = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*")}).DeviceID
 
 
     If($GuidedMenuAnwser -eq 1){
@@ -137,9 +139,47 @@ Function GuidedMenu(){
         $GuidedPressEnter = read-host "Press [Enter] to continue"
         clear 
         GuidedMenu       
-    }    
+    }
     If($GuidedMenuAnwser -eq 5){
+        $GuidedMenuAnwser4 = read-host "Select COM-port type e.g. 'COM7' or let me guess (default)"
+
+        if(!$GuidedMenuAnwser4){
+            $ComportToUse = $MostLikelyCOMport
+            Write-host "Im guessing your FC is on: $ComportToUse"
+        }else{
+            $ComportToUse = $GuidedMenuAnwser4
+        }
+        Write-host "Using $ComportToUse"
+
+        Setup-FalcoX -comPort $ComportToUse -SetUART 1 -SetUARTProtocol 2
+        $GuidedPressEnter = read-host "Press [Enter] to continue"
+        clear 
+        GuidedMenu       
+    }
+    If($GuidedMenuAnwser -eq 6){
+        $GuidedMenuAnwser4 = read-host "Select COM-port type e.g. 'COM7' or let me guess (default)"
+
+        if(!$GuidedMenuAnwser4){
+            $ComportToUse = $MostLikelyCOMport
+            Write-host "Im guessing your FC is on: $ComportToUse"
+        }else{
+            $ComportToUse = $GuidedMenuAnwser4
+        }
+        Write-host "Using $ComportToUse"
+
+        #Presets
+        $PresetArrayMRTEEL = @("SET deadband=0.014","SET esc_protocol=2","SET idle_percent=6","SET max_throttle=100","SET roll_p=65","SET roll_i=45","SET roll_d=314","SET pitch_p=68","SET pitch_i=45","SET pitch_d=345","SET yaw_p=65","SET yaw_i=45","SET yaw_d=116","SET level_kp=50","SET level_ki=40","SET level_angle=35","SET use_simmode=1","SET use_whisper=1","SET use_dyn_aa=0","SET aa_strength=0","SET d_term_aa_strength=0","SET p_curve0=105.000","SET p_curve1=95.000","SET p_curve2=85.000","SET p_curve3=80.000","SET p_curve4=80.000","SET p_curve5=75.000","SET p_curve6=65.000","SET p_curve7=55.000","SET p_curve8=55.000","SET p_curve9=55.000","SET p_curve10=55.000","SET i_curve0=100.000","SET i_curve1=100.000","SET i_curve2=100.000","SET i_curve3=100.000","SET i_curve4=100.000","SET i_curve5=100.000","SET i_curve6=100.000","SET i_curve7=100.000","SET i_curve8=100.000","SET i_curve9=100.000","SET i_curve10=100.000","SET d_curve0=100.000","SET d_curve1=92.000","SET d_curve2=90.000","SET d_curve3=80.000","SET d_curve4=80.000","SET d_curve5=75.000","SET d_curve6=65.000","SET d_curve7=55.000","SET d_curve8=55.000","SET d_curve9=55.000","SET d_curve10=55.000","SET cg_comp=0.907","SET sim_boost=1.200","SET smooth_stop=0","SET rc_smoothing_type=2","SET rc_smoothing_value=0.250","SET filt1_type=2","SET filt2_type=2","SET dfilt1_type=1","SET dfilt2_type=1","SET filt1_freq=240","SET filt2_freq=105","SET dfilt1_freq=180","SET dfilt2_freq=95","SET dyn_lpf_scale=80","SET pitch_rate1=200.000","SET roll_rate1=200.000","SET yaw_rate1=200.000","SET pitch_acrop1=1.906","SET roll_acrop1=1.906","SET yaw_acrop1=1.807","SET pitch_expo1=0.648","SET roll_expo1=0.648","SET yaw_expo1=0.647")
+
+        Set-FalcoXCOMPortWriteLine -comPort $ComportToUse -inputString $PresetArrayMRTEEL
+        $GuidedPressEnter = read-host "Press [Enter] to continue"
+        clear 
+        GuidedMenu       
+    }
+
+    
+    If($GuidedMenuAnwser -eq 7){
         Get-FalcoXCOMPort
+        Write-Host "I guess that your FC is on $MostLikelyCOMport"
         $GuidedPressEnter = read-host "Press [Enter] to continue"
         clear
         GuidedMenu
@@ -588,6 +628,50 @@ function Export-FalcoXReportHtml {
     
 }
 
+Function Setup-FalcoX {
+    param (
+        [parameter(Mandatory=$true)][string]$comPort,
+        [switch]$EnterDFU,
+        [switch]$ResetConfig,
+        [switch]$ResetWizard,
+        [switch]$ResetRadio,
+        [string]$SetUARTProtocol,
+        [string]$SetUART,
+        [switch]$WizardCompleted
+    )
+
+    if($EnterDFU){
+        Write-Host "Entering DFU mode"
+        Set-FalcoXCOMPortFunctions -comPort $comPort -inputString "DFU"
+    }
+    if($ResetConfig){
+        Write-Host "Resetting Config"
+        Set-FalcoXCOMPortFunctions -comPort $comPort -inputString "RESETCONFIG"
+    }
+    if($ResetWizard){
+        Write-Host "Resetting Wizard"
+        Set-FalcoXCOMPortFunctions -comPort $comPort -inputString "RESET_WIZARD"
+        Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET wizard_flags=0"
+    }        
+    if($WizardCompleted){
+        Write-Host "Setting Wizard Completed"
+        Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET wizard_flags=127"
+    }
+    if($SetUARTProtocol){
+
+        if($SetUART){
+            Write-Host "Setting Radio Protocol $($SetUART)"
+            Write-Host "Only supported in 10.0.6.xxxx or later"
+            Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET uart$($SetUART)_protocol=$($SetUARTProtocol)"
+        }else{
+            Write-Host "Please provide '-SetUART' as well"
+        }
+
+    }
+
+    
+   
+}
 
 
 ####
@@ -793,7 +877,7 @@ function Get-FalcoXCOMPortDump(){
     )
 
     If(!$Waitms){$Waitms = 3000}
-    $port = new-Object System.IO.Ports.SerialPort $comPort,9600,None,8,one
+    $port = new-Object System.IO.Ports.SerialPort $comPort,115200,None,8,one
     $port.Open()
     start-sleep -Milliseconds 10
     $port.WriteLine("dump")
@@ -821,7 +905,7 @@ function Get-FalcoXCOMPortReadLine(){
     If(!$Waitms){$Waitms = 3000}
     #Only get command allowed
     If(($InputString -match "GET") -or ($InputString -match "version")){
-        $port = new-Object System.IO.Ports.SerialPort $comPort,9600,None,8,one
+        $port = new-Object System.IO.Ports.SerialPort $comPort,115200,None,8,one
         $port.Open()
         start-sleep -Milliseconds 10
 
@@ -851,16 +935,16 @@ function Set-FalcoXCOMPortWriteLine() {
         [array]$inputString
     )
 
-    $port= new-Object System.IO.Ports.SerialPort $comPort,9600,None,8,one
+    $port= new-Object System.IO.Ports.SerialPort $comPort,115200,None,8,one
     $port.open()
     start-sleep -Milliseconds 500
 
     foreach($InputStringCommand in $inputString){
         
         $port.WriteLine("$($InputStringCommand)")
-        start-sleep -Milliseconds 500
+        start-sleep -Milliseconds 100
         $readline = $port.ReadLine()
-        start-sleep -Milliseconds 250
+        start-sleep -Milliseconds 100
         #Check if input ok
         if(!($readline -match "#Ok")){
             $readline
