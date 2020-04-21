@@ -19,6 +19,8 @@ Connect your FlightController</br>
 Double click on "Start FalcoXLovesPowerShell.cmd"</br>
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/n00bs001.PNG'></br>
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/n00bs002.PNG'></br>
+</br>
+HTML Report:</br>
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/exportHtml_2.PNG'>
 </br></br>
 
