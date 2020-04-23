@@ -51,7 +51,7 @@ https://github.com/tedelm/PowershellFalcox
 ####
 clear
 Function GuidedMenu(){
-
+    clear
     Write-Host " * Welcome to FalcoXLovesPowerShell * "
     Write-Host " "
     Write-Host " [1] - Create backup"
@@ -59,7 +59,7 @@ Function GuidedMenu(){
     Write-Host " [3] - View current config"
     Write-Host " [4] - Create HTML Report" 
     Write-Host " [5] - Set CRSF on TX1 (10.0.6.xxxx or later)"
-    Write-Host " [6] - Set MRTEEL PIDs and Filters"
+    Write-Host " [6] - Preset tunes - PIDs and Filters"
     Write-Host " [7] - Show connected COM-ports"
     Write-Host " "
 
@@ -157,24 +157,87 @@ Function GuidedMenu(){
         clear 
         GuidedMenu       
     }
+
     If($GuidedMenuAnwser -eq 6){
-        $GuidedMenuAnwser4 = read-host "Select COM-port type e.g. 'COM7' or let me guess (default)"
+        clear
+        Write-Host " * Welcome to FalcoXLovesPowerShell * "
+        Write-Host " "
+        Write-Host " ### Preset PID and Filters ###"
+        Write-Host " [1] - Set MRTEEL 4s - Freestyle - PIDs and Filters"
+        Write-Host " [2] - Set KIM 6s - Freestyle - PIDs and Filters"
+        Write-Host " [C] - Create outputfile with only PIDs,Filters,Rates"
+        Write-Host " [Q] - Main menu"
+        Write-Host " "
+    
+        $GuidedMenuAnwserPidsAndFilters = read-host "Pick a number [1-2] or 'Q' for main menu"
 
-        if(!$GuidedMenuAnwser4){
-            $ComportToUse = $MostLikelyCOMport
-            Write-host "Im guessing your FC is on: $ComportToUse"
-        }else{
-            $ComportToUse = $GuidedMenuAnwser4
-        }
-        Write-host "Using $ComportToUse"
-
-        #Presets
-        $PresetArrayMRTEEL = @("SET deadband=0.014","SET esc_protocol=2","SET idle_percent=6","SET max_throttle=100","SET roll_p=65","SET roll_i=45","SET roll_d=314","SET pitch_p=68","SET pitch_i=45","SET pitch_d=345","SET yaw_p=65","SET yaw_i=45","SET yaw_d=116","SET level_kp=50","SET level_ki=40","SET level_angle=35","SET use_simmode=1","SET use_whisper=1","SET use_dyn_aa=0","SET aa_strength=0","SET d_term_aa_strength=0","SET p_curve0=105.000","SET p_curve1=95.000","SET p_curve2=85.000","SET p_curve3=80.000","SET p_curve4=80.000","SET p_curve5=75.000","SET p_curve6=65.000","SET p_curve7=55.000","SET p_curve8=55.000","SET p_curve9=55.000","SET p_curve10=55.000","SET i_curve0=100.000","SET i_curve1=100.000","SET i_curve2=100.000","SET i_curve3=100.000","SET i_curve4=100.000","SET i_curve5=100.000","SET i_curve6=100.000","SET i_curve7=100.000","SET i_curve8=100.000","SET i_curve9=100.000","SET i_curve10=100.000","SET d_curve0=100.000","SET d_curve1=92.000","SET d_curve2=90.000","SET d_curve3=80.000","SET d_curve4=80.000","SET d_curve5=75.000","SET d_curve6=65.000","SET d_curve7=55.000","SET d_curve8=55.000","SET d_curve9=55.000","SET d_curve10=55.000","SET cg_comp=0.907","SET sim_boost=1.200","SET smooth_stop=0","SET rc_smoothing_type=2","SET rc_smoothing_value=0.250","SET filt1_type=2","SET filt2_type=2","SET dfilt1_type=1","SET dfilt2_type=1","SET filt1_freq=240","SET filt2_freq=105","SET dfilt1_freq=180","SET dfilt2_freq=95","SET dyn_lpf_scale=80","SET pitch_rate1=200.000","SET roll_rate1=200.000","SET yaw_rate1=200.000","SET pitch_acrop1=1.906","SET roll_acrop1=1.906","SET yaw_acrop1=1.807","SET pitch_expo1=0.648","SET roll_expo1=0.648","SET yaw_expo1=0.647")
-
-        Set-FalcoXCOMPortWriteLine -comPort $ComportToUse -inputString $PresetArrayMRTEEL
-        $GuidedPressEnter = read-host "Press [Enter] to continue"
-        clear 
-        GuidedMenu       
+        If($GuidedMenuAnwserPidsAndFilters -eq 1){
+            $GuidedMenuAnwserPidsAndFiltersPort_1 = read-host "Select COM-port type e.g. 'COM7' or let me guess (default)"
+    
+            if(!$GuidedMenuAnwserPidsAndFiltersPort_1){
+                $ComportToUse = $MostLikelyCOMport
+                Write-host "Im guessing your FC is on: $ComportToUse"
+            }else{
+                $ComportToUse = $GuidedMenuAnwser4
+            }
+            Write-host "Using $ComportToUse"
+    
+            #Presets
+            $PresetArrayMRTEEL = @("SET deadband=0.014","SET esc_protocol=2","SET idle_percent=6","SET max_throttle=100","SET roll_p=65","SET roll_i=45","SET roll_d=314","SET pitch_p=68","SET pitch_i=45","SET pitch_d=345","SET yaw_p=65","SET yaw_i=45","SET yaw_d=116","SET level_kp=50","SET level_ki=40","SET level_angle=35","SET use_simmode=1","SET use_whisper=1","SET use_dyn_aa=0","SET aa_strength=0","SET d_term_aa_strength=0","SET p_curve0=105.000","SET p_curve1=95.000","SET p_curve2=85.000","SET p_curve3=80.000","SET p_curve4=80.000","SET p_curve5=75.000","SET p_curve6=65.000","SET p_curve7=55.000","SET p_curve8=55.000","SET p_curve9=55.000","SET p_curve10=55.000","SET i_curve0=100.000","SET i_curve1=100.000","SET i_curve2=100.000","SET i_curve3=100.000","SET i_curve4=100.000","SET i_curve5=100.000","SET i_curve6=100.000","SET i_curve7=100.000","SET i_curve8=100.000","SET i_curve9=100.000","SET i_curve10=100.000","SET d_curve0=100.000","SET d_curve1=92.000","SET d_curve2=90.000","SET d_curve3=80.000","SET d_curve4=80.000","SET d_curve5=75.000","SET d_curve6=65.000","SET d_curve7=55.000","SET d_curve8=55.000","SET d_curve9=55.000","SET d_curve10=55.000","SET cg_comp=0.907","SET sim_boost=1.200","SET smooth_stop=0","SET rc_smoothing_type=2","SET rc_smoothing_value=0.250","SET filt1_type=2","SET filt2_type=2","SET dfilt1_type=1","SET dfilt2_type=1","SET filt1_freq=240","SET filt2_freq=105","SET dfilt1_freq=180","SET dfilt2_freq=95","SET dyn_lpf_scale=80","SET pitch_rate1=200.000","SET roll_rate1=200.000","SET yaw_rate1=200.000","SET pitch_acrop1=1.906","SET roll_acrop1=1.906","SET yaw_acrop1=1.807","SET pitch_expo1=0.648","SET roll_expo1=0.648","SET yaw_expo1=0.647")
+    
+            Set-FalcoXCOMPortWriteLine -comPort $ComportToUse -inputString $PresetArrayMRTEEL
+            $GuidedPressEnter = read-host "Press [Enter] to continue"
+            clear 
+            GuidedMenu       
+        }  
+        If($GuidedMenuAnwserPidsAndFilters -eq 2){
+            $GuidedMenuAnwserPidsAndFiltersPort_2 = read-host "Select COM-port type e.g. 'COM7' or let me guess (default)"
+    
+            if(!$GuidedMenuAnwserPidsAndFiltersPort_2){
+                $ComportToUse = $MostLikelyCOMport
+                Write-host "Im guessing your FC is on: $ComportToUse"
+            }else{
+                $ComportToUse = $GuidedMenuAnwser4
+            }
+            Write-host "Using $ComportToUse"
+    
+            #Presets
+            $PresetArray = @('SET idle_percent=6', 'SET max_throttle=100', 'SET roll_p=54', 'SET roll_i=50', 'SET roll_d=380', 'SET pitch_p=54', 'SET pitch_i=50', 'SET pitch_d=320', 'SET yaw_p=64', 'SET yaw_i=150', 'SET yaw_d=0', 'SET level_kp=50', 'SET level_ki=40', 'SET level_angle=35', 'SET use_simmode=1', 'SET use_whisper=1', 'SET use_dyn_aa=0', 'SET aa_strength=0', 'SET d_term_aa_strength=2', 'SET p_curve0=100.000', 'SET p_curve1=100.000 SET p_curve10=60.000', 'SET p_curve2=100.000', 'SET p_curve3=100.000', 'SET p_curve4=100.000', 'SET p_curve5=100.000', 'SET p_curve6=100.000', 'SET p_curve7=90.000', 'SET p_curve8=80.000', 'SET p_curve9=70.000', 'SET p_curve10=60.000', 'SET i_curve0=100.000', 'SET i_curve1=100.000 SET i_curve10=100.000', 'SET i_curve2=100.000', 'SET i_curve3=100.000', 'SET i_curve4=100.000', 'SET i_curve5=100.000', 'SET i_curve6=100.000', 'SET i_curve7=100.000', 'SET i_curve8=100.000', 'SET i_curve9=100.000', 'SET i_curve10=100.000', 'SET d_curve0=100.000', 'SET d_curve1=100.000 SET d_curve10=70.000', 'SET d_curve2=100.000', 'SET d_curve3=100.000', 'SET d_curve4=100.000', 'SET d_curve5=100.000', 'SET d_curve6=100.000', 'SET d_curve7=100.000', 'SET d_curve8=90.000', 'SET d_curve9=80.000', 'SET d_curve10=70.000', 'SET cg_comp=0.949', 'SET sim_boost=1.358', 'SET smooth_stop=0', 'SET rc_smoothing_type=2', 'SET rc_smoothing_value=0.158', 'SET filt1_type=2', 'SET filt2_type=2', 'SET dfilt1_type=1', 'SET dfilt2_type=1', 'SET filt1_freq=270', 'SET filt2_freq=100', 'SET dfilt1_freq=120', 'SET dfilt2_freq=240', 'SET dyn_lpf_scale=80', 'SET pitch_rate1=350.000', 'SET roll_rate1=350.000', 'SET yaw_rate1=360.000', 'SET pitch_acrop1=0.898', 'SET roll_acrop1=0.898', 'SET yaw_acrop1=1.100', 'SET pitch_expo1=0.559', 'SET roll_expo1=0.559', 'SET yaw_expo1=0.559')
+    
+            Set-FalcoXCOMPortWriteLine -comPort $ComportToUse -inputString $PresetArray
+            $GuidedPressEnter = read-host "Press [Enter] to continue"
+            clear 
+            GuidedMenu       
+        } 
+        If($GuidedMenuAnwserPidsAndFilters -match "C"){
+            $GuidedMenuAnwserPidsAndFilters_inputfile = read-host "Inputfile [e.g c:\myFalcoxDump.txt]"
+            $GuidedMenuAnwserPidsAndFilters_outputfile = read-host "Outputfile [e.g c:\myFalcoxPids.txt]"
+    
+            if(!$GuidedMenuAnwserPidsAndFilters_inputfile){
+                Write-host "Plese enter Inputfile (dump)"
+                $GuidedMenuAnwserPidsAndFilters_inputfile = read-host "Inputfile [e.g c:\myFalcoxDump.txt]"
+            }
+            if(!$GuidedMenuAnwserPidsAndFilters_outputfile){
+                Write-host "Plese enter Inputfile (dump)"
+                $GuidedMenuAnwserPidsAndFilters_outputfile = read-host "Outputfile [e.g c:\myFalcoxPids.txt]"
+            }            
+            
+            Write-host "Inputfile: $GuidedMenuAnwserPidsAndFilters_inputfile"
+            Write-host "Outputfile: $GuidedMenuAnwserPidsAndFilters_outputfile"
+    
+            #Presets
+            FalcoXPresetLookup -OutputArrayName '$PresetArray' -inputfile "$($GuidedMenuAnwserPidsAndFilters_inputfile)" -Outputfile $($GuidedMenuAnwserPidsAndFilters_outputfile)
+            
+            write-host ""
+            $GuidedPressEnter = read-host "Press [Enter] to continue"
+            clear 
+            GuidedMenu       
+        }         
+        If($GuidedMenuAnwserPidsAndFilters -match "Q"){
+            clear 
+            GuidedMenu       
+        }     
+          
     }
 
     
@@ -1012,6 +1075,36 @@ function Set-FalcoXCOMPortWriteDump() {
     $port.Close()
     
 }
+
+########################
+
+#Export pids,filters and rates from dump
+function FalcoXPresetLookup{
+    param (
+        [parameter(Mandatory=$true)][string]$inputfile,
+        [parameter(Mandatory=$true)][string]$OutputArrayName,
+        [parameter(Mandatory=$true)][string]$Outputfile
+    )
+
+    $FalcoXPresetLookupArray = @("SET idle_percent","SET max_throttle","SET roll_p","SET roll_i","SET roll_d","SET pitch_p","SET pitch_i","SET pitch_d","SET yaw_p","SET yaw_i","SET yaw_d","SET level_kp","SET level_ki","SET level_angle","SET use_simmode","SET use_whisper","SET use_dyn_aa","SET aa_strength","SET d_term_aa_strength","SET p_curve0","SET p_curve1","SET p_curve2","SET p_curve3","SET p_curve4","SET p_curve5","SET p_curve6","SET p_curve7","SET p_curve8","SET p_curve9","SET p_curve10","SET i_curve0","SET i_curve1","SET i_curve2","SET i_curve3","SET i_curve4","SET i_curve5","SET i_curve6","SET i_curve7","SET i_curve8","SET i_curve9","SET i_curve10","SET d_curve0","SET d_curve1","SET d_curve2","SET d_curve3","SET d_curve4","SET d_curve5","SET d_curve6","SET d_curve7","SET d_curve8","SET d_curve9","SET d_curve10","SET cg_comp","SET sim_boost","SET smooth_stop","SET rc_smoothing_type","SET rc_smoothing_value","SET filt1_type","SET filt2_type","SET dfilt1_type","SET dfilt2_type","SET filt1_freq","SET filt2_freq","SET dfilt1_freq","SET dfilt2_freq","SET dyn_lpf_scale","SET pitch_rate1","SET roll_rate1","SET yaw_rate1","SET pitch_acrop1","SET roll_acrop1","SET yaw_acrop1","SET pitch_expo1","SET roll_expo1","SET yaw_expo1")
+
+    $FalcoXAttributeArrayString = "$($OutputArrayName)" + ' = @('
+    foreach($Attribute in $FalcoXPresetLookupArray){
+
+        $AttributeLine = Get-content "$($inputfile)" | select-string -pattern "$($Attribute)"
+        $FalcoXAttributeArrayString += "'$($AttributeLine)', "
+        #Textfile raw dump
+        $FalcoXAttributeDUMPString += '$($AttributeLine)'
+    }
+    #Remove last comma
+    $FalcoXAttributeArrayString = $FalcoXAttributeArrayString.Substring(0,$FalcoXAttributeArrayString.Length -2)
+    $FalcoXAttributeArrayString += ')'
+    $FalcoXAttributeArrayString | out-file "$($Outputfile)"
+    $FalcoXAttributeDUMPString | out-file "$($Outputfile).dump"
+}
+
+#FalcoXPresetLookup -OutputArrayName '$Kimpa' -inputfile "c:\Users\teel\Downloads\kwadskwad6spids.txt" -Outputfile
+
 
 
 ########################
