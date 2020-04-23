@@ -223,7 +223,8 @@ Function GuidedMenu(){
             }            
             
             Write-host "Inputfile: $GuidedMenuAnwserPidsAndFilters_inputfile"
-            Write-host "Outputfile: $GuidedMenuAnwserPidsAndFilters_outputfile"
+            Write-host "Outputfile with powershell array: $GuidedMenuAnwserPidsAndFilters_outputfile"
+            Write-host "Outputfile with only pids,filters and rates: $($GuidedMenuAnwserPidsAndFilters_outputfile).dump"
     
             #Presets
             FalcoXPresetLookup -OutputArrayName '$PresetArray' -inputfile "$($GuidedMenuAnwserPidsAndFilters_inputfile)" -Outputfile $($GuidedMenuAnwserPidsAndFilters_outputfile)
@@ -1089,12 +1090,13 @@ function FalcoXPresetLookup{
     $FalcoXPresetLookupArray = @("SET idle_percent","SET max_throttle","SET roll_p","SET roll_i","SET roll_d","SET pitch_p","SET pitch_i","SET pitch_d","SET yaw_p","SET yaw_i","SET yaw_d","SET level_kp","SET level_ki","SET level_angle","SET use_simmode","SET use_whisper","SET use_dyn_aa","SET aa_strength","SET d_term_aa_strength","SET p_curve0","SET p_curve1","SET p_curve2","SET p_curve3","SET p_curve4","SET p_curve5","SET p_curve6","SET p_curve7","SET p_curve8","SET p_curve9","SET p_curve10","SET i_curve0","SET i_curve1","SET i_curve2","SET i_curve3","SET i_curve4","SET i_curve5","SET i_curve6","SET i_curve7","SET i_curve8","SET i_curve9","SET i_curve10","SET d_curve0","SET d_curve1","SET d_curve2","SET d_curve3","SET d_curve4","SET d_curve5","SET d_curve6","SET d_curve7","SET d_curve8","SET d_curve9","SET d_curve10","SET cg_comp","SET sim_boost","SET smooth_stop","SET rc_smoothing_type","SET rc_smoothing_value","SET filt1_type","SET filt2_type","SET dfilt1_type","SET dfilt2_type","SET filt1_freq","SET filt2_freq","SET dfilt1_freq","SET dfilt2_freq","SET dyn_lpf_scale","SET pitch_rate1","SET roll_rate1","SET yaw_rate1","SET pitch_acrop1","SET roll_acrop1","SET yaw_acrop1","SET pitch_expo1","SET roll_expo1","SET yaw_expo1")
 
     $FalcoXAttributeArrayString = "$($OutputArrayName)" + ' = @('
+    $FalcoXAttributeDUMPString = @()
     foreach($Attribute in $FalcoXPresetLookupArray){
 
-        $AttributeLine = Get-content "$($inputfile)" | select-string -pattern "$($Attribute)"
+        $AttributeLine = Get-content "$($inputfile)" | select-string -pattern "$($Attribute)" | ?{$_ -match "$($Attribute)"} | select -first 1
         $FalcoXAttributeArrayString += "'$($AttributeLine)', "
         #Textfile raw dump
-        $FalcoXAttributeDUMPString += '$($AttributeLine)'
+        $FalcoXAttributeDUMPString += "$($AttributeLine)"
     }
     #Remove last comma
     $FalcoXAttributeArrayString = $FalcoXAttributeArrayString.Substring(0,$FalcoXAttributeArrayString.Length -2)
