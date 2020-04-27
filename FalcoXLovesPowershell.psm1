@@ -121,7 +121,7 @@ Function Get-FalcoXHelp {
 
 Function Get-FalcoXConfig {
     param (
-        [parameter(Mandatory=$true)][string]$comPort,
+        [parameter(Mandatory=$false)][string]$comPort,
         [int]$Waitms,
         [switch]$All,
         [switch]$VtxChannel,
@@ -135,6 +135,19 @@ Function Get-FalcoXConfig {
         [switch]$AllTable,
         [string]$Outputfile
     )
+
+    #Autodetect COM-port
+    if(!$comPort){
+        Write-Host "Autodetecting COM-port..."
+        $comPort = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*")}).DeviceID
+
+        if($comPort -match "com"){
+            Write-Host "Autodetecting COM-port...Found $comPort"
+        }else{
+            Write-Host "Autodetecting COM-port...FAILED, exiting"
+            break
+        }
+    }    
 
     #Always dump config
     $FalcoXOnlineDump = Get-FalcoXCOMPortDump -comPort $comPort
@@ -277,7 +290,7 @@ Function Get-FalcoXConfig {
 
 Function Set-FalcoXConfig {
     param (
-        [parameter(Mandatory=$true)][string]$comPort,
+        [parameter(Mandatory=$false)][string]$comPort,
         [parameter(Mandatory=$false)][string]$VtxChannel,
         [parameter(Mandatory=$false)][string]$PilotName,
         [parameter(Mandatory=$false)][array]$LedColor,
@@ -295,6 +308,19 @@ Function Set-FalcoXConfig {
         [parameter(Mandatory=$false)][switch]$Restore,
         [parameter(Mandatory=$false)][String]$RestoreFilePath
     )
+
+    #Autodetect COM-port
+    if(!$comPort){
+        Write-Host "Autodetecting COM-port..."
+        $comPort = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*")}).DeviceID
+
+        if($comPort -match "com"){
+            Write-Host "Autodetecting COM-port...Found $comPort"
+        }else{
+            Write-Host "Autodetecting COM-port...FAILED, exiting"
+            break
+        }
+    }    
 
     #Set "VTX Channel"
     If($VtxChannel){
@@ -412,9 +438,22 @@ Function Set-FalcoXConfig {
 
 function Export-FalcoXReportHtml {
     param (
-        [parameter(Mandatory=$true)][string]$comPort,
+        [parameter(Mandatory=$false)][string]$comPort,
         [string]$Outputfile = "C:\Users\$env:USERNAME\FalcoXReport_$(Get-Date -format 'yyyyMMdd_HHmmss').html"
     )
+
+    #Autodetect COM-port
+    if(!$comPort){
+        Write-Host "Autodetecting COM-port..."
+        $comPort = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*")}).DeviceID
+
+        if($comPort -match "com"){
+            Write-Host "Autodetecting COM-port...Found $comPort"
+        }else{
+            Write-Host "Autodetecting COM-port...FAILED, exiting"
+            break
+        }
+    }    
 
     #Always dump config
     $FalcoXOnlineDump = Get-FalcoXCOMPortDump -comPort $comPort
@@ -646,7 +685,7 @@ Function Get-FalcoXConfigLocal {
 
 Function Setup-FalcoX {
     param (
-        [parameter(Mandatory=$true)][string]$comPort,
+        [parameter(Mandatory=$false)][string]$comPort,
         [switch]$EnterDFU,
         [switch]$ResetConfig,
         [switch]$ResetWizard,
@@ -655,6 +694,19 @@ Function Setup-FalcoX {
         [string]$SetUART,
         [switch]$WizardCompleted
     )
+
+    #Autodetect COM-port
+    if(!$comPort){
+        Write-Host "Autodetecting COM-port..."
+        $comPort = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*")}).DeviceID
+
+        if($comPort -match "com"){
+            Write-Host "Autodetecting COM-port...Found $comPort"
+        }else{
+            Write-Host "Autodetecting COM-port...FAILED, exiting"
+            break
+        }
+    }    
 
     if($EnterDFU){
         Write-Host "Entering DFU mode"
