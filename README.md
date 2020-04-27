@@ -22,6 +22,12 @@ You should now have two zip-files on your Desktop that you need to extract "Falc
 iwr -Uri https://github.com/tedelm/PowershellFalcox/blob/master/FalcoXLovesPowerShell_for_n00bs/FalcoXLovesPowershell_for_n00bs.zip?raw=true -OutFile C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs.zip
 iwr -Uri https://github.com/tedelm/PowershellFalcox/blob/master/FalcoXLovesPowershell.zip?raw=true -OutFile C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowershell.zip
 ```
+</br></br>
+Or use http-links:</br>
+ * <a href='https://github.com/tedelm/PowershellFalcox/blob/master/FalcoXLovesPowershell.zip?raw=true' target='_BLANK'>FalcoXLovesPowerShell.zip</a></br>
+ * <a href='https://github.com/tedelm/PowershellFalcox/blob/master/FalcoXLovesPowerShell_for_n00bs/FalcoXLovesPowershell_for_n00bs.zip?raw=true' target='_BLANK'>FalcoXLovesPowerShell_for_n00bs.zip</a></br>
+ </br>
+ </br>
 
 
 ## PowerShellLovesFalcoX for n00bs
