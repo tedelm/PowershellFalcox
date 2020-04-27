@@ -1,5 +1,15 @@
 # PowershellLovesFalcox
-FalcoX Configurator PowerShell Module
+FalcoX Configurator PowerShell Module</br>
+</br>
+</br>
+Changelog:</br>
+    * Added Autodetect COM-port</br>
+    * Added Get-FalcoXHelp</br>
+</br></br>
+Changelog (for n00bs script):</br>
+    * Added Preset tunes and export tunes</br>
+    * Added Autodetect COM-port</br>
+</br></br></br>
 
 ## Installation/Download
 
