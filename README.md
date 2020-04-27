@@ -27,7 +27,11 @@ Or use http-links:</br>
  * <a href='https://github.com/tedelm/PowershellFalcox/blob/master/FalcoXLovesPowershell.zip?raw=true' target='_BLANK'>FalcoXLovesPowerShell.zip</a></br>
  * <a href='https://github.com/tedelm/PowershellFalcox/blob/master/FalcoXLovesPowerShell_for_n00bs/FalcoXLovesPowershell_for_n00bs.zip?raw=true' target='_BLANK'>FalcoXLovesPowerShell_for_n00bs.zip</a></br>
  </br>
+ Or use LTS version (Does not update that often, not really a LTS :D ):
+  * <a href='https://github.com/tedelm/PowershellFalcox/releases' target='_BLANK'>FalcoXLovesPowerShell Releases</a></br>
+
  </br>
+
 
 
 ## PowerShellLovesFalcoX for n00bs
