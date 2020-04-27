@@ -59,7 +59,7 @@ function FalcoXLoad(){
     Set-Location ~
 }
 
-#Load FalcoX script and create variables for path $FalcoXPath
+#Load FalcoX script and create variables for path $FalcoXPath and loads all functions
 FalcoXLoad -FalcoXLovesPowershellFolder "C:\Users\teel\Google Drive\Drone\FalcoXLovesPowershell"
 ```
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/powershellprofile_01.PNG'></br>
