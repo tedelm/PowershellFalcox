@@ -31,7 +31,7 @@ HTML Report:</br>
 ## Optional - Make Powershell load script on startup
 Open Powershell and write "notepad.exe $PROFILE", press [ENTER]</br>
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/powershellprofile_02.PNG'></br>
-Copy and paste all the lines below, remember to change "-FalcoXLovesPowershellFolder" to your folder.</br>
+Copy and paste all the lines below, remember to change "-FalcoXLovesPowershellFolder" to your folder. Save and restart Powershell.</br>
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/powershellprofile_01.PNG'></br>
 Copy this-></br>
 ```Powershell
