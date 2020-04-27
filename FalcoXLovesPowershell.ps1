@@ -55,6 +55,72 @@ Import-Module '.\vtxchannelmap.psm1' #Module for vtx channel mapping, Smart Audi
 ####
 ####
 
+
+Function Get-FalcoXHelp {
+    param (
+        [string]$Function
+    )
+
+  if(!$Function){
+    Write-Host " "
+    Write-Host "###  FalcoXHelp  ###"
+    Write-Host "Available functions:"
+    Write-Host " "
+    Write-Host "  Get-FalcoXConfig"
+    Write-Host "  Get-FalcoXConfigLocal"
+    Write-Host "  Set-FalcoXConfig"
+    Write-Host "  Setup-FalcoX"
+    Write-Host "  Export-FalcoXReportHtml"
+    Write-Host " "
+    Write-Host " Get-FalcoXHelp -Function 'function'"
+    Write-Host " e.g. Get-FalcoXHelp -Function 'Set-FalcoXConfig'"
+    Write-Host " "
+    Write-Host " "
+  }
+    switch ($Function) {
+        "Get-FalcoXConfig"  {"
+            Get-FalcoXConfig -comPort com7 -All
+
+            #Create backup
+            Get-FalcoXConfig -comPort COM7 -Dump -Outputfile .\MyFalcoXBackup.txt"}
+        "Get-FalcoXConfigLocal"   {"
+            Get-FalcoXConfigLocal -InputFile 'C:\MyFalcoXDump.txt' -PIDs -Filters -Rates -TPA -RawConfig"}
+        "Set-FalcoXConfig"   {"
+            #Set PIDs
+            Set-FalcoXConfig -comPort com7 -PIDroll 65,45,175 -PIDpitch 64,45,175 -PIDyaw 58,45,0
+
+            #Set Filter
+            Set-FalcoXConfig -comPort com7 -Filter1 'Frequency' -Filter2 'Dynamic' 
+            Set-FalcoXConfig -comPort com7 -Filter1Freq 240 -Filter2Freq 105 -DFilter1 'BiQuad' -DFilter2 'BiQuad' -DFilter1Freq 200 -DFilter2Freq 200
+
+            #Restore from backup
+            Set-FalcoXConfig -comPort COM7 -Restore -RestoreFilePath .\MyFalcoXBackup.txt"}
+        "Setup-FalcoX"   {"
+            #Reset all config
+            Setup-FalcoX -comPort com10 -ResetConfig
+
+            #Reset Wizard
+            Setup-FalcoX -comPort com10 -ResetWizard
+
+            #Set Wizard complete
+            Setup-FalcoX -comPort com10 -WizardCompleted
+
+            #Enter DFU/STM32 Bootloader mode
+            Setup-FalcoX -comPort com10 -EnterDFU
+
+            #Setting UARTS and Protocols 
+            #Setting CRSF on UART1
+            Setup-FalcoX -comPort com10 -SetUART 1 -SetUARTProtocol 2
+        "}
+        "Export-FalcoXReportHtml"   {"
+            #Export your configuration to html formated page
+            Export-FalcoXReportHtml -comPort com7"}             
+    }
+
+}
+
+
+
 Function Get-FalcoXConfig {
     param (
         [parameter(Mandatory=$true)][string]$comPort,

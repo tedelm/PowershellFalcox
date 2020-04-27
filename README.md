@@ -28,6 +28,19 @@ HTML Report:</br>
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/exportHtml_2.PNG'>
 </br></br>
 
+## Help! - FalcoXLovesPowershell help
+Import-Module .\FalcoXLovesPowershell.ps1</br>
+<img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/GetFalcoXHelp_01.PNG'></br>
+
+```Powershell
+#List all available functions
+Get-FalcoXHelp
+
+#Show examples
+Get-FalcoXHelp -Function "setup-falcox"
+
+```
+
 ## Optional - Make Powershell load script on startup
 Open Powershell and write "notepad.exe $PROFILE", press [ENTER]</br>
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/powershellprofile_02.PNG'></br>
