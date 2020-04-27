@@ -712,15 +712,15 @@ function Get-FalcoXRateCalc() {
 
 }
 
-#Export-ModuleMember -Function Get-FalcoXConfigLocal
-#Export-ModuleMember -Function Get-FalcoXConfig
-#Export-ModuleMember -Function Get-FalcoXRateCalc
-#Export-ModuleMember -Function Get-FalcoXDfiltStrength
-#Export-ModuleMember -Function Get-FalcoXEscProto
-#Export-ModuleMember -Function Set-FalcoXConfig
-#Export-ModuleMember -Function Export-FalcoXReportHtml
-#Export-ModuleMember -Function Setup-FalcoX
-#Export-ModuleMember -Function FilterNumb
-#Export-ModuleMember -Function Get-FilterNameTable
+Export-ModuleMember -Function Get-FalcoXConfigLocal
+Export-ModuleMember -Function Get-FalcoXConfig
+Export-ModuleMember -Function Get-FalcoXRateCalc
+Export-ModuleMember -Function Get-FalcoXDfiltStrength
+Export-ModuleMember -Function Get-FalcoXEscProto
+Export-ModuleMember -Function Set-FalcoXConfig
+Export-ModuleMember -Function Export-FalcoXReportHtml
+Export-ModuleMember -Function Setup-FalcoX
+Export-ModuleMember -Function FilterNumb
+Export-ModuleMember -Function Get-FilterNameTable
 
 

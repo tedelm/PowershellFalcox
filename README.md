@@ -39,7 +39,8 @@ Copy this-></br>
 function FalcoXLoad(){
     param (
         [parameter(Mandatory=$false)][string]$FalcoXLovesPowershellFolder = "C:\Users\teel\Google Drive\Drone\FalcoXLovesPowershell",
-        [parameter(Mandatory=$false)][string]$FalcoXLovesPowershellPS1 = "FalcoXLovesPowershell.ps1"
+        [parameter(Mandatory=$false)][string]$FalcoXLovesPowershellPS1 = "FalcoXLovesPowershell.ps1",
+        [parameter(Mandatory=$false)][string]$FalcoXLovesPowershellPSM1 = "FalcoXLovesPowershell.psm1"
     )
     
     $script:FalcoXLovesPowershellFolder = $FalcoXLovesPowershellFolder
@@ -47,10 +48,11 @@ function FalcoXLoad(){
 
     #Join path
     $FalcoXLovesPowershellFullPath = join-path "$($FalcoXLovesPowershellFolder)" "$($FalcoXLovesPowershellPS1)"
+    $FalcoXLovesPowershellFullPathPSM = join-path "$($FalcoXLovesPowershellFolder)" "$($FalcoXLovesPowershellPSM1)"
     #Change directory to allow modules to be imported
     Set-Location "$($FalcoXLovesPowershellFolder)"
     #Import modules
-    Import-Module "$($FalcoXLovesPowershellFullPath)"
+    Import-Module "$($FalcoXLovesPowershellFullPathPSM)" -Verbose
     #Set variable for FalcoXPath, to be used seperatly
     $script:FalcoXPath = "$($FalcoXLovesPowershellFolder)"
     #Go back to start directory
