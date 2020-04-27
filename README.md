@@ -3,6 +3,7 @@ FalcoX Configurator PowerShell Module
 
 ## Installation/Download
 
+Download 
 Open PowerShell.exe (start->run->type "powershell.exe"-> press "enter")</br>
 Paste the commands below into Powershell and press "enter"</br>
 You should now have two zip-files on your Desktop that you need to extract "FalcoXLovesPowershell.zip" and "FalcoXLovesPowerShell_for_n00bs"</br>
@@ -26,6 +27,40 @@ Presets and extract only PIDS,Filters and rates from your dump/backup
 HTML Report:</br>
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/exportHtml_2.PNG'>
 </br></br>
+
+## Optional - Make Powershell load script on startup
+Open Powershell and write "notepad.exe $PROFILE", press [ENTER]</br>
+Copy and paste all the lines below, remember to change "-FalcoXLovesPowershellFolder" to your folder.</br>
+<img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/powershellprofile_02.PNG'></br>
+<img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/powershellprofile_01.PNG'></br>
+</br>
+```Powershell
+##### Load FalcoX in powershell profile
+function FalcoXLoad(){
+    param (
+        [parameter(Mandatory=$false)][string]$FalcoXLovesPowershellFolder = "C:\Users\teel\Google Drive\Drone\FalcoXLovesPowershell",
+        [parameter(Mandatory=$false)][string]$FalcoXLovesPowershellPS1 = "FalcoXLovesPowershell.ps1"
+    )
+    
+    $script:FalcoXLovesPowershellFolder = $FalcoXLovesPowershellFolder
+    $script:FalcoXLovesPowershellPS1 = $FalcoXLovesPowershellPS1
+
+    #Join path
+    $FalcoXLovesPowershellFullPath = join-path "$($FalcoXLovesPowershellFolder)" "$($FalcoXLovesPowershellPS1)"
+    #Change directory to allow modules to be imported
+    Set-Location "$($FalcoXLovesPowershellFolder)"
+    #Import modules
+    Import-Module "$($FalcoXLovesPowershellFullPath)"
+    #Set variable for FalcoXPath, to be used seperatly
+    $script:FalcoXPath = "$($FalcoXLovesPowershellFolder)"
+    #Go back to start directory
+    Set-Location ~
+}
+
+#Load FalcoX script and create variables for path $FalcoXPath
+FalcoXLoad -FalcoXLovesPowershellFolder "C:\Users\teel\Google Drive\Drone\FalcoXLovesPowershell"
+```
+
 
 ## Online Usage (USB): "Setup" commands
 1. Open Powershell and navigate to your "FalcoXLovesPowershell" folder </br> e.g (without quotes) "cd C:\Users\\$env:username\Downloads\"

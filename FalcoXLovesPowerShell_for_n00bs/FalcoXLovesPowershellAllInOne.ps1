@@ -225,6 +225,7 @@ Function GuidedMenu(){
             Write-host "Inputfile: $GuidedMenuAnwserPidsAndFilters_inputfile"
             Write-host "Outputfile with powershell array: $GuidedMenuAnwserPidsAndFilters_outputfile"
             Write-host "Outputfile with only pids,filters and rates: $($GuidedMenuAnwserPidsAndFilters_outputfile).dump"
+            Write-host "Use restore function to import: $($GuidedMenuAnwserPidsAndFilters_outputfile).dump"
     
             #Presets
             FalcoXPresetLookup -OutputArrayName '$PresetArray' -inputfile "$($GuidedMenuAnwserPidsAndFilters_inputfile)" -Outputfile $($GuidedMenuAnwserPidsAndFilters_outputfile)
