@@ -85,7 +85,7 @@ function FalcoXLoad(){
     #Change directory to allow modules to be imported
     Set-Location "$($FalcoXLovesPowershellFolder)"
     #Import modules
-    Import-Module "$($FalcoXLovesPowershellFullPathPSM)" -Verbose
+    Import-Module "$($FalcoXLovesPowershellFullPathPSM)"
     #Set variable for FalcoXPath, to be used seperatly
     $script:FalcoXPath = "$($FalcoXLovesPowershellFolder)"
     #Go back to start directory
