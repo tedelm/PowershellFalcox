@@ -245,6 +245,7 @@ Function GuidedMenu(){
         Write-Host " ### Preset PID and Filters ###"
         Write-Host " [1] - Set MRTEEL 4s - Freestyle - PIDs and Filters"
         Write-Host " [2] - Set KIM 6s - Freestyle - PIDs and Filters"
+        Write-Host " [3] - Preset Tune Online Downloader"
         Write-Host " [C] - Create outputfile with only PIDs,Filters,Rates"
         Write-Host " [CC] - Create Online outputfile with only PIDs,Filters,Rates"
         Write-Host " [Q] - Main menu"
@@ -260,7 +261,7 @@ Function GuidedMenu(){
                 $ComportToUse = $MostLikelyCOMport
                 Write-host "Im guessing your FC is on: $ComportToUse"
             }else{
-                $ComportToUse = $GuidedMenuAnwser4
+                $ComportToUse = $GuidedMenuAnwserPidsAndFiltersPort_1
             }
             Write-host "Using $ComportToUse"
     
@@ -280,7 +281,7 @@ Function GuidedMenu(){
                 $ComportToUse = $MostLikelyCOMport
                 Write-host "Im guessing your FC is on: $ComportToUse"
             }else{
-                $ComportToUse = $GuidedMenuAnwser4
+                $ComportToUse = $GuidedMenuAnwserPidsAndFiltersPort_2
             }
             Write-host "Using $ComportToUse"
     
@@ -291,7 +292,58 @@ Function GuidedMenu(){
             $GuidedPressEnter = read-host "Press [Enter] to continue"
             clear 
             GuidedMenu       
+        }
+
+        If($GuidedMenuAnwserPidsAndFilters -eq 3){
+
+            clear
+            Write-Host " * Welcome to FalcoXLovesPowerShell * "
+            Write-Host " "
+            Write-Host " ### Preset PID and Filters Online ###"
+            Write-Host " [1] - Set MRTEEL 4s - Freestyle - PIDs and Filters"
+            Write-Host " [2] - Set KIM 6s - Freestyle - PIDs and Filters"
+            Write-Host " [Q] - Main menu"
+            Write-Host " "
+
+            $GuidedMenuAnwserPidsAndFilters_fetcher = read-host "Select a number [...]"
+            
+            switch ($GuidedMenuAnwserPidsAndFilters_fetcher){
+                1 { $FetchThisTune = '#MRTEEL' }
+                2 { $FetchThisTune = '#KIM' }
+                default { $FetchThisTune = '#DEFAULT' }
+            }
+
+            Write-Host "Downloading Preset Tune: $FetchThisTune"
+
+            If($GuidedMenuAnwserPidsAndFilters -match "Q"){
+                clear 
+                GuidedMenu       
+            } 
+
+            $GuidedMenuAnwserPidsAndFiltersPort = read-host "Select COM-port type e.g. 'COM7' or let me guess (default)"
+    
+            if(!$GuidedMenuAnwserPidsAndFiltersPort){
+                AutodetectFC
+                $ComportToUse = $MostLikelyCOMport
+                Write-host "Im guessing your FC is on: $ComportToUse"
+            }else{
+                $ComportToUse = $GuidedMenuAnwserPidsAndFiltersPort
+            }
+            Write-host "Using $ComportToUse"
+    
+            #Presets
+            $PresetTunes = (iwr -Uri https://raw.githubusercontent.com/tedelm/PowershellFalcox/master/PresetTunes/PresetTunes.txt)
+            $Tune = ($PresetTunes.content -split "#KIM")[1]
+            $Tune = $Tune -replace "'","" -replace " SET","SET"
+            $PresetArray = @()
+            $PresetArray += $Tune -split ","            
+    
+            Set-FalcoXCOMPortWriteLine -comPort $ComportToUse -inputString $PresetArray
+            $GuidedPressEnter = read-host "Press [Enter] to continue"
+            clear 
+            GuidedMenu       
         } 
+
         If($GuidedMenuAnwserPidsAndFilters -match "C"){
             $GuidedMenuAnwserPidsAndFilters_inputfile = read-host "Inputfile [e.g c:\myFalcoxDump.txt]"
             $GuidedMenuAnwserPidsAndFilters_outputfile = read-host "Outputfile [e.g c:\myFalcoxPids.txt]"
