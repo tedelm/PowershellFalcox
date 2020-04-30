@@ -58,22 +58,32 @@ Function GuidedMenu(){
     Write-Host " [2] - Restore from backup"
     Write-Host " [3] - View current config"
     Write-Host " [4] - Create HTML Report" 
-    Write-Host " [5] - Set CRSF on TX1 (10.0.6.xxxx or later)"
+    Write-Host " [5] - MISC Settings"
     Write-Host " [6] - Preset tunes - PIDs and Filters"
     Write-Host " [7] - Show connected COM-ports"
     Write-Host " "
 
+    #Read user input
     $GuidedMenuAnwser = read-host "Pick a number [1-7]"
 
-    $MostLikelyCOMport = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*")}).DeviceID
-
+    #Autodetect flightcontroller
+    function AutodetectFC() {
+        Write-Host "Autodetecting Flightcontroller..."
+        $script:MostLikelyCOMport = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*")}).DeviceID
+        If($MostLikelyCOMport){Write-Host "...Found $MostLikelyCOMport"}else{Write-Host "...No Flightcontroller found :("}
+        
+        $MostLikelyCOMport      
+    }
+    
 
     If($GuidedMenuAnwser -eq 1){
+
         $GuidedMenuAnwser1_1 = read-host "Select COM-port type e.g. 'COM7' or let me guess (default)"
         $GuidedMenuAnwser1_2 = read-host "Backup filename e.g. 'myFalcoXbackup.txt'"
         $GuidedMenuAnwser1_2 
 
         if(!$GuidedMenuAnwser1_1){
+            AutodetectFC
             $ComportToUse = $MostLikelyCOMport
             Write-host "Im guessing your FC is on: $ComportToUse"
         }else{
@@ -93,6 +103,7 @@ Function GuidedMenu(){
         $GuidedMenuAnwser2_2 = read-host "Restore filename e.g. 'myFalcoXbackup.txt'"
 
         if(!$GuidedMenuAnwser2_1){
+            AutodetectFC
             $ComportToUse = $MostLikelyCOMport
             Write-host "Im guessing your FC is on: $ComportToUse"
         }else{
@@ -111,6 +122,7 @@ Function GuidedMenu(){
         $GuidedMenuAnwser3_1 = read-host "Select COM-port type e.g. 'COM7' or let me guess (default)"
 
         if(!$GuidedMenuAnwser3_1){
+            AutodetectFC
             $ComportToUse = $MostLikelyCOMport
             Write-host "Im guessing your FC is on: $ComportToUse"
         }else{
@@ -128,6 +140,7 @@ Function GuidedMenu(){
         $GuidedMenuAnwser4 = read-host "Select COM-port type e.g. 'COM7' or let me guess (default)"
 
         if(!$GuidedMenuAnwser4){
+            AutodetectFC
             $ComportToUse = $MostLikelyCOMport
             Write-host "Im guessing your FC is on: $ComportToUse"
         }else{
@@ -141,19 +154,86 @@ Function GuidedMenu(){
         GuidedMenu       
     }
     If($GuidedMenuAnwser -eq 5){
-        $GuidedMenuAnwser4 = read-host "Select COM-port type e.g. 'COM7' or let me guess (default)"
 
-        if(!$GuidedMenuAnwser4){
-            $ComportToUse = $MostLikelyCOMport
-            Write-host "Im guessing your FC is on: $ComportToUse"
-        }else{
-            $ComportToUse = $GuidedMenuAnwser4
+        clear
+        Write-Host " * Welcome to FalcoXLovesPowerShell * "
+        Write-Host " "
+        Write-Host " ### Misc ###"
+        Write-Host " -- RX-settings --"
+        Write-Host " [1] - Set CRSF on TX1 (10.0.6.xxxx or later)"
+        Write-Host " [2] - Set FRSKY (INV_SBUS) on TX1 (10.0.6.xxxx or later)"
+        Write-Host " [3] - Set FRSKY (INV_FPORT) on TX1 (10.0.6.xxxx or later)"
+        Write-Host " [4] - Set DJI (DJI_SBUS) on TX1 (10.0.6.xxxx or later)"
+        Write-Host " [5] - Set FlySky (IBUS) on TX1 (10.0.6.xxxx or later)"
+        Write-Host " -- VTX-settings --"
+        Write-Host " [6] - Set SmartAudio on TX3 (10.0.6.xxxx or later)"
+        Write-Host " [7] - Set Tramp on TX3 (10.0.6.xxxx or later)"
+        Write-Host " [Q] - Main menu"
+        Write-Host " "
+
+
+        #Read user input
+        $GuidedMenuAnwser = read-host "Pick a number [1-7] or 'Q' for main menu"
+
+        if($GuidedMenuAnwser -notmatch "Q"){
+            $GuidedMenuAnwserB = read-host "Select COM-port type e.g. 'COM7' or let me guess (default)"
+
+            if(!$GuidedMenuAnwserB){
+                AutodetectFC
+                $ComportToUse = $MostLikelyCOMport
+                Write-host "Im guessing your FC is on: $ComportToUse"
+            }else{
+                $ComportToUse = $GuidedMenuAnwserB
+            }
+            Write-host "Using $ComportToUse"
         }
-        Write-host "Using $ComportToUse"
+
         
-        #Get-UARTMapping -protocol crsf
-        Setup-FalcoX -comPort $ComportToUse -SetUART 1 -SetUARTProtocol 2
-        $GuidedPressEnter = read-host "Press [Enter] to continue"
+        If($GuidedMenuAnwser -eq 1){
+            #Get-UARTMapping -protocol CRSF
+            Write-Host "Setting TX1 to CRSF"
+            Setup-FalcoX -comPort $ComportToUse -SetUART 1 -SetUARTProtocol $(Get-UARTMapping -protocol CRSF)
+            $GuidedPressEnter = read-host "Press [Enter] to continue"
+        }
+        If($GuidedMenuAnwser -eq 2){
+            #Get-UARTMapping -protocol INV_SBUS
+            Write-Host "Setting TX1 to INV_SBUS"
+            Setup-FalcoX -comPort $ComportToUse -SetUART 1 -SetUARTProtocol $(Get-UARTMapping -protocol INV_SBUS)
+            $GuidedPressEnter = read-host "Press [Enter] to continue"
+        }
+        If($GuidedMenuAnwser -eq 3){
+            #Get-UARTMapping -protocol INV_FPORT
+            Write-Host "Setting TX1 to INV_FPORT"
+            Setup-FalcoX -comPort $ComportToUse -SetUART 1 -SetUARTProtocol $(Get-UARTMapping -protocol INV_FPORT)
+            $GuidedPressEnter = read-host "Press [Enter] to continue"
+        }
+        If($GuidedMenuAnwser -eq 4){
+            #Get-UARTMapping -protocol DJI_SBUS
+            Write-Host "Setting TX1 to DJI_SBUS"
+            Setup-FalcoX -comPort $ComportToUse -SetUART 1 -SetUARTProtocol $(Get-UARTMapping -protocol DJI_SBUS)
+            $GuidedPressEnter = read-host "Press [Enter] to continue"
+        }
+        If($GuidedMenuAnwser -eq 5){
+            #Get-UARTMapping -protocol IBUS
+            Write-Host "Setting TX1 to IBUS"
+            Setup-FalcoX -comPort $ComportToUse -SetUART 1 -SetUARTProtocol $(Get-UARTMapping -protocol IBUS)
+            $GuidedPressEnter = read-host "Press [Enter] to continue"
+        }
+        If($GuidedMenuAnwser -eq 6){
+            #Get-UARTMapping -protocol SMART_AUDIO
+            Write-Host "Setting TX3 to SMART_AUDIO"
+            Setup-FalcoX -comPort $ComportToUse -SetUART 3 -SetUARTProtocol $(Get-UARTMapping -protocol SMART_AUDIO)
+            $GuidedPressEnter = read-host "Press [Enter] to continue"
+        }
+        If($GuidedMenuAnwser -eq 7){
+            #Get-UARTMapping -protocol TRAMP_TELEM
+            Write-Host "Setting TX3 to TRAMP_TELEM"
+            Setup-FalcoX -comPort $ComportToUse -SetUART 3 -SetUARTProtocol $(Get-UARTMapping -protocol TRAMP_TELEM)
+            $GuidedPressEnter = read-host "Press [Enter] to continue"
+        }
+
+        $GuidedMenuAnwser = $null
+        $GuidedMenuAnwserB = $null
         clear 
         GuidedMenu       
     }
@@ -166,6 +246,7 @@ Function GuidedMenu(){
         Write-Host " [1] - Set MRTEEL 4s - Freestyle - PIDs and Filters"
         Write-Host " [2] - Set KIM 6s - Freestyle - PIDs and Filters"
         Write-Host " [C] - Create outputfile with only PIDs,Filters,Rates"
+        Write-Host " [CC] - Create Online outputfile with only PIDs,Filters,Rates"
         Write-Host " [Q] - Main menu"
         Write-Host " "
     
@@ -175,6 +256,7 @@ Function GuidedMenu(){
             $GuidedMenuAnwserPidsAndFiltersPort_1 = read-host "Select COM-port type e.g. 'COM7' or let me guess (default)"
     
             if(!$GuidedMenuAnwserPidsAndFiltersPort_1){
+                AutodetectFC
                 $ComportToUse = $MostLikelyCOMport
                 Write-host "Im guessing your FC is on: $ComportToUse"
             }else{
@@ -194,6 +276,7 @@ Function GuidedMenu(){
             $GuidedMenuAnwserPidsAndFiltersPort_2 = read-host "Select COM-port type e.g. 'COM7' or let me guess (default)"
     
             if(!$GuidedMenuAnwserPidsAndFiltersPort_2){
+                AutodetectFC
                 $ComportToUse = $MostLikelyCOMport
                 Write-host "Im guessing your FC is on: $ComportToUse"
             }else{
@@ -234,7 +317,49 @@ Function GuidedMenu(){
             $GuidedPressEnter = read-host "Press [Enter] to continue"
             clear 
             GuidedMenu       
-        }         
+        }
+
+        If($GuidedMenuAnwserPidsAndFilters -match "CC"){
+
+            $GuidedMenuAnwserB = read-host "Select COM-port type e.g. 'COM7' or let me guess (default)"
+
+            if(!$GuidedMenuAnwserB){
+                AutodetectFC
+                $ComportToUse = $MostLikelyCOMport
+                Write-host "Im guessing your FC is on: $ComportToUse"
+            }else{
+                $ComportToUse = $GuidedMenuAnwserB
+            }
+            Write-host "Using $ComportToUse"
+
+            $randomDumpFile = "$(Get-Random)myFalcoxDump.txt"
+            Get-FalcoXConfig -comPort "$($ComportToUse)" -Dump -Outputfile "$($randomDumpFile)"
+
+            $GuidedMenuAnwserPidsAndFilters_inputfile = $randomDumpFile
+            $GuidedMenuAnwserPidsAndFilters_outputfile = read-host "Outputfile [e.g c:\myFalcoxPids.txt]"
+    
+            if(!$GuidedMenuAnwserPidsAndFilters_outputfile){
+                Write-host "Plese enter Inputfile (dump)"
+                $GuidedMenuAnwserPidsAndFilters_outputfile = read-host "Outputfile [e.g c:\myFalcoxPids.txt]"
+            }            
+            
+            Write-host "Inputfile: $GuidedMenuAnwserPidsAndFilters_inputfile"
+            Write-host "Outputfile with powershell array: $GuidedMenuAnwserPidsAndFilters_outputfile"
+            Write-host "Outputfile with only pids,filters and rates: $($GuidedMenuAnwserPidsAndFilters_outputfile).dump"
+            Write-host "Use restore function to import: $($GuidedMenuAnwserPidsAndFilters_outputfile).dump"
+    
+            #Presets
+            FalcoXPresetLookup -OutputArrayName '$PresetArray' -inputfile "$($GuidedMenuAnwserPidsAndFilters_inputfile)" -Outputfile $($GuidedMenuAnwserPidsAndFilters_outputfile)
+            
+            write-host ""
+            $GuidedPressEnter = read-host "Press [Enter] to continue"
+
+            $GuidedMenuAnwserB = $null
+
+            clear 
+            GuidedMenu       
+        }
+
         If($GuidedMenuAnwserPidsAndFilters -match "Q"){
             clear 
             GuidedMenu       
@@ -1271,8 +1396,13 @@ Function Get-UARTMapping($protocol){
      
     $UARTMapping
 }
-#Get-UARTMapping -protocol crsf
-
+#Get-UARTMapping -protocol CRSF
+#Get-UARTMapping -protocol INV_SBUS
+#Get-UARTMapping -protocol INV_FPORT
+#Get-UARTMapping -protocol DJI_SBUS
+#Get-UARTMapping -protocol IBUS
+#Get-UARTMapping -protocol SMART_AUDIO
+#Get-UARTMapping -protocol TRAMP_TELEM
 
 
 
