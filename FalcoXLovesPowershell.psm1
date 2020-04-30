@@ -743,6 +743,57 @@ Function Setup-FalcoX {
 
 #Setup-FalcoX -comPort com10 -SetUART 1 -SetUARTProtocol 2
 
+
+function Get-FalcoXOSD {
+    param (
+        [parameter(Mandatory=$false)][string]$comPort,
+        [switch]$OsdON,
+        [switch]$OsdOFF
+    )
+    clear
+    #Autodetect COM-port
+    if(!$comPort){
+        Write-Host "Autodetecting COM-port..."
+        $comPort = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*")}).DeviceID
+
+        if($comPort -match "com"){
+            Write-Host "Autodetecting COM-port...Found $comPort"
+        }else{
+            Write-Host "Autodetecting COM-port...FAILED, exiting"
+            break
+        }
+    }
+
+    if($OsdON){
+
+
+            while($OsdON){
+
+                $port= new-Object System.IO.Ports.SerialPort $comPort,115200,None,8,one
+                start-sleep -Milliseconds 200
+                $port.open()
+                $port.WriteLine("osdon")                  
+                    
+                start-sleep -Milliseconds 500       
+                $port.ReadExisting()
+                start-sleep -Seconds 1
+                $port.Close()
+                $port = $null
+                start-sleep -Seconds 1
+            }
+            
+        
+    }
+    if($OsdOFF){
+        Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "osdoff"
+
+    }
+}
+
+#Get-FalcoXOSD -OsdON
+
+
+
 ####
 ####
 # Secondary function for getting filter names
@@ -836,6 +887,7 @@ Export-ModuleMember -Function Get-FalcoXEscProto
 Export-ModuleMember -Function Set-FalcoXConfig
 Export-ModuleMember -Function Export-FalcoXReportHtml
 Export-ModuleMember -Function Setup-FalcoX
+Export-ModuleMember -Function Get-FalcoXOSD
 Export-ModuleMember -Function FilterNumb
 Export-ModuleMember -Function Get-FilterNameTable
 Export-ModuleMember -Function Get-FalcoXHelp

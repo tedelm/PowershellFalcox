@@ -745,6 +745,46 @@ Function Setup-FalcoX {
 
 #Setup-FalcoX -comPort com10 -SetUART 1 -SetUARTProtocol 2
 
+
+function Get-FalcoXOSD {
+    param (
+        [parameter(Mandatory=$false)][string]$comPort,
+        [switch]$OsdON,
+        [switch]$OsdOFF
+    )
+
+    #Autodetect COM-port
+    if(!$comPort){
+        Write-Host "Autodetecting COM-port..."
+        $comPort = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*")}).DeviceID
+
+        if($comPort -match "com"){
+            Write-Host "Autodetecting COM-port...Found $comPort"
+        }else{
+            Write-Host "Autodetecting COM-port...FAILED, exiting"
+            break
+        }
+    }
+
+    if($OsdON){
+        Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "OSDON"
+
+        While(1 -eq 1){
+            clear
+            Get-FalcoXCOMPortDump -comPort $comPort
+            start-sleep -Seconds 1
+        }
+    }
+    if($OsdOFF){
+        Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "OSDOFF"
+
+    }
+    
+    
+}
+
+#Get-FalcoXOSD -OsdON
+
 ####
 ####
 # Secondary function for getting filter names
