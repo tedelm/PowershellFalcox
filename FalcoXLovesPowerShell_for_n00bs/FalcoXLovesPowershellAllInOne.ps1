@@ -159,15 +159,17 @@ Function GuidedMenu(){
         Write-Host " * Welcome to FalcoXLovesPowerShell * "
         Write-Host " "
         Write-Host " ### Misc ###"
-        Write-Host " -- RX-settings --"
+        Write-Host " -- RX Settings --"
         Write-Host " [1] - Set CRSF on TX1 (10.0.6.xxxx or later)"
         Write-Host " [2] - Set FRSKY (INV_SBUS) on TX1 (10.0.6.xxxx or later)"
         Write-Host " [3] - Set FRSKY (INV_FPORT) on TX1 (10.0.6.xxxx or later)"
         Write-Host " [4] - Set DJI (DJI_SBUS) on TX1 (10.0.6.xxxx or later)"
         Write-Host " [5] - Set FlySky (IBUS) on TX1 (10.0.6.xxxx or later)"
-        Write-Host " -- VTX-settings --"
+        Write-Host " -- VTX Settings --"
         Write-Host " [6] - Set SmartAudio on TX3 (10.0.6.xxxx or later)"
         Write-Host " [7] - Set Tramp on TX3 (10.0.6.xxxx or later)"
+        Write-Host " -- System Settings --"
+        Write-Host " [RESET] - Reset Wizard"
         Write-Host " [Q] - Main menu"
         Write-Host " "
 
@@ -230,6 +232,23 @@ Function GuidedMenu(){
             Write-Host "Setting TX3 to TRAMP_TELEM"
             Setup-FalcoX -comPort $ComportToUse -SetUART 3 -SetUARTProtocol $(Get-UARTMapping -protocol TRAMP_TELEM)
             $GuidedPressEnter = read-host "Press [Enter] to continue"
+        }
+        If($GuidedMenuAnwser -match "RESET"){
+            #Reset Wizard
+            $GuidedYesNo = read-host "Reset Wizard/Configuration - Are you sure? [y/n]"
+            If($GuidedYesNo -match "Y"){
+                Setup-FalcoX -comPort $ComportToUse -ResetWizard
+            }else{
+                Write-Host "Task cancelled..."
+            }
+            
+            $GuidedPressEnter = read-host "Press [Enter] to continue"
+        }
+        If($GuidedMenuAnwser -match "Q"){
+            $GuidedMenuAnwser = $null
+            $GuidedMenuAnwserB = $null
+            clear 
+            GuidedMenu 
         }
 
         $GuidedMenuAnwser = $null
