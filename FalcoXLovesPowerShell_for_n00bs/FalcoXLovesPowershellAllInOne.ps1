@@ -315,29 +315,31 @@ Function GuidedMenu(){
 
         If($GuidedMenuAnwserPidsAndFilters -eq 3){
 
+            #Check online            
+            $PresetTunes = iwr -Uri https://raw.githubusercontent.com/tedelm/PowershellFalcox/master/PresetTunes/PresetTunes.json | ConvertFrom-Json
+            
             clear
             Write-Host " * Welcome to FalcoXLovesPowerShell * "
             Write-Host " "
             Write-Host " ### Preset PID and Filters Online ###"
-            Write-Host " [1] - Set MRTEEL 4s - Freestyle - PIDs and Filters"
-            Write-Host " [2] - Set KIM 6s - Freestyle - PIDs and Filters"
+            $i = 0
+            Foreach($PresetTune in $($PresetTunes.Tunes)){
+                Write-Host "[$i] - $($PresetTune.Tune)"
+                $i++
+            }
             Write-Host " [Q] - Main menu"
             Write-Host " "
 
             $GuidedMenuAnwserPidsAndFilters_fetcher = read-host "Select a number [...]"
-            
-            switch ($GuidedMenuAnwserPidsAndFilters_fetcher){
-                1 { $FetchThisTune = '#MRTEEL' }
-                2 { $FetchThisTune = '#KIM' }
-                default { $FetchThisTune = '#DEFAULT' }
-            }
-
             Write-Host "Downloading Preset Tune: $FetchThisTune"
+
+            $PresetArray = @()
+            $PresetArray = ($PresetTunes.Tunes[$GuidedMenuAnwserPidsAndFilters_fetcher]).Settings -split "--"
 
             If($GuidedMenuAnwserPidsAndFilters -match "Q"){
                 clear 
                 GuidedMenu       
-            } 
+            }
 
             $GuidedMenuAnwserPidsAndFiltersPort = read-host "Select COM-port type e.g. 'COM7' or let me guess (default)"
     
@@ -349,14 +351,7 @@ Function GuidedMenu(){
                 $ComportToUse = $GuidedMenuAnwserPidsAndFiltersPort
             }
             Write-host "Using $ComportToUse"
-    
-            #Presets
-            $PresetTunes = (iwr -Uri https://raw.githubusercontent.com/tedelm/PowershellFalcox/master/PresetTunes/PresetTunes.txt)
-            $Tune = ($PresetTunes.content -split "#KIM")[1]
-            $Tune = $Tune -replace "'","" -replace " SET","SET"
-            $PresetArray = @()
-            $PresetArray += $Tune -split ","            
-    
+               
             Set-FalcoXCOMPortWriteLine -comPort $ComportToUse -inputString $PresetArray
             $GuidedPressEnter = read-host "Press [Enter] to continue"
             clear 
