@@ -324,22 +324,21 @@ Function GuidedMenu(){
             Write-Host " ### Preset PID and Filters Online ###"
             $i = 0
             Foreach($PresetTune in $($PresetTunes.Tunes)){
-                Write-Host "[$i] - $($PresetTune.Tune)"
+                Write-Host " [$i] - $($PresetTune.Tune)"
                 $i++
             }
             Write-Host " [Q] - Main menu"
             Write-Host " "
 
             $GuidedMenuAnwserPidsAndFilters_fetcher = read-host "Select a number [...]"
-            Write-Host "Downloading Preset Tune: $FetchThisTune"
-
-            $PresetArray = @()
-            $PresetArray = ($PresetTunes.Tunes[$GuidedMenuAnwserPidsAndFilters_fetcher]).Settings -split "--"
-
-            If($GuidedMenuAnwserPidsAndFilters -match "Q"){
+            If($GuidedMenuAnwserPidsAndFilters_fetcher -match "Q"){
                 clear 
                 GuidedMenu       
             }
+
+            Write-Host "Downloading Preset Tune: $GuidedMenuAnwserPidsAndFilters_fetcher"
+            $PresetArray = @()
+            $PresetArray = ($PresetTunes.Tunes[$GuidedMenuAnwserPidsAndFilters_fetcher]).Settings -split "--"
 
             $GuidedMenuAnwserPidsAndFiltersPort = read-host "Select COM-port type e.g. 'COM7' or let me guess (default)"
     
