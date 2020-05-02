@@ -49,6 +49,38 @@ https://github.com/tedelm/PowershellFalcox
 # Main function for getting config from FC
 ####
 ####
+
+Function CheckForUpdates(){
+    param (
+        [parameter(Mandatory=$true)][int]$CurrentVersion
+    )
+
+    $configJSON = iwr -Uri https://raw.githubusercontent.com/tedelm/PowershellFalcox/master/misc/config.json | ConvertFrom-Json
+
+    $LatestVersion = $configJSON.PowershellLovesFalcox.Version | select -First 1
+    $LatestVersionChanges = $configJSON.PowershellLovesFalcox.News | select -First 1
+
+    If($LatestVersion -gt $CurrentVersion){
+        Write-Host "New Version Available - $LatestVersion"
+        Write-Host "Changes: "
+        Write-Host "$LatestVersionChanges"
+        $Download = Read-Host "Do you want to download? [y/n]"
+
+        If($Download -match "y"){
+            #Download FalcoXLovesPowerShell for n00bs
+            iwr -Uri https://github.com/tedelm/PowershellFalcox/blob/master/FalcoXLovesPowerShell_for_n00bs/FalcoXLovesPowershell_for_n00bs.zip?raw=true -OutFile "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs.zip"
+            #Unpack FalcoXLovesPowerShell for n00bs
+            Expand-Archive -LiteralPath "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs.zip" -DestinationPath "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs"
+            #Start FalcoXLovesPowerShell for n00bs
+            cd "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs"
+            start '.\Start FalcoXLovesPowerShell.cmd'
+        }
+    }
+}
+
+#Check for updates
+CheckForUpdates -CurrentVersion 3.0.0
+
 clear
 Function GuidedMenu(){
     clear
@@ -61,6 +93,7 @@ Function GuidedMenu(){
     Write-Host " [5] - MISC Settings"
     Write-Host " [6] - Preset tunes - PIDs and Filters"
     Write-Host " [7] - Show connected COM-ports"
+    Write-Host " [8] - Check for update"
     Write-Host " "
 
     #Read user input

@@ -49,6 +49,35 @@ Import-Module '.\comPort.psm1' #Module to read/write to comport
 Import-Module '.\vtxchannelmap.psm1' #Module for vtx channel mapping, Smart Audio/IRC Tramp
 
 
+Function CheckForUpdates(){
+    param (
+        [parameter(Mandatory=$true)][int]$CurrentVersion
+    )
+
+    $configJSON = iwr -Uri https://raw.githubusercontent.com/tedelm/PowershellFalcox/master/misc/config.json | ConvertFrom-Json
+
+    $LatestVersion = $configJSON.PowershellLovesFalcox.Version | select -First 1
+    $LatestVersionChanges = $configJSON.PowershellLovesFalcox.News | select -First 1
+
+    If($LatestVersion -gt $CurrentVersion){
+        Write-Host "New Version Available - $LatestVersion"
+        Write-Host "Changes: "
+        Write-Host "$LatestVersionChanges"
+        $Download = Read-Host "Do you want to download? [y/n]"
+
+        If($Download -match "y"){
+            #Download full
+            iwr -Uri https://github.com/tedelm/PowershellFalcox/blob/master/FalcoXLovesPowershell.zip?raw=true -OutFile "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowershell.zip"
+            #Unpack full
+            Expand-Archive -LiteralPath "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowershell.zip" -DestinationPath "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell"
+            explorer.exe "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell"
+        }
+    }
+}
+
+#Check for updates
+CheckForUpdates -CurrentVersion 3.0.0
+
 ####
 ####
 # Main function for getting config from FC
