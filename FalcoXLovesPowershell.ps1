@@ -51,7 +51,7 @@ Import-Module '.\vtxchannelmap.psm1' #Module for vtx channel mapping, Smart Audi
 
 Function CheckForUpdates(){
     param (
-        [parameter(Mandatory=$true)][int]$CurrentVersion
+        [parameter(Mandatory=$true)][version]$CurrentVersion
     )
 
     $configJSON = iwr -Uri https://raw.githubusercontent.com/tedelm/PowershellFalcox/master/misc/config.json | ConvertFrom-Json

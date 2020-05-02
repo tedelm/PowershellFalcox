@@ -52,7 +52,7 @@ https://github.com/tedelm/PowershellFalcox
 
 Function CheckForUpdates(){
     param (
-        [parameter(Mandatory=$true)][int]$CurrentVersion
+        [parameter(Mandatory=$true)][version]$CurrentVersion
     )
 
     $configJSON = iwr -Uri https://raw.githubusercontent.com/tedelm/PowershellFalcox/master/misc/config.json | ConvertFrom-Json
