@@ -48,6 +48,8 @@ https://github.com/tedelm/PowershellFalcox
 Import-Module '.\comPort.psm1' #Module to read/write to comport
 Import-Module '.\vtxchannelmap.psm1' #Module for vtx channel mapping, Smart Audio/IRC Tramp
 
+#Global variables
+$global:CurrentVersion = 3.1.0
 
 Function CheckForUpdates(){
     param (
@@ -69,14 +71,14 @@ Function CheckForUpdates(){
             #Download full
             iwr -Uri https://github.com/tedelm/PowershellFalcox/blob/master/FalcoXLovesPowershell.zip?raw=true -OutFile "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowershell.zip"
             #Unpack full
-            Expand-Archive -LiteralPath "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowershell.zip" -DestinationPath "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell"
+            Expand-Archive -LiteralPath "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowershell.zip" -DestinationPath "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell" -force
             explorer.exe "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell"
         }
     }
 }
 
 #Check for updates
-CheckForUpdates -CurrentVersion 3.0.0
+CheckForUpdates -CurrentVersion $CurrentVersion
 
 ####
 ####

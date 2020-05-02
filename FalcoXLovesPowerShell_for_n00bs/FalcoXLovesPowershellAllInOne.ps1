@@ -49,6 +49,7 @@ https://github.com/tedelm/PowershellFalcox
 # Main function for getting config from FC
 ####
 ####
+$global:CurrentVersion = 3.1.0
 
 Function CheckForUpdates(){
     param (
@@ -70,7 +71,7 @@ Function CheckForUpdates(){
             #Download FalcoXLovesPowerShell for n00bs
             iwr -Uri https://github.com/tedelm/PowershellFalcox/blob/master/FalcoXLovesPowerShell_for_n00bs/FalcoXLovesPowershell_for_n00bs.zip?raw=true -OutFile "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs.zip"
             #Unpack FalcoXLovesPowerShell for n00bs
-            Expand-Archive -LiteralPath "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs.zip" -DestinationPath "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs"
+            Expand-Archive -LiteralPath "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs.zip" -DestinationPath "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs" -force
             #Start FalcoXLovesPowerShell for n00bs
             cd "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs"
             start '.\Start FalcoXLovesPowerShell.cmd'
@@ -79,7 +80,8 @@ Function CheckForUpdates(){
 }
 
 #Check for updates
-CheckForUpdates -CurrentVersion 3.0.0
+CheckForUpdates -CurrentVersion $CurrentVersion
+
 
 clear
 Function GuidedMenu(){
@@ -473,7 +475,10 @@ Function GuidedMenu(){
         clear
         GuidedMenu
     }
-
+    If($GuidedMenuAnwser -eq 8){
+        #Check for updates
+        CheckForUpdates -CurrentVersion $CurrentVersion
+    }
     
 }
 
