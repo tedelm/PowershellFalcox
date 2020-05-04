@@ -61,6 +61,7 @@ Function CheckForUpdates(){
     $LatestVersionChanges = $configJSON.PowershellLovesFalcox.News | select -First 1
 
     If([version]$LatestVersion -gt $CurrentVersion){
+        Write-Host "Current version - $CurrentVersion"
         Write-Host "New Version Available - $LatestVersion"
         Write-Host "Changes: "
         Write-Host "$LatestVersionChanges"
@@ -73,6 +74,10 @@ Function CheckForUpdates(){
             Expand-Archive -LiteralPath "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowershell.zip" -DestinationPath "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell" -force
             explorer.exe "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell"
         }
+    }Else{
+        Write-Host "Current Version - $CurrentVersion"
+        Write-Host "Latest Available Version - $LatestVersion"
+
     }
 }
 

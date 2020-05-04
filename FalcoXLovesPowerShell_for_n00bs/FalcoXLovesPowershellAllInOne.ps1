@@ -63,6 +63,7 @@ Function CheckForUpdates(){
     $LatestVersionChanges = $configJSON.PowershellLovesFalcox.News | select -First 1
 
     If([version]$LatestVersion -gt $CurrentVersion){
+        Write-Host "Current version - $CurrentVersion"
         Write-Host "New Version Available - $LatestVersion"
         Write-Host "Changes: "
         Write-Host "$LatestVersionChanges"
@@ -77,6 +78,10 @@ Function CheckForUpdates(){
             cd "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs"
             start '.\Start FalcoXLovesPowerShell.cmd'
         }
+    }Else{
+        Write-Host "Current Version - $CurrentVersion"
+        Write-Host "Latest Available Version - $LatestVersion"
+
     }
 }
 
@@ -479,6 +484,8 @@ Function GuidedMenu(){
     If($GuidedMenuAnwser -eq 8){
         #Check for updates
         CheckForUpdates -CurrentVersion $CurrentVersion
+        clear 
+        GuidedMenu        
     }
     
 }
