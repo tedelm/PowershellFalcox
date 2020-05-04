@@ -50,7 +50,7 @@ https://github.com/tedelm/PowershellFalcox
 ####
 ####
 
-$CurrentVersion = "3.2.1"
+$CurrentVersion = "3.2.2"
 
 Function CheckForUpdates(){
     param (
@@ -93,6 +93,7 @@ clear
 Function GuidedMenu(){
     clear
     Write-Host " * Welcome to FalcoXLovesPowerShell * "
+    Write-Host "            v. $CurrentVersion "
     Write-Host " "
     Write-Host " [1] - Create backup"
     Write-Host " [2] - Restore from backup"

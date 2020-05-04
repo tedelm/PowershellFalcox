@@ -1,4 +1,5 @@
 {"PowershellLovesFalcox":[
+    {"Version":"3.2.2","News":"Minor changes"},
     {"Version":"3.2.1","News":"Added DFU function"},
     {"Version":"3.1.1","News":"Fixed auto update function"},
     {"Version":"3.1.0","News":"Auto update function, Autodetect Flightcontroller now more accurate"},
