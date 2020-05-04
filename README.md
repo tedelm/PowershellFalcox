@@ -53,7 +53,7 @@ Double click on "Start FalcoXLovesPowerShell.cmd"</br>
 Presets and extract only PIDS,Filters and rates from your dump/backup
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/n00bs003.PNG'></br>
 </br>
-How its updated (Auto update)
+How its updated (Auto update)</br>
 <img src='https://github.com/tedelm/PowershellFalcox/blob/master/img/n00bs004.PNG'></br>
 </br>
 Misc functions
