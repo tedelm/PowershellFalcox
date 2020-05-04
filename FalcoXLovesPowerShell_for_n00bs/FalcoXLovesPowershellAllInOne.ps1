@@ -50,7 +50,7 @@ https://github.com/tedelm/PowershellFalcox
 ####
 ####
 
-$CurrentVersion = "3.1.1"
+$CurrentVersion = "3.2.1"
 
 Function CheckForUpdates(){
     param (
@@ -210,6 +210,7 @@ Function GuidedMenu(){
         Write-Host " [6] - Set SmartAudio on TX3 (10.0.6.xxxx or later)"
         Write-Host " [7] - Set Tramp on TX3 (10.0.6.xxxx or later)"
         Write-Host " -- System Settings --"
+        Write-Host " [DFU] - Enter DFU"
         Write-Host " [RESET] - Reset Wizard"
         Write-Host " [Q] - Main menu"
         Write-Host " "
@@ -272,6 +273,17 @@ Function GuidedMenu(){
             #Get-UARTMapping -protocol TRAMP_TELEM
             Write-Host "Setting TX3 to TRAMP_TELEM"
             Setup-FalcoX -comPort $ComportToUse -SetUART 3 -SetUARTProtocol $(Get-UARTMapping -protocol TRAMP_TELEM)
+            $GuidedPressEnter = read-host "Press [Enter] to continue"
+        }
+        If($GuidedMenuAnwser -match "DFU"){
+            #Reset Wizard
+            $GuidedYesNo = read-host "Enter DFU mode - Are you sure? [y/n]"
+            If($GuidedYesNo -match "Y"){
+                Setup-FalcoX -comPort $ComportToUse -EnterDFU
+            }else{
+                Write-Host "Task cancelled..."
+            }
+            
             $GuidedPressEnter = read-host "Press [Enter] to continue"
         }
         If($GuidedMenuAnwser -match "RESET"){
@@ -929,6 +941,7 @@ function Export-FalcoXReportHtml {
 
     
 }
+
 
 Function Setup-FalcoX {
     param (
