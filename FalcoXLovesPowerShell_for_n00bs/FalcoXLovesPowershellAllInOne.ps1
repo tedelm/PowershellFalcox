@@ -49,7 +49,8 @@ https://github.com/tedelm/PowershellFalcox
 # Main function for getting config from FC
 ####
 ####
-$global:CurrentVersion = 3.1.0
+
+$CurrentVersion = "3.1.0"
 
 Function CheckForUpdates(){
     param (
@@ -61,7 +62,7 @@ Function CheckForUpdates(){
     $LatestVersion = $configJSON.PowershellLovesFalcox.Version | select -First 1
     $LatestVersionChanges = $configJSON.PowershellLovesFalcox.News | select -First 1
 
-    If($LatestVersion -gt $CurrentVersion){
+    If([version]$LatestVersion -gt $CurrentVersion){
         Write-Host "New Version Available - $LatestVersion"
         Write-Host "Changes: "
         Write-Host "$LatestVersionChanges"

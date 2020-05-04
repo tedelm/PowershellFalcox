@@ -48,8 +48,7 @@ https://github.com/tedelm/PowershellFalcox
 Import-Module '.\comPort.psm1' #Module to read/write to comport
 Import-Module '.\vtxchannelmap.psm1' #Module for vtx channel mapping, Smart Audio/IRC Tramp
 
-#Global variables
-$global:CurrentVersion = 3.1.0
+$CurrentVersion = "3.1.0"
 
 Function CheckForUpdates(){
     param (
@@ -61,7 +60,7 @@ Function CheckForUpdates(){
     $LatestVersion = $configJSON.PowershellLovesFalcox.Version | select -First 1
     $LatestVersionChanges = $configJSON.PowershellLovesFalcox.News | select -First 1
 
-    If($LatestVersion -gt $CurrentVersion){
+    If([version]$LatestVersion -gt $CurrentVersion){
         Write-Host "New Version Available - $LatestVersion"
         Write-Host "Changes: "
         Write-Host "$LatestVersionChanges"
