@@ -50,7 +50,7 @@ https://github.com/tedelm/PowershellFalcox
 ####
 ####
 
-$CurrentVersion = "3.1.0"
+$CurrentVersion = "3.1.1"
 
 Function CheckForUpdates(){
     param (
