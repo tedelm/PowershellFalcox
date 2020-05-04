@@ -7,6 +7,8 @@ Changelog:</br>
     * Added Get-FalcoXHelp</br>
 </br></br>
 Changelog (for n00bs script):</br>
+    * Added Auto update</br>
+    * Added Online tune downloader</br>
     * Added Preset tunes and export tunes</br>
     * Added Autodetect COM-port</br>
 </br></br></br>
