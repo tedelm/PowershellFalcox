@@ -105,7 +105,7 @@ Function GuidedMenu(){
     Write-Host " "
 
     #Read user input
-    $GuidedMenuAnwser = read-host "Pick a number [1-7]"
+    $GuidedMenuAnwser = read-host "Pick a number [1-8]"
 
     #Autodetect flightcontroller
     function AutodetectFC() {
