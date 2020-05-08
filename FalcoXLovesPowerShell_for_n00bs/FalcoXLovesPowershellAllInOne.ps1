@@ -52,6 +52,7 @@ https://github.com/tedelm/PowershellFalcox
 
 $CurrentVersion = "3.2.3"
 
+
 Function CheckForUpdates(){
     param (
         [parameter(Mandatory=$true)][version]$CurrentVersion
