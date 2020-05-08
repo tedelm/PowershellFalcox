@@ -63,7 +63,7 @@ Function CheckForUpdates(){
     $LatestVersion = $configJSON.PowershellLovesFalcox.Version | select -First 1
     $LatestVersionChanges = $configJSON.PowershellLovesFalcox.News | select -First 1
 
-    If([version]$LatestVersion -gt $CurrentVersion){
+    If([version]$LatestVersion -gt [version]$CurrentVersion){
         Write-Host "Current version - $CurrentVersion"
         Write-Host "New Version Available - $LatestVersion"
         Write-Host "Changes: "
@@ -71,8 +71,9 @@ Function CheckForUpdates(){
         $Download = Read-Host "Do you want to download? [y/n]"
 
         If($Download -match "y"){
+            
             #Download FalcoXLovesPowerShell for n00bs
-            iwr -Uri https://github.com/tedelm/PowershellFalcox/blob/master/FalcoXLovesPowerShell_for_n00bs/FalcoXLovesPowershell_for_n00bs.zip?raw=true -OutFile "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs.zip"
+            iwr -Uri https://github.com/tedelm/PowershellFalcox/blob/master/FalcoXLovesPowerShell_for_n00bs/FalcoXLovesPowershell_for_n00bs.zip?raw=true -OutFile "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs_$($CurrentVersion).zip"
             #Unpack FalcoXLovesPowerShell for n00bs
             Expand-Archive -LiteralPath "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs.zip" -DestinationPath "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs" -force
             #Start FalcoXLovesPowerShell for n00bs
