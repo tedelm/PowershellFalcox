@@ -50,7 +50,7 @@ https://github.com/tedelm/PowershellFalcox
 ####
 ####
 
-$CurrentVersion = "3.2.3"
+$CurrentVersion = "3.2.4"
 
 
 Function CheckForUpdates(){
@@ -212,6 +212,7 @@ Function GuidedMenu(){
         Write-Host " -- VTX Settings --"
         Write-Host " [6] - Set SmartAudio on TX3 (10.0.6.xxxx or later)"
         Write-Host " [7] - Set Tramp on TX3 (10.0.6.xxxx or later)"
+        Write-Host " -- ESC Settings --"
         Write-Host " [8] - Set ESC Telemetry (BLHELI_TELEM) on UART6 (10.0.6.xxxx or later)"
         Write-Host " -- System Settings --"
         Write-Host " [DFU] - Enter DFU"
