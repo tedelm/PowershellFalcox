@@ -73,9 +73,9 @@ Function CheckForUpdates(){
         If($Download -match "y"){
             
             #Download FalcoXLovesPowerShell for n00bs
-            iwr -Uri https://github.com/tedelm/PowershellFalcox/blob/master/FalcoXLovesPowerShell_for_n00bs/FalcoXLovesPowershell_for_n00bs.zip?raw=true -OutFile "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs_$($CurrentVersion).zip"
+            iwr -Uri https://github.com/tedelm/PowershellFalcox/blob/master/FalcoXLovesPowerShell_for_n00bs/FalcoXLovesPowershell_for_n00bs.zip?raw=true -OutFile "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs.zip"
             #Unpack FalcoXLovesPowerShell for n00bs
-            Expand-Archive -LiteralPath "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs_$($CurrentVersion).zip" -DestinationPath "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs" -force
+            Expand-Archive -LiteralPath "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs.zip" -DestinationPath "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs" -force
             #Start FalcoXLovesPowerShell for n00bs
             cd "C:\Users\$($env:USERNAME)\desktop\FalcoXLovesPowerShell_for_n00bs"
             start '.\Start FalcoXLovesPowerShell.cmd'
