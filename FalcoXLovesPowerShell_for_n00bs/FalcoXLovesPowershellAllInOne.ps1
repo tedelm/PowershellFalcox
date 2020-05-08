@@ -50,7 +50,7 @@ https://github.com/tedelm/PowershellFalcox
 ####
 ####
 
-$CurrentVersion = "3.2.2"
+$CurrentVersion = "3.2.3"
 
 Function CheckForUpdates(){
     param (
@@ -210,6 +210,7 @@ Function GuidedMenu(){
         Write-Host " -- VTX Settings --"
         Write-Host " [6] - Set SmartAudio on TX3 (10.0.6.xxxx or later)"
         Write-Host " [7] - Set Tramp on TX3 (10.0.6.xxxx or later)"
+        Write-Host " [8] - Set ESC Telemetry (BLHELI_TELEM) on UART6 (10.0.6.xxxx or later)"
         Write-Host " -- System Settings --"
         Write-Host " [DFU] - Enter DFU"
         Write-Host " [RESET] - Reset Wizard"
@@ -218,7 +219,7 @@ Function GuidedMenu(){
 
 
         #Read user input
-        $GuidedMenuAnwser = read-host "Pick a number [1-7] or 'Q' for main menu"
+        $GuidedMenuAnwser = read-host "Pick a number [1-8] or 'Q' for main menu"
 
         if($GuidedMenuAnwser -notmatch "Q"){
             $GuidedMenuAnwserB = read-host "Select COM-port type e.g. 'COM7' or let me guess (default)"
@@ -276,6 +277,12 @@ Function GuidedMenu(){
             Setup-FalcoX -comPort $ComportToUse -SetUART 3 -SetUARTProtocol $(Get-UARTMapping -protocol TRAMP_TELEM)
             $GuidedPressEnter = read-host "Press [Enter] to continue"
         }
+        If($GuidedMenuAnwser -eq 8){
+            #Get-UARTMapping -protocol BLHELI_TELEM
+            Write-Host "Setting UART6 to BLHELI_TELEM"
+            Setup-FalcoX -comPort $ComportToUse -SetUART 6 -SetUARTProtocol $(Get-UARTMapping -protocol BLHELI_TELEM)
+            $GuidedPressEnter = read-host "Press [Enter] to continue"
+        }        
         If($GuidedMenuAnwser -match "DFU"){
             #Reset Wizard
             $GuidedYesNo = read-host "Enter DFU mode - Are you sure? [y/n]"
