@@ -50,7 +50,7 @@ https://github.com/tedelm/PowershellFalcox
 ####
 ####
 
-$CurrentVersion = "3.2.6"
+$CurrentVersion = "3.2.7"
 
 
 Function CheckForUpdates(){
@@ -90,33 +90,8 @@ Function CheckForUpdates(){
 #Check for updates
 CheckForUpdates -CurrentVersion $CurrentVersion
 
-Function ShowUsage(){
-    clear
-    Write-Host " * Welcome to FalcoXLovesPowerShell * "
-    Write-Host " "
-    Write-Host " Is it ok if we know that you started the App (count useage)?"
-    Write-Host " "
-    Write-Host " [1] - Yeah, No problem, you can have my IP (only) "
-    Write-Host " [2] - Yeah, No problem, but you cannot have my IP-Address "
-    Write-Host " [Nooooo] - Nooooo, you cannot, the FAA is enough"
-    Write-Host " "
-
-    #Read user input
-    $CheckUsageMenu = read-host "Pick a number [1-2, or 'Nooooo']"
-
-    if($CheckUsageMenu -eq 1){
-        start https://softwaist.se/FalcoXLovesPowershell.php?Tell=yes
-    }
-    if($CheckUsageMenu -eq 2){
-        start https://softwaist.se/FalcoXLovesPowershell.php?Tell=no
-    }
-    if($CheckUsageMenu -match "Nooooo"){
-        $CheckUsageMenu_ = Read-Host "Ok, sorry to hear that, maybe I stop updating now.. :("
-    }
-    
-}
 #Show Usage
-ShowUsage
+iwr -Uri https://softwaist.se/FalcoXLovesPowershell.php?Tell=yes | Out-Null
 
 
 clear

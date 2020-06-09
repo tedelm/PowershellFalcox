@@ -1,4 +1,5 @@
 {"PowershellLovesFalcox":[
+    {"Version":"3.2.7","News":"Removed report menu"},
     {"Version":"3.2.6","News":"Added Missing Function"},
     {"Version":"3.2.5","News":"Added logging of useage"},
     {"Version":"3.2.4","News":"Added set BLHELI Telemetry"},
