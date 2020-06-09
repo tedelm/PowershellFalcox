@@ -50,7 +50,7 @@ https://github.com/tedelm/PowershellFalcox
 ####
 ####
 
-$CurrentVersion = "3.2.5"
+$CurrentVersion = "3.2.6"
 
 
 Function CheckForUpdates(){
@@ -1399,6 +1399,34 @@ function FalcoXPresetLookup{
 
 
 ########################
+
+function Set-FalcoXCOMPortFunctions(){
+    param (
+        [parameter(Mandatory=$true)][string]$comPort,
+        [string]$inputString,
+        [int]$Waitms
+    )
+
+    If(!$Waitms){$Waitms = 250}
+    $port = new-Object System.IO.Ports.SerialPort $comPort,115200,None,8,one
+    $port.Open()
+    start-sleep -Milliseconds 10
+    $port.WriteLine("$($inputString)")
+    start-sleep -Milliseconds $Waitms
+    #$Script:FalcoXDump = $port.ReadExisting()
+    start-sleep -Milliseconds 250
+    $port.Close()
+
+    #If(!$(($FalcoXDump -split "#")[1]) -match "OK"){
+    #    Write-Host -ForegroundColor red "! Error, try '-Waitms 3000' !"
+    #}
+    
+    #$FalcoXDump
+}
+#Get-FalcoXCOMPortFunctions -comPort COM7 -Waitms 3000 -inputString
+
+
+################
 
 Function Get-VTXChannelMapping($SmartAudio){
     switch ($SmartAudio)
