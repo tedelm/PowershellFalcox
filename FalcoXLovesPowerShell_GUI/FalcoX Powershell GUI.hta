@@ -1,0 +1,245 @@
+<html>
+<head>
+<title>FalcoX Powershell GUI </title>
+<HTA:APPLICATION 
+     APPLICATIONNAME="FalcoX Powershell GUI"
+     SCROLL="yes"
+     SINGLEINSTANCE="yes"
+     ICON="powershell.exe"
+     SCROLL="no"
+/>
+    <style>
+        body {
+            background-color: #ffffff;            
+        }       
+        .screen{
+        position: relative;
+        }
+        .topRight {
+        position: absolute;
+        z-index: 9;   
+        top: 5;
+        right: 5;
+        }    
+
+        .logo {
+        position: absolute;
+        width: 350px;
+        height: 250px;
+        z-index: -9;
+        background-image: url("bg.jpg");
+        background-color: #ffffff;
+        background-repeat: no-repeat;      
+        top: 5;
+        left: 5;
+        }
+        .menuLeft {
+        position: absolute;
+        width: 350px;
+        height: 150px;
+        z-index: 9;   
+        top: 210;
+        left: -200;
+        } 
+        .menuRight {
+        position: absolute;
+        width: 350px;
+        height: 150px;
+        z-index: 9;   
+        top: 210;
+        right: 150;
+        }               
+        
+        .innerdiv {
+        position: absolute;
+        bottom: 50;
+        left: -350;
+        }
+        .CustomButton {
+        box-shadow:inset 0px 1px 0px 0px #cf866c;
+        background:linear-gradient(to bottom, #d0451b 5%, #bc3315 100%);
+        background-color:#d0451b;
+        border-radius:3px;
+        border:1px solid #942911;
+        display:inline-block;
+        cursor:pointer;
+        color:#ffffff;
+        font-family:Arial;
+        font-size:12px;
+        
+        text-decoration:none;
+        text-shadow:0px 1px 0px #854629;
+        }
+        .CustomButton:hover {
+            background:linear-gradient(to bottom, #bc3315 5%, #d0451b 100%);
+            background-color:#bc3315;
+        }
+        .CustomButton:active {
+            position:relative;
+            top:1px;
+        }
+
+     
+
+    </style>
+</head>
+<script language="Javascript">
+    var proc; //global scope
+    function execWithStatus(cmdLine){//Can't run minimized with Exec. Can't capture StdOut/StdErr with Run. 
+        proc = new ActiveXObject("WScript.Shell").Exec(cmdLine);
+        setTimeout("writeOutLine()",1000);//pause for 100 ms to allow StdOut to stream some data 
+        proc.StdIn.Close();//must close input to complete a powershell command    
+    }
+    function writeOutLine(){
+        if(!proc.StdErr.AtEndOfStream) {txtResults.value += "ERROR: " + proc.StdErr.ReadAll() + "\n";}
+        if(!proc.StdOut.AtEndOfStream) {txtResults.value += proc.StdOut.ReadLine() + "\n";writeOutLine();} 
+    }
+    </script>
+
+<body>
+<div class="logo"></div>
+<div class="topRight">
+    <input type="Hidden" id=txtCmd1 value="powershell.exe -NoProfile -windowstyle hidden -ExecutionPolicy Bypass -file main.ps1 -HTALISTUSB"> 
+    <button class="CustomButton" onclick="execWithStatus(txtCmd1.value)">LIST CONNECTED FC</button>      
+    <input type="Hidden" id=txtCmd18 value="powershell.exe -NoProfile -windowstyle hidden -ExecutionPolicy Bypass -file main.ps1 -HTADFU"> 
+    <button class="CustomButton" onclick="execWithStatus(txtCmd18.value)">ENTER DFU</button>      
+</div>
+<div class="screen">
+
+    <center>
+
+    <h1>FalcoX Powershell GUI</h1>
+    <table border="0">
+        <th></th><th></th><th></th>
+        <tr>
+            <td>
+                <input type="Hidden" id=txtCmd2 value="powershell.exe -NoProfile -windowstyle hidden -ExecutionPolicy Bypass -file main.ps1 -HTAViewCurrentConfig"> 
+                <button class="CustomButton" onclick="execWithStatus(txtCmd2.value)">VIEW CURRENT CONFIG</button>
+            </td>
+            <td>
+                <input type="Hidden" id=txtCmd3 value="powershell.exe -NoProfile -windowstyle hidden -ExecutionPolicy Bypass -file main.ps1 -HTACreateHTMLReport"> 
+                <button class="CustomButton" onclick="execWithStatus(txtCmd3.value)">CREATE HTML REPORT</button>                
+            </td>        
+        </tr>
+
+    </table>
+
+    <h3>BACKUP / RESTORE</h3>
+    <table border="0">
+        <th></th><th></th><th></th>
+        <tr>
+            <td>
+                <input type="Hidden" id=txtCmd4 value="powershell.exe -NoProfile -windowstyle hidden -ExecutionPolicy Bypass -file main.ps1 -HTACreateBackup"> 
+                <button class="CustomButton" onclick="execWithStatus(txtCmd4.value)">BACKUP</button>
+            </td>
+
+            <td>
+                <input type="Hidden" id=txtCmd5 value="powershell.exe -NoProfile -windowstyle hidden -ExecutionPolicy Bypass -file main.ps1 -HTARestore"> 
+                <button class="CustomButton" onclick="execWithStatus(txtCmd5.value)">RESTORE</button>                
+            </td>
+            <td>
+                <input type="Hidden" id=txtCmd6 value="powershell.exe -NoProfile -windowstyle hidden -ExecutionPolicy Bypass -file main.ps1 -HTACreateBackupPIDSFiltersRates"> 
+                <button class="CustomButton" onclick="execWithStatus(txtCmd6.value)">BACKUP PIDs/Filters/Rates</button>                
+            </td>                  
+        </tr>
+    </table>
+    </center>
+
+    <div class="menuLeft">
+    <table border="0">
+    <h3>-- RX Settings --</h3>
+        <tr>
+            <td>
+                <input type="Hidden" id=txtCmd7 value="powershell.exe -NoProfile -ExecutionPolicy Bypass -file main.ps1 -HTARxCRSF_TX1"> 
+                <button class="CustomButton" onclick="execWithStatus(txtCmd7.value)">SET CRSF on TX1</button>
+            </td>
+        </tr><tr>
+            <td>
+                <input type="Hidden" id=txtCmd8 value="powershell.exe -NoProfile -ExecutionPolicy Bypass -file main.ps1 -HTARxFRSKY_INV_SBUS_TX1"> 
+                <button class="CustomButton" onclick="execWithStatus(txtCmd8.value)">SET FRSKY (INV_SBUS) on TX1</button>                
+            </td>
+        </tr><tr>
+            <td>
+                <input type="Hidden" id=txtCmd9 value="powershell.exe -NoProfile -ExecutionPolicy Bypass -file main.ps1 -HTARxFRSKY_INV_FPORT_TX1"> 
+                <button class="CustomButton" onclick="execWithStatus(txtCmd9.value)">SET FRSKY (INV_FPORT) on TX1</button>                
+            </td>
+        </tr><tr>
+            <td>
+                <input type="Hidden" id=txtCmd10 value="powershell.exe -NoProfile -ExecutionPolicy Bypass -file main.ps1 -HTARxDJI_SBUS_TX1"> 
+                <button class="CustomButton" onclick="execWithStatus(txtCmd10.value)">SET DJI (DJI_SBUS) on TX1</button>                
+            </td>
+        </tr><tr>
+            <td>
+                <input type="Hidden" id=txtCmd11 value="powershell.exe -NoProfile -ExecutionPolicy Bypass -file main.ps1 -HTARxFLYSKY_IBUS_TX1"> 
+                <button class="CustomButton" onclick="execWithStatus(txtCmd11.value)">SET FlySky (IBUS) on TX1</button>                
+            </td>                        
+        </tr>
+    </table>  
+    
+    <h3>-- VTX Settings --</h3>
+    <table border="0">
+        <tr>
+            <td>
+                <input type="Hidden" id=txtCmd12 value="powershell.exe -NoProfile -ExecutionPolicy Bypass -file main.ps1 -HTAVTX_SA_TX3"> 
+                <button class="CustomButton" onclick="execWithStatus(txtCmd12.value)">Set SmartAudio on TX3</button>
+            </td>
+            <td>
+                <input type="Hidden" id=txtCmd13 value="powershell.exe -NoProfile -ExecutionPolicy Bypass -file main.ps1 -HTAVTX_TRAMP_TX3"> 
+                <button class="CustomButton" onclick="execWithStatus(txtCmd13.value)">Set Tramp on TX3</button>                
+            </td>                      
+        </tr>
+    </table>
+    </div>
+    <div class="menuRight">
+    <h3>-- ESC Settings --</h3>
+    <table border="0">
+        <th></th><th></th><th></th>
+        <tr>
+            <td>
+                <input type="Hidden" id=txtCmd14 value="powershell.exe -NoProfile -ExecutionPolicy Bypass -file main.ps1 -HTAESC_TELEM_UART6"> 
+                <button class="CustomButton" onclick="execWithStatus(txtCmd14.value)">Set ESC Telemetry (BLHELI_TELEM) on UART6</button>
+            </td>                    
+        </tr>
+    </table>      
+    
+    <h3>-PRESET TUNES-</h3>
+    <table border="0">
+        <th></th><th></th><th></th>
+        <tr>
+            <td>
+                <input type="Hidden" id=txtCmd15 value="powershell.exe -NoProfile -ExecutionPolicy Bypass -file main.ps1 -HTATUNE_MRTEEL_FS_6S"> 
+                <button class="CustomButton" onclick="execWithStatus(txtCmd15.value)">MRTEEL FS (6s)</button>
+            </td>
+            <td>
+                <input type="Hidden" id=txtCmd16 value="powershell.exe -NoProfile -ExecutionPolicy Bypass -file main.ps1 -HTATUNE_MRTEEL_FS_6S"> 
+                <button class="CustomButton" onclick="execWithStatus(txtCmd16.value)">MRTEEL RACE (6s)</button>                
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="Hidden" id=txtCmd17 value="powershell.exe -NoProfile -ExecutionPolicy Bypass -file main.ps1 -HTATUNE_MRTEEL_FS_6S"> 
+                <button class="CustomButton" onclick="execWithStatus(txtCmd17.value)">KIM FS (6s)</button>                
+            </td>
+        </tr>
+
+    </table>    
+</div>
+    
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+
+<div class="innerdiv">
+    <textarea id=txtResults style="width:80%" rows=10></textarea> 
+</div>    
+    
+
+
+</div>
+</body>
+
+</html>
