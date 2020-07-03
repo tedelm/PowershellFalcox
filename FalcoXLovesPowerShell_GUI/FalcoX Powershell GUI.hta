@@ -90,7 +90,7 @@
     window.onload = function getFC() {
         proc2 = new ActiveXObject("WScript.Shell").Exec("powershell.exe -NoProfile -windowstyle hidden -ExecutionPolicy Bypass -file main.ps1 -HTAAutodetectFC");
         setTimeout("writeOutLineFC()",1000);//pause for 100 ms to allow StdOut to stream some data 
-        proc2.StdIn.Close();//must close input to complete a powershell command         
+        proc2.StdIn.Close();//must close input to complete a powershell command     
     }
     function writeOutLineFC(){
         if(!proc2.StdErr.AtEndOfStream) {txtResultsFC.value += "ERROR: " + proc2.StdErr.ReadAll() + "\n";}
@@ -151,8 +151,12 @@
             </td>
             <td>
                 <input type="Hidden" id=txtCmd6 value="powershell.exe -NoProfile -windowstyle hidden -ExecutionPolicy Bypass -file main.ps1 -HTACreateBackupPIDSFiltersRates"> 
-                <button class="CustomButton" onclick="execWithStatus(txtCmd6.value)">BACKUP PIDs/Filters/Rates</button>                
-            </td>                  
+                <button class="CustomButton" onclick="execWithStatus(txtCmd6.value)">BACKUP:PIDs/Filters/Rates (Online)</button>                
+            </td>
+            <td>
+                <input type="Hidden" id=txtCmd19 value="powershell.exe -NoProfile -windowstyle hidden -ExecutionPolicy Bypass -file main.ps1 -HTACreateBackupPIDSFiltersRatesOffline"> 
+                <button class="CustomButton" onclick="execWithStatus(txtCmd19.value)">BACKUP:PIDs/Filters/Rates (Offline)</button>                
+            </td>                          
         </tr>
     </table>
     </center>
@@ -246,7 +250,7 @@
 </br>
 
 <div class="innerdiv">
-    <textarea id=txtResultsFC style="width:80%" rows=2></textarea> 
+    <textarea id=txtResultsFC style="width:80%" rows=2>Welcome! ...Searching for your flightcontroller...</textarea> 
     <textarea id=txtResults style="width:80%" rows=10></textarea> 
 </div>    
     
