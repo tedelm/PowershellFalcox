@@ -57,7 +57,8 @@ param (
     [Parameter()][Switch]$HTATUNE_MRTEEL_FS_6S,
     [Parameter()][Switch]$HTATUNE_KIM_FS_6S,
     [Parameter()][Switch]$HTATUNE_MRTEEL_RACE_6S,
-    [Parameter()][Switch]$HTALISTUSB    
+    [Parameter()][Switch]$HTALISTUSB,
+    [Parameter()][Switch]$HTAAutodetectFC
 )
 
 ####
@@ -120,7 +121,8 @@ function AutodetectFC() {
         
     $Script:MostLikelyCOMport      
 }
-AutodetectFC
+
+
 
 #FUNCTIONS
 
@@ -1272,7 +1274,10 @@ If($HTALISTUSB){
     #####
     write-host "Comming soon"
    }
-
+If($HTAAutodetectFC){
+    AutodetectFC
+}
+   
 
 
 ##### /SWITCH MENU #####

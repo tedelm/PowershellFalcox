@@ -85,6 +85,17 @@
 </head>
 <script language="Javascript">
     var proc; //global scope
+    var proc2; //global scope
+
+    window.onload = function getFC() {
+        proc2 = new ActiveXObject("WScript.Shell").Exec("powershell.exe -NoProfile -windowstyle hidden -ExecutionPolicy Bypass -file main.ps1 -HTAAutodetectFC");
+        setTimeout("writeOutLineFC()",1000);//pause for 100 ms to allow StdOut to stream some data 
+        proc2.StdIn.Close();//must close input to complete a powershell command         
+    }
+    function writeOutLineFC(){
+        if(!proc2.StdErr.AtEndOfStream) {txtResultsFC.value += "ERROR: " + proc2.StdErr.ReadAll() + "\n";}
+        if(!proc2.StdOut.AtEndOfStream) {txtResultsFC.value += proc2.StdOut.ReadLine() + "\n";writeOutLineFC();} 
+    } 
     function execWithStatus(cmdLine){//Can't run minimized with Exec. Can't capture StdOut/StdErr with Run. 
         proc = new ActiveXObject("WScript.Shell").Exec(cmdLine);
         setTimeout("writeOutLine()",1000);//pause for 100 ms to allow StdOut to stream some data 
@@ -94,6 +105,7 @@
         if(!proc.StdErr.AtEndOfStream) {txtResults.value += "ERROR: " + proc.StdErr.ReadAll() + "\n";}
         if(!proc.StdOut.AtEndOfStream) {txtResults.value += proc.StdOut.ReadLine() + "\n";writeOutLine();} 
     }
+   
     </script>
 
 <body>
@@ -234,6 +246,7 @@
 </br>
 
 <div class="innerdiv">
+    <textarea id=txtResultsFC style="width:80%" rows=2></textarea> 
     <textarea id=txtResults style="width:80%" rows=10></textarea> 
 </div>    
     
