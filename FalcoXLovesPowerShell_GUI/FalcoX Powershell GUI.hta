@@ -111,6 +111,8 @@
 <body>
 <div class="logo"></div>
 <div class="topRight">
+    <input type="Hidden" id=txtCmd20 value="powershell.exe -NoProfile -windowstyle hidden -ExecutionPolicy Bypass -file main.ps1 -HTARESCAN"> 
+    <button class="CustomButton" onclick="execWithStatus(txtCmd20.value)">RESCAN</button>      
     <input type="Hidden" id=txtCmd1 value="powershell.exe -NoProfile -windowstyle hidden -ExecutionPolicy Bypass -file main.ps1 -HTALISTUSB"> 
     <button class="CustomButton" onclick="execWithStatus(txtCmd1.value)">LIST CONNECTED FC</button>      
     <input type="Hidden" id=txtCmd18 value="powershell.exe -NoProfile -windowstyle hidden -ExecutionPolicy Bypass -file main.ps1 -HTADFU"> 
@@ -250,7 +252,9 @@
 </br>
 
 <div class="innerdiv">
-    <textarea id=txtResultsFC style="width:80%" rows=2>Welcome! ...Searching for your flightcontroller...</textarea> 
+<textarea id=txtResultsFC style="width:80%" rows=3>########################### Welcome! ###########################
+Please use "rescan" if switching between FlightControllers ...Searching for your flightcontroller...
+</textarea> 
     <textarea id=txtResults style="width:80%" rows=10></textarea> 
 </div>    
     

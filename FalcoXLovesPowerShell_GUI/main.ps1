@@ -55,6 +55,7 @@ param (
     [Parameter()][Switch]$HTAVTX_SA_TX3,
     [Parameter()][Switch]$HTAVTX_TRAMP_TX3,
     [Parameter()][Switch]$HTADFU,
+    [Parameter()][Switch]$HTARESCAN,
     [Parameter()][Switch]$HTATUNE_MRTEEL_FS_6S,
     [Parameter()][Switch]$HTATUNE_KIM_FS_6S,
     [Parameter()][Switch]$HTATUNE_MRTEEL_RACE_6S,
@@ -116,11 +117,44 @@ Function CheckForUpdates(){
 
 #Autodetect flightcontroller
 function AutodetectFC() {
-    Write-Host "Autodetecting Flightcontroller..."
-    $script:MostLikelyCOMport = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*")}).DeviceID
-    If($MostLikelyCOMport){Write-Host "$MostLikelyCOMport"}else{Write-Host "...No Flightcontroller found :("}
-        
-    $Script:MostLikelyCOMport      
+    param (
+        [parameter(Mandatory=$false)][switch]$Rescan
+    )
+
+    $DateTime = Get-Date -format yyyyMMddHHmmss
+    $AutodetectDump = $($env:TEMP) + "\FalcoXAutoDetectTempDump.txt"
+
+    if($Rescan){
+        Remove-Item $AutodetectDump -force
+        Write-Host "Searching for flightcontroller..."
+    }    
+
+    If(Test-Path $AutodetectDump){
+        $ContentOfAutodetectDump = $(Get-Content $AutodetectDump) -split ";"
+        $AutodetectLast = $ContentOfAutodetectDump[0]
+        $AutodetectLastFC = $ContentOfAutodetectDump[1]
+
+        $AutodetectLastDiff = [bigint]$AutodetectLast + 5000
+        If($AutodetectLastDiff -lt [bigint]$DateTime){
+            $script:MostLikelyCOMport = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*")}).DeviceID
+            If(!$MostLikelyCOMport){Write-Host "...No Flightcontroller found :("}
+                
+            "$DateTime;$MostLikelyCOMport" | Out-File $AutodetectDump -force
+        }else{
+
+            $script:MostLikelyCOMport = $AutodetectLastFC
+            #$MostLikelyCOMport
+        }
+
+    }else{
+        $script:MostLikelyCOMport = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*")}).DeviceID
+        If(!$MostLikelyCOMport){Write-Host "...No Flightcontroller found :("}
+            
+        "$DateTime;$MostLikelyCOMport" | Out-File $AutodetectDump -force
+        #$MostLikelyCOMport
+    }
+    #Write-Host $MostLikelyCOMport
+    
 }
 
 
@@ -1346,6 +1380,12 @@ If($HTADFU){
     #Reset Wizard
     Setup-FalcoX -comPort $MostLikelyCOMport -EnterDFU
 }
+If($HTARESCAN){
+    AutodetectFC -Rescan
+    if($MostLikelyCOMport){
+        Write-Host "Found:$MostLikelyCOMport"
+    }    
+}
 If($HTATUNE_MRTEEL_FS_6S){
     $PresetArray = @("SET deadband=0.014","SET esc_protocol=2","SET idle_percent=6","SET max_throttle=100","SET roll_p=65","SET roll_i=45","SET roll_d=314","SET pitch_p=68","SET pitch_i=45","SET pitch_d=345","SET yaw_p=65","SET yaw_i=45","SET yaw_d=116","SET level_kp=50","SET level_ki=40","SET level_angle=35","SET use_simmode=1","SET use_whisper=1","SET use_dyn_aa=0","SET aa_strength=0","SET d_term_aa_strength=0","SET p_curve0=105.000","SET p_curve1=95.000","SET p_curve2=85.000","SET p_curve3=80.000","SET p_curve4=80.000","SET p_curve5=75.000","SET p_curve6=65.000","SET p_curve7=55.000","SET p_curve8=55.000","SET p_curve9=55.000","SET p_curve10=55.000","SET i_curve0=100.000","SET i_curve1=100.000","SET i_curve2=100.000","SET i_curve3=100.000","SET i_curve4=100.000","SET i_curve5=100.000","SET i_curve6=100.000","SET i_curve7=100.000","SET i_curve8=100.000","SET i_curve9=100.000","SET i_curve10=100.000","SET d_curve0=100.000","SET d_curve1=92.000","SET d_curve2=90.000","SET d_curve3=80.000","SET d_curve4=80.000","SET d_curve5=75.000","SET d_curve6=65.000","SET d_curve7=55.000","SET d_curve8=55.000","SET d_curve9=55.000","SET d_curve10=55.000","SET cg_comp=0.907","SET sim_boost=1.200","SET smooth_stop=0","SET rc_smoothing_type=2","SET rc_smoothing_value=0.250","SET filt1_type=2","SET filt2_type=2","SET dfilt1_type=1","SET dfilt2_type=1","SET filt1_freq=240","SET filt2_freq=105","SET dfilt1_freq=180","SET dfilt2_freq=95","SET dyn_lpf_scale=80","SET pitch_rate1=200.000","SET roll_rate1=200.000","SET yaw_rate1=200.000","SET pitch_acrop1=1.906","SET roll_acrop1=1.906","SET yaw_acrop1=1.807","SET pitch_expo1=0.648","SET roll_expo1=0.648","SET yaw_expo1=0.647")
     Set-FalcoXCOMPortWriteLine -comPort $MostLikelyCOMport -inputString $PresetArray
@@ -1363,7 +1403,11 @@ If($HTALISTUSB){
     write-host "Comming soon"
    }
 If($HTAAutodetectFC){
-    AutodetectFC
+    #AutodetectFC
+    if($MostLikelyCOMport){
+        Write-Host "Found:$MostLikelyCOMport"
+    }
+    
 }
    
 
