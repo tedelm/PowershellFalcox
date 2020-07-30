@@ -46,6 +46,7 @@ param (
     [Parameter()][Switch]$HTARestore,
     [Parameter()][Switch]$HTACreateBackupPIDSFiltersRates,
     [Parameter()][Switch]$HTACreateBackupPIDSFiltersRatesOffline,
+    [Parameter()][Switch]$HTAResetRX,
     [Parameter()][Switch]$HTARxCRSF_TX1,
     [Parameter()][Switch]$HTARxFRSKY_INV_SBUS_TX1,
     [Parameter()][Switch]$HTARxFRSKY_INV_FPORT_TX1,
@@ -626,6 +627,10 @@ Function Setup-FalcoX {
         Write-Host "Resetting Wizard"
         Set-FalcoXCOMPortFunctions -comPort $comPort -inputString "RESET_WIZARD"
         Set-FalcoXCOMPortWriteLine -comPort $comPort -inputString "SET wizard_flags=0"
+    }
+    if($ResetRadio){
+        Write-Host "Resetting Radio Wizard"
+        Set-FalcoXCOMPortFunctions -comPort $comPort -inputString "RESET_WIZARD RADIO"
     }        
     if($WizardCompleted){
         Write-Host "Setting Wizard Completed"
@@ -1334,7 +1339,12 @@ if($HTACreateHTMLReport){
     $Outputfilepath = $DesktopFolder + "\MyFalcoXHTMLReport.html"
     Export-FalcoXReportHtml -comPort "$($MostLikelyCOMport)" -Outputfile "$($Outputfilepath)"
 }
-        
+  
+If($HTAResetRX){
+    #Get-UARTMapping -protocol CRSF
+    Write-Host "Clear RX-settings"
+    Setup-FalcoX -comPort $MostLikelyCOMport -ResetRadio
+}
 If($HTARxCRSF_TX1){
     #Get-UARTMapping -protocol CRSF
     Write-Host "Setting TX1 to CRSF"

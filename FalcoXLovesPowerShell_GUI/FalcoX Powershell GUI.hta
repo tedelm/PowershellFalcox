@@ -168,6 +168,10 @@
     <h3>-- RX Settings --</h3>
         <tr>
             <td>
+                <input type="Hidden" id=txtCmd21 value="powershell.exe -NoProfile -ExecutionPolicy Bypass -file main.ps1 -HTAResetRX"> 
+                <button class="CustomButton" onclick="execWithStatus(txtCmd21.value)">RESET RX Config</button>
+            </td>
+            <td>
                 <input type="Hidden" id=txtCmd7 value="powershell.exe -NoProfile -ExecutionPolicy Bypass -file main.ps1 -HTARxCRSF_TX1"> 
                 <button class="CustomButton" onclick="execWithStatus(txtCmd7.value)">SET CRSF on TX1</button>
             </td>
