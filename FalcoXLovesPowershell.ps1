@@ -48,7 +48,7 @@ https://github.com/tedelm/PowershellFalcox
 Import-Module '.\comPort.psm1' #Module to read/write to comport
 Import-Module '.\vtxchannelmap.psm1' #Module for vtx channel mapping, Smart Audio/IRC Tramp
 
-$CurrentVersion = "3.2.7"
+$CurrentVersion = "3.2.8"
 
 Function CheckForUpdates(){
     param (
