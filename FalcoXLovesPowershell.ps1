@@ -828,9 +828,11 @@ function Get-FalcoXOSD {
 Function FilterNumb($Filterint){
     switch ($Filterint)
     {
+        0 { $result = 'Predictive' }
         1 { $result = 'BiQuad' }
         2 { $result = 'Frequency' }
         3 { $result = 'Dynamic' }
+        4 { $result = 'Disabled' }
 
     }
 
@@ -840,9 +842,11 @@ Function FilterNumb($Filterint){
 Function Get-FilterNameTable($FilterName){
     switch ($FilterName)
     {
+        Predictive { $result = 0 }
         BiQuad { $result = 1 }
         Freq { $result = 2 }
         Dyn { $result = 3 }
+        Disabled { $result = 4 }
         Frequency { $result = 2 }
         Dynamic { $result = 3 }
 
@@ -850,6 +854,7 @@ Function Get-FilterNameTable($FilterName){
 
     $result
 }
+
 
 #Esc proto
 Function Get-FalcoXEscProto($ProtocolInt){
