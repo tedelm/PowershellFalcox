@@ -50,7 +50,7 @@ https://github.com/tedelm/PowershellFalcox
 ####
 ####
 
-$CurrentVersion = "3.2.8"
+$CurrentVersion = "3.2.9"
 
 
 Function CheckForUpdates(){
@@ -116,7 +116,7 @@ Function GuidedMenu(){
     #Autodetect flightcontroller
     function AutodetectFC() {
         Write-Host "Autodetecting Flightcontroller..."
-        $script:MostLikelyCOMport = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*")}).DeviceID
+        $script:MostLikelyCOMport = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*") -or ($_.PNPDeviceID -like "USB\VID_0483&PID_5741*")}).DeviceID
         If($MostLikelyCOMport){Write-Host "...Found $MostLikelyCOMport"}else{Write-Host "...No Flightcontroller found :("}
         
         $MostLikelyCOMport      

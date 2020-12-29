@@ -139,7 +139,7 @@ Function Get-FalcoXConfig {
     #Autodetect COM-port
     if(!$comPort){
         Write-Host "Autodetecting COM-port..."
-        $comPort = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*")}).DeviceID
+        $comPort = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*") -or ($_.PNPDeviceID -like "USB\VID_0483&PID_5741*")}).DeviceID
 
         if($comPort -match "com"){
             Write-Host "Autodetecting COM-port...Found $comPort"
@@ -312,7 +312,7 @@ Function Set-FalcoXConfig {
     #Autodetect COM-port
     if(!$comPort){
         Write-Host "Autodetecting COM-port..."
-        $comPort = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*")}).DeviceID
+        $comPort = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*") -or ($_.PNPDeviceID -like "USB\VID_0483&PID_5741*")}).DeviceID
 
         if($comPort -match "com"){
             Write-Host "Autodetecting COM-port...Found $comPort"
@@ -445,7 +445,7 @@ function Export-FalcoXReportHtml {
     #Autodetect COM-port
     if(!$comPort){
         Write-Host "Autodetecting COM-port..."
-        $comPort = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*")}).DeviceID
+        $comPort = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*") -or ($_.PNPDeviceID -like "USB\VID_0483&PID_5741*")}).DeviceID
 
         if($comPort -match "com"){
             Write-Host "Autodetecting COM-port...Found $comPort"
@@ -698,7 +698,7 @@ Function Setup-FalcoX {
     #Autodetect COM-port
     if(!$comPort){
         Write-Host "Autodetecting COM-port..."
-        $comPort = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*")}).DeviceID
+        $comPort = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*") -or ($_.PNPDeviceID -like "USB\VID_0483&PID_5741*")}).DeviceID
 
         if($comPort -match "com"){
             Write-Host "Autodetecting COM-port...Found $comPort"
@@ -754,7 +754,7 @@ function Get-FalcoXOSD {
     #Autodetect COM-port
     if(!$comPort){
         Write-Host "Autodetecting COM-port..."
-        $comPort = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*")}).DeviceID
+        $comPort = (Get-WMIObject Win32_SerialPort | where{($_.PNPDeviceID -like "USB\VID_0483&PID_5740*") -or ($_.PNPDeviceID -like "USB\VID_0483&PID_5741*")}).DeviceID
 
         if($comPort -match "com"){
             Write-Host "Autodetecting COM-port...Found $comPort"
